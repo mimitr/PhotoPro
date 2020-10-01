@@ -13,6 +13,23 @@ def create_user(first, last, email, password, conn, cur):
 		print(e)
 		return "Unable to create new account. Account with that email already exists."
 
+def login_user(email, password, conn, cur):
+
+	cmd = "SELECT * FROM users WHERE email='{}' AND password='{}'".format(email, password)
+	print(cmd)
+	cur.execute(cmd)
+	conn.commit()
+	data = cur.fetchall()
+	length = len(data)
+	if length == 0:
+		return "Incorrect email or password! Please try again."
+	elif length == 1:
+		(id,first,last,email,password) = data[0]
+		print(id, first, last, email, password)
+		return "Welcome back {} {}".format(first, last)
+	else:
+		print("Email not unique")
+
 
 
 if __name__ == '__main__':
@@ -31,21 +48,17 @@ if __name__ == '__main__':
 	table = "users"
 	first = 'Matthew'
 	last = 'Olsen'
-	email = 'OlsenMatthew780@gmail.com'
+	email = 'olsenmatthew780@gmail.com'
 	password = 'password'
 
-	response = create_user(first, last, email, password, conn, cur)
-	print(response)
+	# response = create_user(first, last, email, password, conn, cur)
+	# print(response)
 
 	time.sleep(1)
 
-	cmd = "SELECT * FROM {}".format(table)
-	cur.execute(cmd)
+	response = login_user(email, password, conn, cur)
+	print(response)
 
-
-	data = cur.fetchall()
-
-	print(data)
 
 	if conn:
 		cur.close()
