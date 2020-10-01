@@ -30,6 +30,21 @@ def login_user(email, password, conn, cur):
 	else:
 		print("Email not unique")
 
+def change_password(email, password, new_password, conn, cur):
+	login_response = login_user(email, password, conn, cur)
+
+	if "Welcome back" in login_response:
+		cmd = "UPDATE users SET password = '{}' WHERE email='{}' AND password='{}'".format(
+			new_password,
+			email,
+			password
+		)
+		print(cmd)
+		cur.execute(cmd)
+		conn.commit()
+		return "Successfully changed password!"
+	else:
+		return login_response
 
 
 if __name__ == '__main__':
@@ -54,10 +69,14 @@ if __name__ == '__main__':
 	# response = create_user(first, last, email, password, conn, cur)
 	# print(response)
 
-	time.sleep(1)
+	# time.sleep(1)
+	#
+	# response = login_user(email, password, conn, cur)
+	# print(response)
 
-	response = login_user(email, password, conn, cur)
-	print(response)
+	# response = change_password(email, password, "new_password", conn, cur)
+	# print(response)
+
 
 
 	if conn:
