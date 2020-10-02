@@ -1,0 +1,14 @@
+=======================    WEEK 3    =======================
+
+October 1st:
+I have created the postgres database on Google Cloud Platform. On this database I added and tested
+the users table which contains serial ID, first name, last name, email and password.
+The email is unique and the serial ID is the primary key.
+
+I also wrote four functions in the backend utils/connect_to_database.py:
+    1. create_user: creates a new user in the postgres DB
+    2. login_user: checks that the email is unique and matches the given password
+    3. change_password: check that the user is logged in and then changes the password to the provided
+    4. forgot_password_get_change_password_link: sends email to provided email to change the user's password
+
+=======================    WEEK 4    =======================
