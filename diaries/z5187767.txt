@@ -11,4 +11,14 @@ I also wrote four functions in the backend utils/connect_to_database.py:
     3. change_password: check that the user is logged in and then changes the password to the provided
     4. forgot_password_get_change_password_link: sends email to provided email to change the user's password
 
+October 3rd:
+Added post function and discovery function, populated the database with ~300
+photos. Discovery function queries photos that weren't posted by this user in batches
+such as 16 to 32. I also created database_function_tests.py in the utils for testing
+of the database functions. I also split connect_to_database.py into two files.
+connect.py and general_user.py. Connect.py simply connects to the database and allows
+for imports of the connection and cursor objects. general_user.py has the functions
+relating to functions that are for everyone. So far all of these files are located
+under utils/database.
+
 =======================    WEEK 4    =======================
