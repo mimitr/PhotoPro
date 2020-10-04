@@ -13,7 +13,10 @@
 }
 
 .toolbar-right {
-  position: relative;
+  display: flex;
+
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .logo {

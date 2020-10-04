@@ -1,7 +1,7 @@
 .sign-in,
 .getting-started {
   display: inline;
-  position: absolute;
+  margin: 0.5rem;
 
   top: 0.7rem;
 }
