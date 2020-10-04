@@ -1,33 +1,20 @@
 .flex-container {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.toolbar-left {
-  display: flex;
-  position: absolute;
+.toolbar-left,
+.toolbar-right {
+  height: 3.3em;
+  width: 45%;
 
-  left: 0rem;
-
-  padding-top: 2.3em;
-  padding-left: 40%;
-
-  border: solid 3px rgb(62, 166, 214);
   background-color: rgb(68, 179, 179);
 }
 
 .toolbar-right {
-  display: flex;
-  position: absolute;
-
-  right: 0rem;
-
-  padding-top: 2.3em;
-  padding-right: 40%;
-
-  border: solid 3px rgb(62, 166, 214);
-  background-color: rgb(68, 179, 179);
+  position: relative;
 }
 
 .logo {
-  margin: 0 auto;
 }
