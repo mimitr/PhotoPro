@@ -1,4 +1,4 @@
-from database_connection_config import conn, cur
+from connect import conn, cur
 from general_user import create_user, login_user, change_password, forgot_password_get_change_password_link, post_image, discovery
 import time
 
