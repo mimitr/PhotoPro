@@ -5,7 +5,7 @@ function Feed() {
   return (
     <div>
       <h1>Feed</h1>
-      <img src={test_image}></img>
+      <img src={test_image} alt="Bull"></img>
     </div>
   );
 }
