@@ -18,10 +18,10 @@ function MainWrapper() {
     //setImages(response.data.results.map((x) => images.push(x)));
     const newImages = response.data.results;
     setImages(newImages);
-    console.log(images);
+    // console.log(images);
   }
 
-  console.log(images);
+  //console.log(images);
 
   return (
     <React.Fragment>
