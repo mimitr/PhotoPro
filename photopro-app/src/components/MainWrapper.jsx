@@ -7,20 +7,21 @@ import ImageList from "./ImageList/ImageList";
 function MainWrapper() {
   const [images, setImages] = useState([]);
 
-  onSearchSubmit = async (term) => {
+  async function onSearchSubmit(term) {
     const response = await axios.get("https://api.unsplash.com/search/photos", {
       params: { query: term },
       headers: {
-        Authorization: "Client-ID YOUR_ACCESS_KEYS",
+        Authorization: "Client-ID d59bDVT3fM5DB90WT41RUwaYFzikaPGfpviDpMqMTls",
       },
     });
 
-    setImages(response.data.results.map((x) => images.push(x)));
-  };
-
-  onSearchSubmit().then(() => {
+    //setImages(response.data.results.map((x) => images.push(x)));
+    const newImages = response.data.results;
+    setImages(newImages);
     console.log(images);
-  });
+  }
+
+  console.log(images);
 
   return (
     <React.Fragment>
