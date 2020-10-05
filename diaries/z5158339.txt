@@ -1,0 +1,26 @@
+Week 1
+
+Group formed. As a Scrum master, I created Jira and Github accounts.
+
+Week 2
+
+Together with other members, I have worked on the proposal and wrote user stories. I have wrote out the sprints from Week 3 to Week 9 where I specify which user stories have to be covered for each sprint.
+
+Week 3
+
+Submitted proposal. Started working on the website. Based on sprint 1, we should be able to have the look of the main page done. I started picking up on React and wrote functions to show the search bar and displaying photos on the main page.
+Since we decided to use Hooks for React, I got an issue when I can not use 'props' properly, so I was stucked on that for quite some time. 
+Me and Cristian are responsible for front-end, so we are planning to get the main page done by beginning of Week 4, and create a window to post photos.
+
+Week 4
+
+Week 5
+
+Week 6
+
+Week 7
+
+Week 8
+
+Week 9 
+
