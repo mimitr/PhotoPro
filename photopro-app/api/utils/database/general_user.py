@@ -164,3 +164,24 @@ def discovery(user_id, batch_size, conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+def discovery_with_search_term(user_id, batch_size, query, conn, cur):
+    try:
+        user_id = int(user_id)
+        batch_size = int(batch_size)
+        cmd = "SELECT * FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+            user_id, query, batch_size)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        data = cur.fetchmany(batch_size)
+
+        length = len(data)
+        if length == 0:
+            return False
+        else:
+            return data
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False

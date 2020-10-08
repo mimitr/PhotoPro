@@ -10,24 +10,26 @@ function MainWrapper() {
 
   async function onSearchSubmit(term) {
     const response = await axios.get("http://localhost:5000/discovery", {
-      params: { query: term , batch_size:16, user_id: 1},
+      params: { query: term , batch_size:32, user_id: 1},
     });
 
     // setImages(response.data.results.map((x) => images.push(x)));
     var results = response.data.result;
-    // var newImages = [];
-    // for (var i = 0; i < results.length; i++) {
-      // var obj = results[i];
-      // console.log(obj['id']);
-      // console.log(obj['caption']);
-      // console.log(obj['img']);
-      // console.log(obj['uploader']);
-      // newImages.push(obj['img']);
-    // }
-    // const newImages = response.data.results;
-    setImages(results);
-    // console.log(response)
-    // console.log(images);
+    if (results != false){
+      // var newImages = [];
+      // for (var i = 0; i < results.length; i++) {
+        // var obj = results[i];
+        // console.log(obj['id']);
+        // console.log(obj['caption']);
+        // console.log(obj['img']);
+        // console.log(obj['uploader']);
+        // newImages.push(obj['img']);
+      // }
+      // const newImages = response.data.results;
+      setImages(results);
+      // console.log(response)
+      // console.log(images);
+    }
   }
 
   //console.log(images);

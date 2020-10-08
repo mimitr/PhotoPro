@@ -10,7 +10,7 @@ for i in sys.path:
 from utils.database.connect import conn, cur
 from utils.database.general_user import create_user, login_user, \
     change_password, forgot_password_get_change_password_link, \
-    post_image, discovery
+    post_image, discovery, discovery_with_search_term
 
 print(conn, cur)
 
@@ -46,6 +46,7 @@ def api_create_user():
     if result:
         (result, user_id) = login_user(email, password, conn, cur)
         print(result, user_id)
+        app.user_id = user_id
         return jsonify({
             'result': result
         })
@@ -95,26 +96,34 @@ def api_post_image():
 def api_discovery():
     user_id = request.args.get('user_id')
     batch_size = request.args.get('batch_size')
-    result = discovery(user_id, batch_size, conn, cur)
+    query = request.args.get('query')
+    if query is not None:
+        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+    else:
+        result = discovery(user_id, batch_size, conn, cur)
 
-    processed_result = []
+    if result:
 
-    for tup in result:
-        id, caption, uploader, img = tup
-        img = base64.encodebytes(img).decode("utf-8")
-        # print(img)
-        processed_result.append(
-            {
-                'id': id,
-                'caption': caption,
-                'uploader': uploader,
-                'img': img
-            }
-        )
+        processed_result = []
 
-    # print(imgarr[0])
+        for tup in result:
+            id, caption, uploader, img = tup
+            img = base64.encodebytes(img).decode("utf-8")
+            # print(img)
+            processed_result.append(
+                {
+                    'id': id,
+                    'caption': caption,
+                    'uploader': uploader,
+                    'img': img
+                }
+            )
 
-    retval = jsonify({
-        'result': processed_result
-    })
-    return retval
+        # print(imgarr[0])
+
+        retval = jsonify({
+            'result': processed_result
+        })
+        return retval
+    else:
+        return jsonify({'result': False})
