@@ -1,5 +1,6 @@
 from connect import conn, cur
 from general_user import create_user, login_user, change_password, forgot_password_get_change_password_link, post_image, discovery
+from watermark import apply_watermark
 import time
 
 
@@ -36,6 +37,15 @@ if __name__ == '__main__':
     for tup in response:
         id, caption, uploader, img = tup
 
-        fin = open('{}.jpg'.format(id), 'wb')
+        #fin = open('{}.jpg'.format(id), 'wb')
+        #fin.write(img)
+        #fin.close()
+
+        filename = '{}.jpg'.format(id)
+
+        fin = open(filename, 'wb')
         fin.write(img)
         fin.close()
+
+        apply_watermark(filename)
+
