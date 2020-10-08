@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './toolbar.css';
+import SignIn from './buttons/sign_in';
 
 function Toolbar(props) {
   return (
@@ -7,7 +8,9 @@ function Toolbar(props) {
       <div className="flex-container">
         <div className="toolbar-left"></div>
         <h1 className="logo">Logo</h1>
-        <div className="toolbar-right"></div>
+        <div className="toolbar-right">
+          <SignIn />
+        </div>
       </div>
     </React.Fragment>
   );
