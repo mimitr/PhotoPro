@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import sys
+import base64
 
 for i in sys.path:
     print(i)
@@ -13,18 +15,24 @@ from utils.database.general_user import create_user, login_user, \
 print(conn, cur)
 
 app = Flask(__name__)
+app.user_id = None
+CORS(app)
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET','POST'])
 def api_login():
     email = request.args.get('email')
     password = request.args.get('password')
+    print(email, password)
+
     (result, user_id) = login_user(email, password, conn, cur)
     print(result, user_id)
 
-    return {
+    app.user_id = user_id
+
+    return jsonify({
         'result': result
-    }
+    })
 
 
 @app.route('/create_user')
@@ -38,13 +46,13 @@ def api_create_user():
     if result:
         (result, user_id) = login_user(email, password, conn, cur)
         print(result, user_id)
-        return {
+        return jsonify({
             'result': result
-        }
+        })
 
-    return {
+    return jsonify({
         'result': result
-    }
+    })
 
 
 @app.route('/change_password')
@@ -64,9 +72,9 @@ def api_forgot_password():
     email = request.args.get('email')
     result = forgot_password_get_change_password_link(email, conn, cur)
 
-    return {
+    return jsonify({
         'result': result
-    }
+    })
 
 
 @app.route('/post')
@@ -78,9 +86,9 @@ def api_post_image():
         image = request.files['image']
         result = post_image(user_id, caption, image, conn, cur)
 
-        return {
+        return jsonify({
             'result': result
-        }
+        })
 
 
 @app.route('/discovery')
@@ -89,6 +97,24 @@ def api_discovery():
     batch_size = request.args.get('batch_size')
     result = discovery(user_id, batch_size, conn, cur)
 
-    return {
-        'result': result
-    }
+    processed_result = []
+
+    for tup in result:
+        id, caption, uploader, img = tup
+        img = base64.encodebytes(img).decode("utf-8")
+        # print(img)
+        processed_result.append(
+            {
+                'id': id,
+                'caption': caption,
+                'uploader': uploader,
+                'img': img
+            }
+        )
+
+    # print(imgarr[0])
+
+    retval = jsonify({
+        'result': processed_result
+    })
+    return retval

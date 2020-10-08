@@ -3,10 +3,15 @@ import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 
 import MainWrapper from "./components/MainWrapper";
+import LoginPage from "./components/LoginPage";
+import RegistrationPage from "./components/RegistrationPage";
+import ChangePasswordPage from "./components/ChangePasswordPage";
+import ForgotPasswordPage from "./components/ForgotPasswordPage";
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <MainWrapper />
+    <MainWrapper/>
   </React.StrictMode>,
   document.getElementById("root")
 );

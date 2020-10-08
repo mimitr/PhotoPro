@@ -22,7 +22,7 @@ class ImageSquare extends Component {
   componentDidMount() {
     this.imageRef.current.addEventListener("load", this.setSpans);
     // console log the height of the images
-    console.log(this.imageRef.current.clientHeight);
+    // console.log(this.imageRef.current.clientHeight);
   }
 
   setSpans = () => {
@@ -37,8 +37,8 @@ class ImageSquare extends Component {
       <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
         <img
           ref={this.imageRef}
-          src={this.props.image.urls.regular}
-          alt={this.props.image.alt_description}
+          src={`data:image/jpg;base64,${this.props.image.img}`}
+          alt={this.props.image.caption}
         />
       </div>
     );
