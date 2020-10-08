@@ -5,6 +5,7 @@ import SearchBar from "./SearchBar/SearchBar";
 import ImageList from "./ImageList/ImageList";
 
 function MainWrapper() {
+  // initialise the array to an empty array []
   const [images, setImages] = useState([]);
 
   async function onSearchSubmit(term) {

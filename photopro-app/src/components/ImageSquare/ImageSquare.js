@@ -3,6 +3,10 @@ import React, { Component } from "react";
 class ImageSquare extends Component {
   constructor(props) {
     super(props);
+
+    // CreateRef is used to access the DOM
+    // after accessing the DOM, we can get the height of each ImageSquare
+
     this.imageRef = React.createRef();
     this.state = { spans: 0 };
   }

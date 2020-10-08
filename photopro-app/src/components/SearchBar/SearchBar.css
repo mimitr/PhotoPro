@@ -1,13 +1,13 @@
 .flexContainer {
   display: flex;
+  margin: 20px;
   justify-content: center;
   align-items: center;
-  /*border: 1px solid black;*/
 }
 
 .inputStyle {
-  font-size: 1.5em;
-  padding: 3px;
+  font-size: 1.3em;
+  padding: 5px;
   display: inline-block;
   width: 50%;
 }
