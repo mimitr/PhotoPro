@@ -10,8 +10,9 @@ function MainWrapper() {
 
   async function onSearchSubmit(term) {
     const response = await axios.get("http://localhost:5000/discovery", {
-      params: { query: term , batch_size:32, user_id: 1},
+      params: { query: term , batch_size:25, },//user_id: 1
     });
+    console.log(response);
 
     // setImages(response.data.results.map((x) => images.push(x)));
     var results = response.data.result;

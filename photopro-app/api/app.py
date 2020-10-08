@@ -95,6 +95,8 @@ def api_post_image():
 @app.route('/discovery')
 def api_discovery():
     user_id = request.args.get('user_id')
+    if user_id == None:
+        user_id = 0
     batch_size = request.args.get('batch_size')
     query = request.args.get('query')
     if query is not None:
