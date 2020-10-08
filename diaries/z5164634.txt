@@ -1,0 +1,7 @@
+===== Week 4 =====
+
+10/8/2020
+
+I created a function, 'watermark.py' which lays a semi-transparent watermark over an inputted image,
+which will be sourced from the postgres database. I have yet to test this function, given that this is supposed
+to be part of the discovery functionality of the web app. 
