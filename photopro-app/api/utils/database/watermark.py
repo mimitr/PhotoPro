@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 
-def apply_watermark(input, output):
+def apply_watermark(input):
     photo = Image.open(input).convert('RGBA')
     w, h = photo.size
 
@@ -17,7 +17,12 @@ def apply_watermark(input, output):
 
     # Draw watermark image and paste over base photo
     wmdraw.text((x,y), wtxt, font=wfont, fill=(255,255,255,128))
-    outphoto = Image.alpha_composite(photo, wmdraw)
+    outphoto = Image.alpha_composite(photo, watermark)
+    outphoto_rgb = outphoto.convert('RGB')
 
     # save watermarked photo
-    outphoto.save(output)
+    outphoto_rgb.save(input)
+
+    photo.close()
+
+    #return outphoto
