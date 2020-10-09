@@ -9,11 +9,20 @@ Together with other members, I have worked on the proposal and wrote user storie
 Week 3
 
 Submitted proposal. Started working on the website. Based on sprint 1, we should be able to have the look of the main page done. I started picking up on React and wrote functions to show the search bar and displaying photos on the main page.
+<<<<<<< HEAD
 Since we decided to use Hooks for React, I got an issue when I can not use 'props' properly, so I was stucked on that for quite some time. 
+=======
+Since we decided to use Hooks for React, I got an issue when I can not use React 'props' properly, so I was stucked on that for quite some time. 
+>>>>>>> 6834c67a95860b31b61b9d48e1e24c442ad4b392
 Me and Cristian are responsible for front-end, so we are planning to get the main page done by beginning of Week 4, and create a window to post photos.
 
 Week 4
 
+<<<<<<< HEAD
+=======
+Solved the issue with React 'props' that I have faced with last week. Successfully managed to display the photos on the main page, and make them align without weird gaps.
+
+>>>>>>> 6834c67a95860b31b61b9d48e1e24c442ad4b392
 Week 5
 
 Week 6
