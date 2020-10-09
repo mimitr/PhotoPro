@@ -1,0 +1,15 @@
+Week 1
+
+Group formed. We created the Jira board and github repo and have begun planning out our proposal on a google doc. We started off with some essential user stories we may need such as a responsive discovery feed, search capabilities and so on. We also split the team up based on experience and skills, with me and Mimi focusing on the front-end, Joe on the back-end and Matt and Ethan on full-stack. 
+
+
+Week 2 
+Worked on the proposal. I split the user stories into three categories: general, explorer and contributer in order to better cover the project scope in out product backlog and to improve organisation. Did some research on similar sights such as shutterstock and unsplash by having a look at their UI and features
+
+Week 3
+Proposal finished. Basic setup added with react boilerplate using the toolchain create-react-app. For this project I have decided to use react hooks over the normal class based components due to the easier to read and more intuitive code which I feel will be important in a team based project such as this. I needed to revise some CSS, in particular flexbox and grid which will be important for laying out the photos. At the moment I have just added a basic header with sign in and sign up buttons and have begun work on implementing the feed. Mimi will take care of testing the feed with the API while I try to get a UI library known as ant design working properly. 
+
+
+Week 4
+
+As of now the library works but am experiencing an issue with the css files global scope overwriting all other existing css on the page. There are apparently ways around this but non have worked so far.I decided to leave this and partially import some of the css so it does not affect the global scope. For now I will focus more on the feed and the rest of the stories as functionality should be most important. 

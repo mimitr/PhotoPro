@@ -22,3 +22,10 @@ relating to functions that are for everyone. So far all of these files are locat
 under utils/database.
 
 =======================    WEEK 4    =======================
+
+October 8-9th:
+Last night I integrated the backend api with the frontend in react. I create the login page,
+registration page, forgot password page, and change password page. These all require css updates since
+they only provide the bare minimum functionality. They also need to be integrated with each other through
+a routing system. I have also worked on the main wrapper to ensure that the discovery function uses our
+database. Also, I added optional query terms to our database which use the comments to filter as of current.
