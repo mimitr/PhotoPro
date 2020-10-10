@@ -150,7 +150,7 @@ def delete_image_post(image_id, conn, cur):
             WHERE image_id = %s;
             """
         print(cmd)
-        cur.execute(cmd, (image_id))
+        cur.execute(cmd, (image_id,))
         conn.commit()
         return True
     except Exception as e:
