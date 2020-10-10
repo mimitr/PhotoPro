@@ -17,19 +17,8 @@ function MainWrapper() {
     // setImages(response.data.results.map((x) => images.push(x)));
     var results = response.data.result;
     if (results != false) {
-      // var newImages = [];
-      // for (var i = 0; i < results.length; i++) {
-      // var obj = results[i];
-      // console.log(obj['id']);
-      // console.log(obj['caption']);
-      // console.log(obj['img']);
-      // console.log(obj['uploader']);
-      // newImages.push(obj['img']);
-      // }
-      // const newImages = response.data.results;
       setImages(results);
-      // console.log(response)
-      // console.log(images);
++
     }
   }
 
