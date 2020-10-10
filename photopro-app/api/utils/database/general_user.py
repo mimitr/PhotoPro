@@ -129,7 +129,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
 def post_image(uploader, caption, image, conn, cur):
     try:
         cmd = """
-            INSERT INTO images (caption, uploader, file) 
+            INSERT INTO images (caption, uploader, file)
             VALUES (%s, %s, %s)
             """
         print(cmd)
@@ -143,6 +143,22 @@ def post_image(uploader, caption, image, conn, cur):
         print(error)
         return False
 
+def delete_image_post(image_id, conn, cur):
+    try:
+        cmd = """
+            DELETE FROM images
+            WHERE image_id = %s;
+            """
+        print(cmd)
+        cur.execute(cmd, (image_id))
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
 
 def discovery(user_id, batch_size, conn, cur):
     try:
