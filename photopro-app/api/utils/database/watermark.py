@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+import io
 
 def apply_watermark(input):
     photo = Image.open(input).convert('RGBA')
@@ -19,10 +20,9 @@ def apply_watermark(input):
     wmdraw.text((x,y), wtxt, font=wfont, fill=(255,255,255,128))
     outphoto = Image.alpha_composite(photo, watermark)
     outphoto_rgb = outphoto.convert('RGB')
-
-    # save watermarked photo
-    outphoto_rgb.save(input)
-
     photo.close()
 
-    #return outphoto
+    # save watermarked photo
+    buffer = io.BytesIO()
+    outphoto_rgb.save(buffer, format="JPEG")
+    return buffer

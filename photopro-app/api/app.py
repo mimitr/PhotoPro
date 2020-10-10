@@ -11,6 +11,7 @@ from utils.database.connect import conn, cur
 from utils.database.general_user import create_user, login_user, \
     change_password, forgot_password_get_change_password_link, \
     post_image, discovery, discovery_with_search_term
+from utils.database.watermark import apply_watermark
 
 print(conn, cur)
 
@@ -110,6 +111,11 @@ def api_discovery():
 
         for tup in result:
             id, caption, uploader, img = tup
+            file = "image.jpeg"
+            photo = open(file, 'wb')
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
             # print(img)
             processed_result.append(
