@@ -18,3 +18,12 @@ I was finally able to integrate the watermark function properly into the discove
 watermark function now takes in an image file generated from the byte data from the database sql entry, applies the watermark and returns
 a bytesIO object of the resultant file. The bytesIO object is then encoded and processed as a part of the request data for the
 search results at the frontend.
+
+10/10/2020
+
+I began work on the 'Edit Post' user story, which entails a user's ability to edit the caption, tags and/or price of their photos/posts.
+Since our current database only stores the user id, image id and caption of a photo, my edit post function within the api only updates
+the 'caption' column of the table.
+UPDATE:
+After testing and tweaking, the edit post function works correctly, with the caption text changed to the text inputted into the
+function. It however has a quirk of changing the order of entries within the table, with the affected entry being set as the last entry.

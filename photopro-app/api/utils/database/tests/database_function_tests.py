@@ -1,5 +1,5 @@
 from connect import conn, cur
-from general_user import create_user, login_user, change_password, forgot_password_get_change_password_link, post_image, discovery
+from general_user import create_user, login_user, change_password, forgot_password_get_change_password_link, post_image, discovery,edit_post_caption
 from watermark import apply_watermark
 import time
 
@@ -33,19 +33,24 @@ if __name__ == '__main__':
     #     response = post_image(user_id, "African Elephant!", img, conn, cur)
     #     print(response)
 
-    response = discovery(user_id, 32, conn, cur)
-    for tup in response:
-        id, caption, uploader, img = tup
+    #response = discovery(user_id, 32, conn, cur)
+    #for tup in response:
+    #    id, caption, uploader, img = tup
 
         #fin = open('{}.jpg'.format(id), 'wb')
         #fin.write(img)
         #fin.close()
 
-        filename = '{}.jpg'.format(id)
+    #    filename = '{}.jpg'.format(id)
 
-        fin = open(filename, 'wb')
-        fin.write(img)
-        fin.close()
+    #    fin = open(filename, 'wb')
+    #    fin.write(img)
+    #    fin.close()
 
-        apply_watermark(filename)
+    #    apply_watermark(filename)
+
+    # change to whatever image_id and caption you want
+    response = edit_post_caption(1, 117, "big buffalo", conn, cur)
+    print(response)
+
 

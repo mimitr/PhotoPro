@@ -187,3 +187,19 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+def edit_post_caption(user_id, image, caption, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "UPDATE images SET caption = '{}' WHERE uploader = {} AND image_id = {}".format(caption, user_id, image)
+        #"SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
