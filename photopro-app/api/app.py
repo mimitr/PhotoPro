@@ -132,6 +132,7 @@ def api_discovery():
         retval = jsonify({
             'result': processed_result
         })
+        print(retval)
         return retval
     else:
         return jsonify({'result': False})
