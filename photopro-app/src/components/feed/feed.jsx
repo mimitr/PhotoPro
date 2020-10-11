@@ -10,7 +10,7 @@ const Feed = (props) => {
   return (
     <React.Fragment>
       <h2>Found Images: {props.foundImages.length}</h2>
-      <div className="image-list">{imgs}</div>;
+      <div className="image-list">{imgs}</div>
     </React.Fragment>
   );
 };
