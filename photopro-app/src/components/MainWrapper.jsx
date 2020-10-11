@@ -4,6 +4,12 @@ import Toolbar from "./toolbar/toolbar";
 import SearchBar from "./SearchBar/SearchBar";
 import ImageList from "./ImageList/ImageList";
 
+import { Route, Switch, Link } from "react-router-dom";
+import LoginPage from "./Login/LoginPage";
+import RegistrationPage from "./Registration/RegistrationPage";
+import ChangePasswordPage from "./ChangePassword/ChangePasswordPage";
+import ForgotPasswordPage from "./ForgotPassword/ForgotPasswordPage";
+
 function MainWrapper() {
   // initialise the array to an empty array []
   const [images, setImages] = useState([]);

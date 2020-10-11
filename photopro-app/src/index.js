@@ -1,17 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
+import { BrowserRouter } from "react-router-dom";
 
 import MainWrapper from "./components/MainWrapper";
-import LoginPage from "./components/LoginPage";
-import RegistrationPage from "./components/RegistrationPage";
-import ChangePasswordPage from "./components/ChangePasswordPage";
-import ForgotPasswordPage from "./components/ForgotPasswordPage";
-
 
 ReactDOM.render(
   <React.StrictMode>
-    <MainWrapper/>
+    <BrowserRouter>
+      <MainWrapper />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );

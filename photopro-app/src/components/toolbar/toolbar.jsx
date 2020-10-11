@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./toolbar.css";
 
 function Toolbar(props) {
@@ -8,8 +9,12 @@ function Toolbar(props) {
         <div className="toolbar-left"></div>
         <h1 className="logo">Logo</h1>
         <div className="toolbar-right"></div>
-        <button class="button button1">Sign up</button>
-        <button class="button button2">Log in</button>
+        <Link to="/signup">
+          <button class="button button1">Sign up</button>
+        </Link>
+        <Link to="login">
+          <button class="button button2">Log in</button>
+        </Link>
       </div>
     </React.Fragment>
   );
