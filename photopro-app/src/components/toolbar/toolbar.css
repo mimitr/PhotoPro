@@ -1,0 +1,23 @@
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolbar-left,
+.toolbar-right {
+  height: 3.3em;
+  width: 45%;
+
+  background-color: rgb(68, 179, 179);
+}
+
+.toolbar-right {
+  display: flex;
+
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.logo {
+}
