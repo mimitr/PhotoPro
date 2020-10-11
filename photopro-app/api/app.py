@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import sys
 import base64
 
@@ -79,13 +79,17 @@ def api_forgot_password():
     })
 
 
-@app.route('/post')
+@app.route('/post', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def api_post_image():
     if request.method == "POST":
+        user_id = request.form['user_id']
+        caption = request.form['caption']
+        image = request.form['image']
 
-        user_id = request.args.get('user_id')
-        caption = request.args.get('caption')
-        image = request.files['image']
+        image = image.split(',')[-1]
+        image = base64.b64decode(image)
+
         result = post_image(user_id, caption, image, conn, cur)
 
         return jsonify({

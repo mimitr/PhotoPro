@@ -7,6 +7,7 @@ import LoginPage from "./components/LoginPage";
 import RegistrationPage from "./components/RegistrationPage";
 import ChangePasswordPage from "./components/ChangePasswordPage";
 import ForgotPasswordPage from "./components/ForgotPasswordPage";
+import {CapturePhotoPage} from "./components/CapturePhotoPage";
 
 
 ReactDOM.render(
