@@ -1,13 +1,18 @@
 import React from 'react';
-import test_image from '../../test_images/001.jpg';
+import './feed.css';
+import ImageCard from './ImageSquare/ImageCard';
 
-function Feed() {
+const ImageList = (props) => {
+  const imgs = props.foundImages.map((img) => {
+    return <ImageCard key={img.id} image={img} />;
+  });
+
   return (
-    <div>
-      <h1>Feed</h1>
-      <img src={test_image}></img>
-    </div>
+    <React.Fragment>
+      <h2>Found Images: {props.foundImages.length}</h2>
+      <div className="image-list">{imgs}</div>;
+    </React.Fragment>
   );
-}
+};
 
-export default Feed;
+export default ImageList;

@@ -1,0 +1,13 @@
+===== Week 4 =====
+
+10/8/2020
+
+I created a function, 'watermark.py' which lays a semi-transparent watermark over an inputted image,
+which will be sourced from the postgres database. I have yet to test this function, given that this is supposed
+to be part of the discovery functionality of the web app.
+UPDATE:
+I revised the watermark.py file this afternoon after some testing, and finally got it to behave correctly;
+the 'apply_watermark' function takes in a filename of the base image as an input, and creates a semi-transparent image which serves
+as as the watermark which is then applied over the original image. The composite image is then saved, creating a watermarked version of
+the original photograph.
+I still need to find a way to integrate this functionality into the original user discovery method.

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import Toolbar from './toolbar/toolbar';
-import Feed from './feed/feed';
+import SearchBar from './SearchBar/SearchBar';
 
 function MainWrapper() {
   return (
     <React.Fragment>
       <Toolbar />
-      <Feed />
+      <SearchBar />
     </React.Fragment>
   );
 }
