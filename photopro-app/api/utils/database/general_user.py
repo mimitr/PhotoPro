@@ -165,6 +165,7 @@ def discovery(user_id, batch_size, conn, cur):
         print(error)
         return False
 
+
 def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     try:
         user_id = int(user_id)
