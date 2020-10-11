@@ -10,7 +10,7 @@ for i in sys.path:
 from utils.database.connect import conn, cur
 from utils.database.general_user import create_user, login_user, \
     change_password, forgot_password_get_change_password_link, \
-    post_image, discovery, discovery_with_search_term
+    post_image, discovery, discovery_with_search_term, edit_post_caption
 from utils.database.watermark import apply_watermark
 
 print(conn, cur)
@@ -136,3 +136,14 @@ def api_discovery():
         return retval
     else:
         return jsonify({'result': False})
+
+@app.route('/edit_post')
+def api_edit_post():
+
+    image_id = request.args.get('image_id')
+    caption = request.args.get('caption')
+    result = edit_post_caption(app.user_id, image_id, caption, conn, cur)
+
+    return jsonify({
+        'result': result
+    })
