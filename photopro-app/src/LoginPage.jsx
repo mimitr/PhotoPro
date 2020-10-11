@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
+import axios from "axios";
+import { useHistory } from "react-router-dom";
 
-import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom';
-import MainPage from './MainPage';
+import { BrowserRouter as Router, Redirect, Route } from "react-router-dom";
+import MainPage from "./MainPage";
 
 export default function LoginPage() {
-  const [email, set_email] = useState('');
-  const [password, set_password] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
+  const history = useHistory();
+
+  const [email, set_email] = useState("");
+  const [password, set_password] = useState("");
 
   function validate_email() {
     return email.length > 0 && email.length < 50;
@@ -21,57 +23,49 @@ export default function LoginPage() {
   async function attempt_login(event) {
     event.preventDefault();
 
-    const response = await axios.get('http://localhost:5000/login', {
+    const response = await axios.get("http://localhost:5000/login", {
       params: { email: email, password: password },
     });
     console.log(response);
-
-    if (response.data.result) {
-      setLoggedIn(true);
-    }
   }
 
-  if (loggedIn) {
-    return (
-      <Router>
-        <Route path="/" exact component={MainPage} />
-        <Redirect to="/" />
-      </Router>
-    );
-  } else {
-    return (
-      <div>
-        <form onSubmit={attempt_login}>
-          <FormGroup controlId="email" bsSize="large">
-            <FormLabel>Email</FormLabel>
-            <FormControl
-              autoFocus
-              type="email"
-              value={email}
-              onChange={(e) => set_email(e.target.value)}
-            />
-          </FormGroup>
+  const handleSubmitClicked = () => {
+    history.push("/");
+  };
 
-          <FormGroup controlId="password" bsSize="large">
-            <FormLabel>Password</FormLabel>
+  return (
+    <div>
+      <form onSubmit={attempt_login}>
+        <FormGroup controlId="email" bsSize="large">
+          <FormLabel>Email</FormLabel>
+          <FormControl
+            autoFocus
+            type="email"
+            value={email}
+            onChange={(e) => set_email(e.target.value)}
+          />
+        </FormGroup>
 
-            <FormControl
-              value={password}
-              onChange={(e) => set_password(e.target.value)}
-              type="password"
-            />
-          </FormGroup>
+        <FormGroup controlId="password" bsSize="large">
+          <FormLabel>Password</FormLabel>
 
-          <Button
-            block
-            bsSize="large"
-            disabled={!validate_email() || !validate_password()}
-            type="submit"
-          >
-            Login
-          </Button>
-        </form>
-      </div>
-    );
-  }
+          <FormControl
+            value={password}
+            onChange={(e) => set_password(e.target.value)}
+            type="password"
+          />
+        </FormGroup>
+
+        <Button
+          block
+          bsSize="large"
+          disabled={!validate_email() || !validate_password()}
+          type="submit"
+          onClick={handleSubmitClicked}
+        >
+          Login
+        </Button>
+      </form>
+    </div>
+  );
 }
