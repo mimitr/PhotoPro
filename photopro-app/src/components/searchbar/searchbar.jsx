@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './SearchBar.css';
+import './searchbar.css';
 import axios from 'axios';
 import Feed from '../feed/feed';
 
@@ -8,8 +8,7 @@ async function onSearchSubmit(term) {
     params: { query: term, batch_size: 30 }, //user_id: 1
   });
 
-  var results = response.data.result;
-  return results;
+  return response;
 }
 
 function SearchBar(props) {
@@ -19,7 +18,10 @@ function SearchBar(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const images = onSearchSubmit(imgs);
-    setImgs(images);
+    images.then((imageResults) => {
+      setImgs(imageResults.data.result);
+    });
+    console.log(imgs);
   };
 
   return (

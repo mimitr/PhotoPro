@@ -1,8 +1,8 @@
 import React from 'react';
 import './feed.css';
-import ImageCard from './ImageSquare/ImageCard';
+import ImageCard from './ImageCard/ImageCard';
 
-const ImageList = (props) => {
+const Feed = (props) => {
   const imgs = props.foundImages.map((img) => {
     return <ImageCard key={img.id} image={img} />;
   });
@@ -15,4 +15,4 @@ const ImageList = (props) => {
   );
 };
 
-export default ImageList;
+export default Feed;

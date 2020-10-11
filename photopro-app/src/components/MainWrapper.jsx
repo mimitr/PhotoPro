@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Toolbar from './toolbar/toolbar';
-import SearchBar from './SearchBar/SearchBar';
+import SearchBar from './searchbar/searchbar';
 
 function MainWrapper() {
   return (
