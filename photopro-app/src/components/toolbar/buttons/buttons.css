@@ -1,15 +1,6 @@
-.sign-in,
-.getting-started {
-  display: inline;
-  margin: 0.5rem;
+.flex-container-buttons {
+  display: flex;
+  width: 15rem;
 
-  top: 0.7rem;
-}
-
-.sign-in {
-  right: 11.1rem;
-}
-
-.getting-started {
-  right: 0.5rem;
+  justify-content: space-around;
 }

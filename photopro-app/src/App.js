@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 import RegistrationPage from './RegistrationPage';
+import ProfilePage from './ProfilePage';
 
 import {
   BrowserRouter as Router,
@@ -43,6 +44,7 @@ function App() {
             {loggedIn ? <Redirect to="/" /> : <RegistrationPage />}
           </Route>
         </Switch>
+        <Route path="/profile" component={ProfilePage} />
         {loggedIn ? <h1>logged in</h1> : <h1>not logged in</h1>}
       </React.Fragment>
     </Router>
