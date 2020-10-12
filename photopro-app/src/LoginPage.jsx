@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
-import { BrowserRouter as Router, Redirect, Route } from "react-router-dom";
-import MainPage from "./MainPage";
-
-export default function LoginPage() {
-  const history = useHistory();
-
-  const [email, set_email] = useState("");
-  const [password, set_password] = useState("");
+export default function LoginPage(props) {
+  const [email, set_email] = useState('');
+  const [password, set_password] = useState('');
+  let history = useHistory(); // router hook which provides access to dom history (allows for page transitions)
 
   function validate_email() {
     return email.length > 0 && email.length < 50;
@@ -23,15 +19,15 @@ export default function LoginPage() {
   async function attempt_login(event) {
     event.preventDefault();
 
-    const response = await axios.get("http://localhost:5000/login", {
+    const response = await axios.get('http://localhost:5000/login', {
       params: { email: email, password: password },
     });
-    console.log(response);
-  }
 
-  const handleSubmitClicked = () => {
-    history.push("/");
-  };
+    if (response.data.result) {
+      localStorage.setItem('userLoggedIn', response.data.result);
+      history.push('/');
+    }
+  }
 
   return (
     <div>
@@ -61,7 +57,6 @@ export default function LoginPage() {
           bsSize="large"
           disabled={!validate_email() || !validate_password()}
           type="submit"
-          onClick={handleSubmitClicked}
         >
           Login
         </Button>

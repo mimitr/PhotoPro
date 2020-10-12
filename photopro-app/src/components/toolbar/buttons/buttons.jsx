@@ -1,22 +1,21 @@
-import React, { useState } from "react";
-import "./buttons.css";
-import { useHistory } from "react-router-dom";
-import LoginPage from "../../../LoginPage";
+import React, { useState } from 'react';
+import './buttons.css';
+import { useHistory } from 'react-router-dom';
 
-function SignIn() {
+function Buttons() {
   const history = useHistory();
 
   const handleSignInClicked = () => {
-    history.push("/login");
+    history.push('/login');
   };
 
   const handleSignUpClicked = () => {
-    history.push("/signup");
+    history.push('/signup');
   };
 
   return (
     <React.Fragment>
-      <ul style={{ listStyleType: "none" }}>
+      <ul style={{ listStyleType: 'none' }}>
         <li className="sign-in">
           <button onClick={handleSignInClicked}>Sign in</button>
         </li>
@@ -28,4 +27,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default Buttons;
