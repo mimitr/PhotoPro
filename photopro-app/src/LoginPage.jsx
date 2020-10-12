@@ -25,6 +25,7 @@ export default function LoginPage(props) {
 
     if (response.data.result) {
       localStorage.setItem('userLoggedIn', response.data.result);
+      props.loggedIn();
       history.push('/');
     }
   }
