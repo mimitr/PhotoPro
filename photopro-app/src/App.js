@@ -45,7 +45,6 @@ function App() {
           </Route>
         </Switch>
         <Route path="/profile" component={ProfilePage} />
-        {loggedIn ? <h1>logged in</h1> : <h1>not logged in</h1>}
       </React.Fragment>
     </Router>
   );

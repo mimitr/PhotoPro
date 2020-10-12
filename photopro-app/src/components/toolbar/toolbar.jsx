@@ -3,14 +3,15 @@ import './toolbar.css';
 import Buttons from './buttons/buttons';
 
 function Toolbar(props) {
+
   return (
     <React.Fragment>
-      <div className="flex-container">
-        <div className="toolbar-left"></div>
-        <h1 className="logo">Logo</h1>
-        <div className="toolbar-right">
-          <Buttons />
+      <div className="flex-container-toolbar">
+        <div className="toolbar-left">
+        <button>Upload Photo</button>
         </div>
+        <h1 className="toolbar-text">PhotoPro</h1>
+        <Buttons />
       </div>
     </React.Fragment>
   );
