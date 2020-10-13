@@ -4,6 +4,8 @@ import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
 import axios from "axios";
 
 var caption = "";
+var title = "";
+var price = "0";
 var img = null;
 
 function isValid() {
@@ -18,9 +20,11 @@ async function attempt_login(event) {
   // console.log(caption);
   // console.log(img);
   const form_data = new FormData();
-  form_data.append("image", img)
-  form_data.append("user_id", 1)
-  form_data.append("caption", caption)
+  form_data.append("image", img);
+  form_data.append("user_id", 1);
+  form_data.append("caption", caption);
+  form_data.append("title", title);
+  form_data.append("price", price)
 
   const response = await axios.post("http://localhost:5000/post", form_data);
   console.log(response);
@@ -58,16 +62,37 @@ class CapturePhotoPage extends React.Component {
           withLabel={true}
         />
         <form onSubmit={attempt_login}>
-
-          <FormGroup bsSize="large">
+        <FormGroup bsSize="large">
             <FormLabel>
-                Caption
+                Title:
             </FormLabel>
             <FormControl
               autoFocus
 
-              onChange={e => caption = e.target.value}
+              onChange={e => title = e.target.value}
           />
+        </FormGroup>
+          <FormGroup bsSize="large">
+              <FormLabel>
+                  Caption:
+              </FormLabel>
+              <FormControl
+                autoFocus
+
+                onChange={e => caption = e.target.value}
+            />
+          </FormGroup>
+          <FormGroup bsSize="large">
+              <FormLabel>
+                  Price: $
+              </FormLabel>
+              <FormControl
+                autoFocus
+                type="number"
+                step="0.01"
+                onChange={e => price = e.target.value}
+            />
+          </FormGroup>
           <Button
               block
               bsSize="large"
@@ -75,7 +100,7 @@ class CapturePhotoPage extends React.Component {
               type="submit">
               Post
           </Button>
-          </FormGroup>
+
         </form>
       </div>
     );

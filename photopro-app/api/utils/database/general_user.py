@@ -126,17 +126,18 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
         return False
 
 
-def post_image(uploader, caption, image, conn, cur):
+def post_image(uploader, caption, image, title, price, conn, cur):
     try:
         cmd = """
-            INSERT INTO images (caption, uploader, file) 
-            VALUES (%s, %s, %s)
+            INSERT INTO images (caption, uploader, file, title, price) 
+            VALUES (%s, %s, %s, %s, %s)
             """
-        print(cmd)
-        cur.execute(cmd, (caption, uploader, image))
+        print(cmd, uploader, caption, title, price)
+        cur.execute(cmd, (caption, uploader, image, title, price))
         conn.commit()
         return True
     except Exception as e:
+        print(e)
         return False
     except psycopg2.Error as e:
         error = e.pgcode
@@ -169,7 +170,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT * FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+        cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
             user_id, query, batch_size)
         print(cmd)
         cur.execute(cmd)

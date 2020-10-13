@@ -86,11 +86,15 @@ def api_post_image():
         user_id = request.form['user_id']
         caption = request.form['caption']
         image = request.form['image']
+        price = str(request.form['price'])
+        title = request.form['title']
+
+        print(price, title)
 
         image = image.split(',')[-1]
         image = base64.b64decode(image)
 
-        result = post_image(user_id, caption, image, conn, cur)
+        result = post_image(user_id, caption, image, title, price, conn, cur)
 
         return jsonify({
             'result': result
@@ -114,7 +118,7 @@ def api_discovery():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img = tup
+            id, caption, uploader, img, title, price = tup
             file = "image.jpeg"
             photo = open(file, 'wb')
             photo.write(img)
@@ -127,7 +131,9 @@ def api_discovery():
                     'id': id,
                     'caption': caption,
                     'uploader': uploader,
-                    'img': img
+                    'img': img,
+                    'title': title,
+                    'price': str(price)
                 }
             )
 

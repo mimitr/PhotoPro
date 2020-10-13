@@ -10,7 +10,7 @@ function MainWrapper() {
 
   async function onSearchSubmit(term) {
     const response = await axios.get("http://localhost:5000/discovery", {
-      params: { query: term , batch_size:1, },//user_id: 1
+      params: { query: term , batch_size:50, },//user_id: 1
     });
     console.log(response);
 

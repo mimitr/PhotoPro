@@ -35,3 +35,7 @@ Today I figured out how to and implmented photo uploading and integerated the po
 of the uploaded file and the API to the Postgres database. I also have been working on
 but have yet to complete direct photo capture from the desktop and then uploading
 that file.
+
+=======================    WEEK 5    =======================
+Today I added titles and prices to the photo uploading and updated the discovery functions and posting
+functions as a result of such.
