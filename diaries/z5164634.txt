@@ -1,6 +1,6 @@
 ===== Week 4 =====
 
-10/8/2020
+8/10/2020
 
 I created a function, 'watermark.py' which lays a semi-transparent watermark over an inputted image,
 which will be sourced from the postgres database. I have yet to test this function, given that this is supposed
@@ -8,6 +8,35 @@ to be part of the discovery functionality of the web app.
 UPDATE:
 I revised the watermark.py file this afternoon after some testing, and finally got it to behave correctly;
 the 'apply_watermark' function takes in a filename of the base image as an input, and creates a semi-transparent image which serves
-as as the watermark which is then applied over the original image. The composite image is then saved, creating a watermarked version of
+as the watermark which is then applied over the original image. The composite image is then saved, creating a watermarked version of
 the original photograph.
 I still need to find a way to integrate this functionality into the original user discovery method.
+
+9/10/2020
+
+I was finally able to integrate the watermark function properly into the discovery method of app.py after much difficulty. The
+watermark function now takes in an image file generated from the byte data from the database sql entry, applies the watermark and returns
+a bytesIO object of the resultant file. The bytesIO object is then encoded and processed as a part of the request data for the
+search results at the frontend.
+
+10/10/2020
+
+I began work on the 'Edit Post' user story, which entails a user's ability to edit the caption, tags and/or price of their photos/posts.
+Since our current database only stores the user id, image id and caption of a photo, my edit post function within the api only updates
+the 'caption' column of the table.
+UPDATE:
+After testing and tweaking, the edit post function works correctly, with the caption text changed to the text inputted into the
+function. It however has a quirk of changing the order of entries within the table, with the affected entry being set as the last entry.
+
+11/10/2020
+
+I attempted to implement the React side of the 'Edit Post' function, creating a rudimentary web page consisting of an input field and a
+button, which would then change the caption of a specified image in the database. However, we have yet to implement a method in which to
+extract the image_id from the post which we want to edit, so for the time being, I had to hardcode the image_id parameter in the
+async function for testing purposes
+
+===== Week 5 =====
+
+14/10/2020
+I revised my edit post function, enabling it to now also edit the title and price of a specified photograph. This was in light
+of the tables now including the aforementioned attributes as new columns.
