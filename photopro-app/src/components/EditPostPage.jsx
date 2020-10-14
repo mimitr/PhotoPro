@@ -5,9 +5,18 @@ import axios from "axios";
 export default function EditPostPage(){
 
     const [caption, set_caption] = useState("");
+    const [title, set_title] = useState("");
+    const [price, set_price] = useState("");
 
+    function validate_title() {
+        return title.length > 0 && title.length < 50;
+    }
     function validate_caption() {
         return caption.length > 0 && caption.length < 50;
+    }
+
+    function validate_price(){
+        return parseInt(price) > 0 && price.length > 0;
     }
 
     async function edit_post(event){
@@ -15,7 +24,7 @@ export default function EditPostPage(){
 
         var response = await axios.get("http://localhost:5000/edit_post",
         {
-            params: {/*image_id: image_id,*/ caption: caption}
+            params: {image_id: image_id, title: title, price: price, caption: caption}
         });
         console.log(response);
     }
@@ -25,6 +34,29 @@ export default function EditPostPage(){
     return(
         <div>
             <form onSubmit={edit_post}>
+                <FormGroup controlId="title" bsSize="large">
+                    <FormLabel>
+                        Title
+                    </FormLabel>
+                    <FormControl
+                        Type="title"
+                        value={title}
+                        onChange={e => set_title(e.target.value)}
+                    />
+
+                </FormGroup>
+
+                <FormGroup controlId="price" bsSize="large">
+                    <FormLabel>
+                        Price
+                    </FormLabel>
+                    <FormControl
+                        Type="price"
+                        value={price}
+                        onChange={e => set_price(e.target.value)}
+                    />
+                </FormGroup>
+
                 <FormGroup controlId="caption" bsSize="large">
                     <FormLabel>
                         Caption
@@ -37,7 +69,7 @@ export default function EditPostPage(){
                 </FormGroup>
 
                 <Button variant="primary"
-                        disabled={!validate_caption()}
+                        disabled={!validate_caption() || !validate_title() || !validate_price() }
                         type="submit"
                 >
                     Submit
