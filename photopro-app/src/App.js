@@ -1,28 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import MainPage from './MainPage';
-import LoginPage from './LoginPage';
-import RegistrationPage from './RegistrationPage';
-import ProfilePage from './ProfilePage';
+import MainPage from "./MainPage/MainPage";
+import LoginPage from "./LoginPage/LoginPage";
+import RegistrationPage from "./RegistrationPage/RegistrationPage";
+import ProfilePage from "./ProfilePage/ProfilePage";
+import PostInfo from "./PostInfo/PostInfo";
 
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
-} from 'react-router-dom';
+} from "react-router-dom";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
-  console.log('RENDERED => ' + loggedIn);
+  console.log("RENDERED => " + loggedIn);
 
   const updateLoginStatus = () => {
     setLoggedIn(true);
   };
 
   useEffect(() => {
-    const userLoggedIn = localStorage.getItem('userLoggedIn');
+    const userLoggedIn = localStorage.getItem("userLoggedIn");
     if (userLoggedIn) {
       setLoggedIn(true);
     }
@@ -43,9 +44,10 @@ function App() {
           <Route path="/signup">
             {loggedIn ? <Redirect to="/" /> : <RegistrationPage />}
           </Route>
+          <Route path="/profile" component={ProfilePage} />
+          {loggedIn ? <h1>logged in</h1> : <h1>not logged in</h1>}
+          <Route path="/post-info" component={PostInfo} />
         </Switch>
-        <Route path="/profile" component={ProfilePage} />
-        {loggedIn ? <h1>logged in</h1> : <h1>not logged in</h1>}
       </React.Fragment>
     </Router>
   );

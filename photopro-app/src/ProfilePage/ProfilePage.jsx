@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import Toolbar from './components/toolbar/toolbar';
+import Toolbar from "../components/toolbar/toolbar";
 
 function ProfilePage() {
   return (
