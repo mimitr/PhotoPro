@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import "./ImageCard.css";
-import { useHistory } from "react-router-dom";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import './ImageCard.css';
+import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 class ImageCard extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class ImageCard extends Component {
   }
 
   componentDidMount() {
-    this.imageRef.current.addEventListener("load", this.setSpans);
+    this.imageRef.current.addEventListener('load', this.setSpans);
   }
 
   setSpans = () => {
@@ -24,8 +24,7 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
-    console.log("image clicked");
-    //this.props.history.push("/post/:url");￼
+    console.log('image clicked');
   };
 
   render() {
