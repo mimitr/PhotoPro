@@ -188,10 +188,8 @@ def api_profile_photos():
 def api_edit_post():
 
     image_id = request.args.get("image_id")
-    title = request.args.get("title")
-    price = request.args.get("price")
     caption = request.args.get("caption")
-    result = edit_post(app.user_id, image_id, title, price, caption, conn, cur)
+    result = edit_post_caption(app.user_id, image_id, caption, conn, cur)
 
     return jsonify({"result": result})
 
