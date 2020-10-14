@@ -18,7 +18,6 @@ function MainWrapper() {
     var results = response.data.result;
     if (results != false) {
       setImages(results);
-+
     }
   }
 
