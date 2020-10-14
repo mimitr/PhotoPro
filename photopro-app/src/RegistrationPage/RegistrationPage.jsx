@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
+import React, { useState } from 'react';
+import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 export default function RegistrationPage() {
   const history = useHistory();
 
-  const [email, set_email] = useState("");
-  const [password, set_password] = useState("");
-  const [first_name, set_first_name] = useState("");
-  const [last_name, set_last_name] = useState("");
+  const [email, set_email] = useState('');
+  const [password, set_password] = useState('');
+  const [first_name, set_first_name] = useState('');
+  const [last_name, set_last_name] = useState('');
 
   function validate_email() {
     return email.length > 0 && email.length < 50;
@@ -30,14 +30,14 @@ export default function RegistrationPage() {
   async function attempt_registration(event) {
     event.preventDefault();
 
-    const response = await axios.get("http://localhost:5000/create_user", {
+    const response = await axios.get('http://localhost:5000/create_user', {
       params: { email: email, password: password },
     });
     console.log(response);
   }
 
   const handleSubmitClicked = () => {
-    history.push("/");
+    history.push('/');
   };
 
   return (

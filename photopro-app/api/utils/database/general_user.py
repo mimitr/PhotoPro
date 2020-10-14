@@ -126,17 +126,18 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
         return False
 
 
-def post_image(uploader, caption, image, conn, cur):
+def post_image(uploader, caption, image, title, price, conn, cur):
     try:
         cmd = """
-            INSERT INTO images (caption, uploader, file) 
-            VALUES (%s, %s, %s)
+            INSERT INTO images (caption, uploader, file, title, price) 
+            VALUES (%s, %s, %s, %s, %s)
             """
-        print(cmd)
-        cur.execute(cmd, (caption, uploader, image))
+        print(cmd, uploader, caption, title, price)
+        cur.execute(cmd, (caption, uploader, image, title, price))
         conn.commit()
         return True
     except Exception as e:
+        print(e)
         return False
     except psycopg2.Error as e:
         error = e.pgcode
@@ -169,7 +170,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT * FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+        cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
             user_id, query, batch_size)
         print(cmd)
         cur.execute(cmd)
@@ -183,6 +184,23 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         else:
             # print(data)
             return data
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+def edit_post(user_id, image, title, price, caption, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "UPDATE images SET title = '{}', price = '{}', caption = '{}' WHERE uploader = {} AND image_id = {}".format(
+            title, int(price), caption, user_id, image)
+        #"SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)

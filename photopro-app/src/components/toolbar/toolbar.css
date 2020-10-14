@@ -1,23 +1,25 @@
-.flex-container {
+.flex-container-toolbar {
   display: flex;
+  position: relative;
   justify-content: space-between;
   align-items: center;
+
+  background-color: rgb(58, 106, 138);
 }
 
-.toolbar-left,
-.toolbar-right {
-  height: 3.3em;
-  width: 45%;
-
-  background-color: rgb(68, 179, 179);
-}
-
-.toolbar-right {
+.flex-container-buttons {
   display: flex;
+  width: 15rem;
 
-  justify-content: flex-end;
-  align-items: center;
+  justify-content: space-around;
 }
 
-.logo {
+.toolbar-text {
+  color: white;
+  text-align: center;
+}
+
+.toolbar-left {
+  width: 10rem;
+  text-align: center;
 }

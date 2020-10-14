@@ -1,27 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './searchbar.css';
 import axios from 'axios';
 import Feed from '../feed/feed';
-
-async function onSearchSubmit(term) {
-  const response = await axios.get('http://localhost:5000/discovery', {
-    params: { query: term, batch_size: 30 }, //user_id: 1
-  });
-
-  return response;
-}
 
 function SearchBar(props) {
   const [imgs, setImgs] = useState([]);
   const [searchVal, setSearchVal] = useState('');
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const images = onSearchSubmit(imgs);
-    images.then((imageResults) => {
-      setImgs(imageResults.data.result);
+  const onSearchSubmit = async function (term) {
+    const response = await axios.get('http://localhost:5000/discovery', {
+      params: { query: term, batch_size: 30 }, //user_id: 1
     });
-    console.log(imgs);
+
+    return response;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const images = onSearchSubmit(searchVal);
+    images.then((imageResults) => {
+      //console.log(imageResults);
+      // this means no images were found
+      if (imageResults.data.result !== false) {
+        setImgs(imageResults.data.result);
+      }
+    });
   };
 
   return (
