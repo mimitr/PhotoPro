@@ -9,8 +9,8 @@ function MainWrapper() {
   const [images, setImages] = useState([]);
 
   async function onSearchSubmit(term) {
-    const response = await axios.get("http://localhost:5000/profile_photos", {
-      params: { user_id: 1, query: term },//user_id: 1
+    const response = await axios.get("http://localhost:5000/discovery", {
+      params: { query: term , batch_size:1, },//user_id: 1
     });
     console.log(response);
 
