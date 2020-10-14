@@ -10,7 +10,7 @@ for i in sys.path:
 from utils.database.connect import conn, cur
 from utils.database.general_user import create_user, login_user, \
     change_password, forgot_password_get_change_password_link, \
-    post_image, discovery, discovery_with_search_term, edit_post_caption
+    post_image, discovery, discovery_with_search_term, edit_post_caption, profiles_photos
 from utils.database.watermark import apply_watermark
 
 print(conn, cur)
@@ -112,6 +112,49 @@ def api_discovery():
         result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
+
+    if result:
+
+        processed_result = []
+
+        for tup in result:
+            id, caption, uploader, img, title, price = tup
+            file = "image.jpeg"
+            photo = open(file, 'wb')
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            # print(img)
+            processed_result.append(
+                {
+                    'id': id,
+                    'caption': caption,
+                    'uploader': uploader,
+                    'img': img,
+                    'title': title,
+                    'price': str(price)
+                }
+            )
+
+        # print(imgarr[0])
+
+        retval = jsonify({
+            'result': processed_result
+        })
+        print(retval)
+        return retval
+    else:
+        return jsonify({'result': False})
+
+@app.route('/profile_photos')
+def api_profile_photos():
+    user_id = request.args.get('user_id')
+    batch_size = request.args.get('batch_size')
+    if batch_size is None:
+        batch_size = -1
+
+    result = profiles_photos(user_id, batch_size, conn, cur)
 
     if result:
 

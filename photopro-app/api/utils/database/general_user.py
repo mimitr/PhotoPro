@@ -166,6 +166,7 @@ def discovery(user_id, batch_size, conn, cur):
         print(error)
         return False
 
+
 def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     try:
         user_id = int(user_id)
@@ -189,11 +190,39 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         print(error)
         return False
 
+
+def profiles_photos(user_id, batch_size, conn, cur):
+    try:
+        user_id = int(user_id)
+        batch_size = int(batch_size)
+        if batch_size > 0:
+            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={} LIMIT {}".format(
+                user_id, batch_size)
+        else:
+            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={}".format(user_id)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        data = cur.fetchmany(batch_size)
+
+        length = len(data)
+        print("retrieved", length, " profile photos")
+        if length == 0:
+            return False
+        else:
+            # print(data)
+            return data
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
 def edit_post_caption(user_id, image, caption, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
         cmd = "UPDATE images SET caption = '{}' WHERE uploader = {} AND image_id = {}".format(caption, user_id, image)
-        #"SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
+        # "SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
