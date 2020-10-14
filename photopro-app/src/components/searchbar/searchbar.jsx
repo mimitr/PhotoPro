@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import './searchbar.css';
-import axios from 'axios';
-import Feed from '../feed/feed';
+import React, { useState } from "react";
+import "./searchbar.css";
+import axios from "axios";
+import Feed from "../feed/feed";
 
 function SearchBar(props) {
   const [imgs, setImgs] = useState([]);
-  const [searchVal, setSearchVal] = useState('');
+  const [searchVal, setSearchVal] = useState("");
 
   const onSearchSubmit = async function (term) {
-    const response = await axios.get('http://localhost:5000/discovery', {
+    const response = await axios.get("http://localhost:5000/discovery", {
       params: { query: term, batch_size: 30 }, //user_id: 1
     });
+    console.log(response);
 
     return response;
   };
