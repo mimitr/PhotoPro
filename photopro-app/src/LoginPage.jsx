@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
@@ -24,8 +24,7 @@ export default function LoginPage(props) {
     });
 
     if (response.data.result) {
-      localStorage.setItem('userLoggedIn', response.data.result);
-      props.loggedIn();
+      localStorage.setItem('userLoggedIn', true);
       history.push('/');
     }
   }

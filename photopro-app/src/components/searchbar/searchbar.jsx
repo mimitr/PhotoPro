@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './searchbar.css';
 import axios from 'axios';
 import Feed from '../feed/feed';

@@ -7,6 +7,15 @@
   background-color: rgb(58, 106, 138);
 }
 
+.flex-container-buttons {
+  display: flex;
+  width: 15rem;
+
+  border: 3px solid red;
+
+  justify-content: space-around;
+}
+
 .toolbar-text {
   color: white;
   text-align: center;
