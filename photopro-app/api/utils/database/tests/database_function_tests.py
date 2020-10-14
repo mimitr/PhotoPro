@@ -33,24 +33,24 @@ if __name__ == '__main__':
     #     response = post_image(user_id, "African Elephant!", img, conn, cur)
     #     print(response)
 
-    #response = discovery(user_id, 32, conn, cur)
-    #for tup in response:
+    # response = discovery(user_id, 32, conn, cur)
+    # for tup in response:
     #    id, caption, uploader, img = tup
-
-        #fin = open('{}.jpg'.format(id), 'wb')
-        #fin.write(img)
-        #fin.close()
-
+    #
+    #     fin = open('{}.jpg'.format(id), 'wb')
+    #     fin.write(img)
+    #     fin.close()
+    #
     #    filename = '{}.jpg'.format(id)
-
+    #
     #    fin = open(filename, 'wb')
     #    fin.write(img)
     #    fin.close()
-
+    #
     #    apply_watermark(filename)
 
     # change to whatever image_id and caption you want
-    response = edit_post_caption(1, 117, "big buffalo", conn, cur)
-    print(response)
+    # response = edit_post_caption(1, 117, "big buffalo", conn, cur)
+    # print(response)
 
 

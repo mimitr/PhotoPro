@@ -27,3 +27,16 @@ the 'caption' column of the table.
 UPDATE:
 After testing and tweaking, the edit post function works correctly, with the caption text changed to the text inputted into the
 function. It however has a quirk of changing the order of entries within the table, with the affected entry being set as the last entry.
+
+11/10/2020
+
+I attempted to implement the React side of the 'Edit Post' function, creating a rudimentary web page consisting of an input field and a
+button, which would then change the caption of a specified image in the database. However, we have yet to implement a method in which to
+extract the image_id from the post which we want to edit, so for the time being, I had to hardcode the image_id parameter in the
+async function for testing purposes
+
+===== Week 5 =====
+
+14/10/2020
+I revised my edit post function, enabling it to now also edit the title and price of a specified photograph. This was in light
+of the tables now including the aforementioned attributes as new columns.
