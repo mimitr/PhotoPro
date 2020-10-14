@@ -12,3 +12,7 @@ reason the argument is not being passed properly and is the value 10 regardless 
 value the function is called with. I will instal windows and the linux subsystem on my computer
 rather than continuning to use Macosx as this strange behabiour may be solved. I do belive though
 that the function is correct, and hence was pushed to my branch db-functions.
+UPDATE:
+It seems that differences in carriage return on mac caused the second line of the sql query specifing the entry
+to be deleted was not parsed properly causing all entries in the images table to be deleted. When run on ubuntu
+this problem is not encountered

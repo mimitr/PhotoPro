@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import sys
 import base64
 
@@ -10,7 +10,7 @@ for i in sys.path:
 from utils.database.connect import conn, cur
 from utils.database.general_user import create_user, login_user, \
     change_password, forgot_password_get_change_password_link, \
-    post_image, discovery, discovery_with_search_term
+    post_image, discovery, discovery_with_search_term, edit_post
 from utils.database.watermark import apply_watermark
 
 print(conn, cur)
@@ -79,14 +79,22 @@ def api_forgot_password():
     })
 
 
-@app.route('/post')
+@app.route('/post', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def api_post_image():
     if request.method == "POST":
+        user_id = request.form['user_id']
+        caption = request.form['caption']
+        image = request.form['image']
+        price = str(request.form['price'])
+        title = request.form['title']
 
-        user_id = request.args.get('user_id')
-        caption = request.args.get('caption')
-        image = request.files['image']
-        result = post_image(user_id, caption, image, conn, cur)
+        print(price, title)
+
+        image = image.split(',')[-1]
+        image = base64.b64decode(image)
+
+        result = post_image(user_id, caption, image, title, price, conn, cur)
 
         return jsonify({
             'result': result
@@ -110,7 +118,7 @@ def api_discovery():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img = tup
+            id, caption, uploader, img, title, price = tup
             file = "image.jpeg"
             photo = open(file, 'wb')
             photo.write(img)
@@ -123,7 +131,9 @@ def api_discovery():
                     'id': id,
                     'caption': caption,
                     'uploader': uploader,
-                    'img': img
+                    'img': img,
+                    'title': title,
+                    'price': str(price)
                 }
             )
 
@@ -132,6 +142,20 @@ def api_discovery():
         retval = jsonify({
             'result': processed_result
         })
+        print(retval)
         return retval
     else:
         return jsonify({'result': False})
+
+@app.route('/edit_post')
+def api_edit_post():
+
+    image_id = request.args.get('image_id')
+    title = request.args.get('title')
+    price = request.args.get('price')
+    caption = request.args.get('caption')
+    result = edit_post(app.user_id, image_id, title, price, caption, conn, cur)
+
+    return jsonify({
+        'result': result
+    })
