@@ -6,7 +6,6 @@ export default function EditPostPage() {
   const [caption, set_caption] = useState('');
   const [title, set_title] = useState('');
   const [price, set_price] = useState('');
-  const [image_id, set_image] = useState('');
 
   function validate_title() {
     return title.length > 0 && title.length < 50;
@@ -23,12 +22,7 @@ export default function EditPostPage() {
     event.preventDefault();
 
     var response = await axios.get('http://localhost:5000/edit_post', {
-      params: {
-        image_id: image_id,
-        title: title,
-        price: price,
-        caption: caption,
-      },
+      params: { title: title, price: price, caption: caption },
     });
     console.log(response);
   }
