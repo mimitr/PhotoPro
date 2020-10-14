@@ -8,6 +8,7 @@
 }
 
 .flex-container-buttons {
+  order: 3;
   display: flex;
   width: 15rem;
 
@@ -15,11 +16,18 @@
 }
 
 .toolbar-text {
+  order: 2;
   color: white;
   text-align: center;
 }
 
 .toolbar-left {
+  order: 1;
   width: 10rem;
   text-align: center;
+}
+
+.toolbar-left-placeholder {
+  order: 1;
+  width: 10rem;
 }

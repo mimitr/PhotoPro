@@ -28,27 +28,32 @@ function Toolbar() {
   let buttons;
   if (loggedIn === 'true') {
     buttons = (
-      <div className="flex-container-buttons">
-        <button>Collections</button>
-        <button onClick={handleProfileClicked}>Profile</button>
-        <button onClick={handleLogoutClicked}>Log Out</button>
-      </div>
+      <React.Fragment>
+        <div className="flex-container-buttons">
+          <button>Collections</button>
+          <button onClick={handleProfileClicked}>Profile</button>
+          <button onClick={handleLogoutClicked}>Log Out</button>
+        </div>
+        <div className="toolbar-left">
+          <button>Upload Photo</button>
+        </div>
+      </React.Fragment>
     );
   } else {
     buttons = (
-      <div className="flex-container-buttons">
-        <button onClick={handleSignInClicked}>Sign in</button>
-        <button onClick={handleSignUpClicked}>Getting Started</button>
-      </div>
+      <React.Fragment>
+        <div className="toolbar-left-placeholder"></div>
+        <div className="flex-container-buttons">
+          <button onClick={handleSignInClicked}>Sign in</button>
+          <button onClick={handleSignUpClicked}>Getting Started</button>
+        </div>
+      </React.Fragment>
     );
   }
 
   return (
     <React.Fragment>
       <div className="flex-container-toolbar">
-        <div className="toolbar-left">
-          <button>Upload Photo</button>
-        </div>
         <h1 className="toolbar-text">PhotoPro</h1>
         {buttons}
       </div>
