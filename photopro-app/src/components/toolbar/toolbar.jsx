@@ -25,6 +25,10 @@ function Toolbar() {
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
   };
 
+  const handleUploadClicked = () => {
+    history.push('/uploadphoto');
+  };
+
   let buttons;
   if (loggedIn === 'true') {
     buttons = (
@@ -35,7 +39,7 @@ function Toolbar() {
           <button onClick={handleLogoutClicked}>Log Out</button>
         </div>
         <div className="toolbar-left">
-          <button>Upload Photo</button>
+          <button onClick={handleUploadClicked}>Upload Photo</button>
         </div>
       </React.Fragment>
     );
