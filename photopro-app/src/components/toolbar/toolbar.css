@@ -1,33 +1,33 @@
-.flex-container {
+.flex-container-toolbar {
   display: flex;
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: rgb(58, 106, 138);
+}
+
+.flex-container-buttons {
+  order: 3;
+  display: flex;
+  width: 15rem;
+
+  justify-content: space-around;
+}
+
+.toolbar-text {
+  order: 2;
+  color: white;
+  text-align: center;
 }
 
 .toolbar-left {
-  display: flex;
-  position: absolute;
-
-  left: 0rem;
-
-  padding-top: 2.3em;
-  padding-left: 40%;
-
-  border: solid 3px rgb(62, 166, 214);
-  background-color: rgb(68, 179, 179);
+  order: 1;
+  width: 10rem;
+  text-align: center;
 }
 
-.toolbar-right {
-  display: flex;
-  position: absolute;
-
-  right: 0rem;
-
-  padding-top: 2.3em;
-  padding-right: 40%;
-
-  border: solid 3px rgb(62, 166, 214);
-  background-color: rgb(68, 179, 179);
-}
-
-.logo {
-  margin: 0 auto;
+.toolbar-left-placeholder {
+  order: 1;
+  width: 10rem;
 }
