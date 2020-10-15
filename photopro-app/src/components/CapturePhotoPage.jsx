@@ -27,6 +27,7 @@ async function attempt_login(event) {
   form_data.append('price', price);
 
   const response = await axios.post('http://localhost:5000/post', form_data);
+  console.log(img);
   console.log(response);
 }
 
