@@ -24,7 +24,7 @@ export default function EditPostPage(){
 
         var response = await axios.get("http://localhost:5000/edit_post",
         {
-            params: {image_id: image_id, title: title, price: price, caption: caption}
+            params: {/*image_id: image_id,*/ title: title, price: price, caption: caption}
         });
         console.log(response);
     }
