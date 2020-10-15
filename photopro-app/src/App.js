@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-import MainPage from './MainPage';
-import LoginPage from './LoginPage';
-import RegistrationPage from './RegistrationPage';
-import ProfilePage from './ProfilePage';
-import CapturePhotoPage from './components/CapturePhotoPage';
+import MainPage from './MainPage/MainPage';
+import LoginPage from './LoginPage/LoginPage';
+import RegistrationPage from './RegistrationPage/RegistrationPage';
+import ProfilePage from './ProfilePage/ProfilePage';
+import PostInfo from './PostInfo/PostInfo';
 
 import { Switch, Route } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ function App() {
         </Route>
         <Route path="/profile" component={ProfilePage} />
         <Route path="/uploadphoto" component={CapturePhotoPage} />
+        <Route path="/post-:id" component={PostInfo} />
       </Switch>
     </React.Fragment>
   );
