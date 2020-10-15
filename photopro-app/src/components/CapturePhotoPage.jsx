@@ -15,10 +15,7 @@ function isValid() {
   return false;
 }
 
-async function attempt_login(event) {
-  event.preventDefault();
-  // console.log(caption);
-  // console.log(img);
+async function attempt_login() {
   const form_data = new FormData();
   form_data.append('image', img);
   form_data.append('caption', caption);
@@ -26,8 +23,7 @@ async function attempt_login(event) {
   form_data.append('price', price);
 
   const response = await axios.post('http://localhost:5000/post', form_data);
-  console.log(img);
-  console.log(response);
+  return response;
 }
 
 class CapturePhotoPage extends React.Component {
@@ -35,6 +31,7 @@ class CapturePhotoPage extends React.Component {
     super(props);
     this.state = { pictures: [], caption: '' };
     this.onDrop = this.onDrop.bind(this);
+    this.formSubmit = this.formSubmit.bind(this);
   }
 
   onDrop(pictureFiles, pictureDataURLs) {
@@ -44,6 +41,17 @@ class CapturePhotoPage extends React.Component {
     // console.log(pictureFiles[0]);
     // console.log(pictureDataURLs[0]);
     img = pictureDataURLs[0];
+  }
+
+  formSubmit(event) {
+    event.preventDefault();
+    const post = attempt_login();
+    post.then((response) => {
+      console.log(response);
+      if (response.data.result !== false) {
+        this.props.history.push('/');
+      }
+    });
   }
 
   render() {
@@ -59,7 +67,7 @@ class CapturePhotoPage extends React.Component {
           singleImage={true}
           withLabel={true}
         />
-        <form onSubmit={attempt_login}>
+        <form onSubmit={this.formSubmit}>
           <FormGroup bsSize="large">
             <FormLabel>Title:</FormLabel>
             <FormControl autoFocus onChange={(e) => (title = e.target.value)} />

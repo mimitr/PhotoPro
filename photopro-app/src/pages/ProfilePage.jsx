@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import Toolbar from './components/toolbar/toolbar';
-import Feed from './components/feed/feed';
+import Toolbar from '../components/toolbar/toolbar';
+import Feed from '../components/feed/feed';
 
 function ProfilePage() {
   const [profileImgs, setImgs] = useState([]);

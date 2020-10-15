@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import "./PostInfo.css";
-import Toolbar from "../components/toolbar/toolbar";
-import PostImage from "./PostImage/PostImage";
+import React, { Component } from 'react';
+import './PostInfo.css';
+import Toolbar from '../../components/toolbar/toolbar';
+import PostImage from './PostImage/PostImage';
 
 const PostInfo = (props) => {
   console.log(props.location.state);
