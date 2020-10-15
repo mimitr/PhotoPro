@@ -10,7 +10,7 @@ class ImageCard extends Component {
     // CreateRef is used to access the DOM
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
-    this.state = { spans: 0 };
+    this.state = { image_clicked: false, spans: 0 };
   }
 
   componentDidMount() {
@@ -25,19 +25,35 @@ class ImageCard extends Component {
 
   handleImageClicked = (e) => {
     console.log("image clicked");
-    //this.props.history.push("/post/:url");￼
-    <Redirect
-      to={{
-        pathname: {`/post/${this.props.image_key}`}
-      }}
-    />;
+    this.setState({ image_clicked: true });
+    console.log(this.state.image_clicked);
   };
 
   render() {
-    console.log(this.props);
-    return (
-      <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
-        <Link to={`/post/${this.props.image_key}`}>
+    console.log("rendered with state " + this.state.image_clicked);
+    let component;
+    if (this.state.image_clicked) {
+      console.log("if clicked");
+      console.log(this.props.image);
+      component = (
+        <Redirect
+          to={{
+            pathname: `/post-${this.props.image.id}`,
+            state: {
+              id: `${this.props.image.id}`,
+              url: `${this.props.image.img}`,
+              caption: `${this.props.image.caption}`,
+              price: `${this.props.image.price}`,
+              title: `${this.props.image.title}`,
+              uploader: `${this.props.image.uploader}`,
+            },
+          }}
+        />
+      );
+    } else {
+      console.log("else clicked");
+      component = (
+        <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
           <div onClick={this.handleImageClicked} className="photo-container">
             <img
               ref={this.imageRef}
@@ -62,9 +78,10 @@ class ImageCard extends Component {
               </svg>
             </button>
           </div>
-        </Link>
-      </div>
-    );
+        </div>
+      );
+    }
+    return <React.Fragment>{component}</React.Fragment>;
   }
 }
 

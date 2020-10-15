@@ -22,7 +22,7 @@ function App() {
           <RegistrationPage />
         </Route>
         <Route path="/profile" component={ProfilePage} />
-        <Route path="/post/:id" component={PostInfo} />
+        <Route path="/post-:id" component={PostInfo} />
       </Switch>
     </React.Fragment>
   );
