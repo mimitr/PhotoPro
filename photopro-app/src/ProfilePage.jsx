@@ -9,7 +9,7 @@ function ProfilePage() {
 
   const requestProfileImages = async function (user_id = 1) {
     const response = await axios.get('http://localhost:5000/profile_photos', {
-      params: { user_id: user_id, batch_size: 272 }, //user_id: 1
+      params: { user_id: user_id, batch_size: 30 }, //user_id: 1
     });
 
     return response;
