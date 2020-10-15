@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 export default function LoginPage(props) {
   const [email, set_email] = useState('');
   const [password, set_password] = useState('');
+  const [loginFailed, setLoginFailed] = useState(false);
   let history = useHistory(); // router hook which provides access to dom history (allows for page transitions)
 
   function validate_email() {
@@ -26,11 +27,13 @@ export default function LoginPage(props) {
     if (response.data.result) {
       localStorage.setItem('userLoggedIn', true);
       history.push('/');
+    } else {
+      setLoginFailed(true);
     }
   }
 
   return (
-    <div>
+    <React.Fragment>
       <form onSubmit={attempt_login}>
         <FormGroup controlId="email" bsSize="large">
           <FormLabel>Email</FormLabel>
@@ -61,6 +64,11 @@ export default function LoginPage(props) {
           Login
         </Button>
       </form>
-    </div>
+      {loginFailed ? (
+        <p style={{ color: 'red' }}>Incorrect username or password</p>
+      ) : (
+        <p></p>
+      )}
+    </React.Fragment>
   );
 }
