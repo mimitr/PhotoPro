@@ -34,11 +34,11 @@ export default function RegistrationPage() {
       params: { email: email, password: password },
     });
     console.log(response);
-  }
 
-  const handleSubmitClicked = () => {
-    history.push('/');
-  };
+    if (response.data.result !== false) {
+      history.push('/');
+    }
+  }
 
   return (
     <div>
@@ -90,7 +90,6 @@ export default function RegistrationPage() {
             !validate_password()
           }
           type="submit"
-          onClick={handleSubmitClicked}
         >
           Register
         </Button>

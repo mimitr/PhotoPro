@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
@@ -6,7 +6,7 @@ import RegistrationPage from './RegistrationPage';
 import ProfilePage from './ProfilePage';
 import CapturePhotoPage from './components/CapturePhotoPage';
 
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 
 function App() {
   return (

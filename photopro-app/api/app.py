@@ -81,7 +81,9 @@ def api_forgot_password():
 @cross_origin(supports_credentials=True)
 def api_post_image():
     if request.method == "POST":
-        user_id = request.form["user_id"]
+        user_id = app.user_id
+        if user_id is None:
+            return jsonify({"result": False})
         caption = request.form["caption"]
         image = request.form["image"]
         price = str(request.form["price"])
@@ -144,7 +146,9 @@ def api_discovery():
 
 @app.route("/profile_photos")
 def api_profile_photos():
-    user_id = request.args.get("user_id")
+    user_id = app.user_id
+    if user_id is None:
+        return jsonify({"result": False})
     batch_size = request.args.get("batch_size")
     if batch_size is None:
         batch_size = -1

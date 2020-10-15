@@ -21,7 +21,6 @@ async function attempt_login(event) {
   // console.log(img);
   const form_data = new FormData();
   form_data.append('image', img);
-  form_data.append('user_id', 1);
   form_data.append('caption', caption);
   form_data.append('title', title);
   form_data.append('price', price);
@@ -85,6 +84,16 @@ class CapturePhotoPage extends React.Component {
             Post
           </Button>
         </form>
+        <Button
+          block
+          bsSize="large"
+          type="submit"
+          onClick={() => {
+            this.props.history.goBack();
+          }}
+        >
+          Cancel
+        </Button>
       </div>
     );
   }
