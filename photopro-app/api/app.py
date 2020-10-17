@@ -45,7 +45,6 @@ def api_login():
 
 @app.route("/logout", methods=["GET", "POST"])
 def app_logout():
-
     app.user_id = None
 
     return jsonify({"result": True})
@@ -199,10 +198,58 @@ def api_profile_photos():
 
 @app.route("/edit_post")
 def api_edit_post():
-
     image_id = request.args.get("image_id")
     caption = request.args.get("caption")
     result = edit_post_caption(app.user_id, image_id, caption, conn, cur)
 
     return jsonify({"result": result})
 
+
+@app.route("/post_like_to_image")
+def api_post_like_to_image():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = post_like(image_id, user_id, conn, cur)
+        return jsonify({
+            'result': result
+        })
+    return jsonify({
+        'result': False
+    })
+
+
+@app.route("/get_num_likes_of_image")
+def api_get_num_likes_of_image():
+    image_id = request.args.get("image_id")
+    if image_id is not None and app.user_id is not None:
+        result = get_num_likes(image_id, conn, cur)
+        return jsonify({
+            'result': result
+        })
+    return jsonify({
+        'result': False
+    })
+
+@app.route("/get_likers_of_image")
+def api_get_likers_of_image():
+    image_id = request.args.get("image_id")
+    limit = request.args.get("batch_size")
+    if image_id is not None and app.user_id is not None and limit is not None:
+        result = get_likers(image_id, limit, conn, cur)
+
+        processed_result = []
+        for tup in result:
+            id, first, last = tup
+            processed_result.append({
+                'user_id': id,
+                'first_name': first,
+                'last_name': last
+            })
+
+        return jsonify({
+            'result': processed_result
+        })
+    return jsonify({
+        'result': False
+    })
