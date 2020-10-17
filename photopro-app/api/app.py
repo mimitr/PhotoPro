@@ -19,6 +19,7 @@ from utils.database.general_user import (
     edit_post_caption,
     profiles_photos,
 )
+from utils.database.likes import post_like, get_num_likes, get_likers
 from utils.database.watermark import apply_watermark
 
 print(conn, cur)
@@ -43,7 +44,7 @@ def api_login():
 
 
 @app.route("/logout", methods=["GET", "POST"])
-def api_login():
+def app_logout():
 
     app.user_id = None
 
