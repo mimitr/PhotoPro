@@ -42,6 +42,14 @@ def api_login():
     return jsonify({"result": result})
 
 
+@app.route("/logout", methods=["GET", "POST"])
+def api_login():
+
+    app.user_id = None
+
+    return jsonify({"result": True})
+
+
 @app.route("/create_user")
 def api_create_user():
     first = request.args.get("first")
