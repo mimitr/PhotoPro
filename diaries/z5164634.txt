@@ -40,3 +40,9 @@ async function for testing purposes
 14/10/2020
 I revised my edit post function, enabling it to now also edit the title and price of a specified photograph. This was in light
 of the tables now including the aforementioned attributes as new columns.
+
+18/10/2020
+I modified my edit post functions to now also update the columns 'price' and 'title' within the tables, although these added
+functionalities have yet to be tested
+
+===== Week 6 =====
