@@ -259,14 +259,13 @@ def edit_post_caption(user_id, image, caption, conn, cur):
         print(error)
         return False
 
-def add_tag(image_id, tag, conn, cur):
+def add_tag(image_id, tag,conn, cur):
     try:
-        cmd = """
-            INSERT INTO images (caption, uploader, file, title, price)
-            VALUES (%s, %s, %s, %s, %s)
-            """
-        #print(cmd, uploader, caption, title, price)
-        cur.execute(cmd, (caption, uploader, image, title, price))
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = """UPDATE images SET tags = array_cat(tags, '{%s}') WHERE image_id = %d AND NOT ('%s' = ANY(tags)) """ % (tag, image_id,tag)
+        # "SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
+        print(cmd)
+        cur.execute(cmd)
         conn.commit()
         return True
     except Exception as e:
@@ -276,5 +275,3 @@ def add_tag(image_id, tag, conn, cur):
         error = e.pgcode
         print(error)
         return False
-
-def get_tags():
