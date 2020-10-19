@@ -258,3 +258,23 @@ def edit_post_caption(user_id, image, caption, conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+def add_tag(image_id, tag, conn, cur):
+    try:
+        cmd = """
+            INSERT INTO images (caption, uploader, file, title, price)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+        #print(cmd, uploader, caption, title, price)
+        cur.execute(cmd, (caption, uploader, image, title, price))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+def get_tags():
