@@ -275,3 +275,23 @@ def add_tag(image_id, tag,conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+def remove_tag(image_id, tag,conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = """UPDATE images SET tags = array_remove(tags, '%s') WHERE image_id = %d AND ('%s' = ANY(tags)) """ % (tag, image_id,tag)
+        # "SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+#
+#def get_image_tags(image_id,conn, cur):
