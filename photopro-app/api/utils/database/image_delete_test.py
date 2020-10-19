@@ -17,7 +17,7 @@ import time
 #image_id_to_delete=3914
 #response = delete_image_post(image_id_to_delete, conn, cur)
 
-image_to_add_tag_to=359
-tag_to_add = "pet"
+image_to_add_tag_to=555
+tag_to_add = "tropical"
 response = add_tag(image_to_add_tag_to, tag_to_add,conn, cur)
 print(response)
