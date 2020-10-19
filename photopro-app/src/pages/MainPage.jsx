@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import Toolbar from "../components/toolbar/toolbar";
-import SearchBar from "../components/searchbar/searchbar";
+import Toolbar from '../components/toolbar/toolbar';
+import SearchBar from '../components/searchbar/searchbar';
 
 function MainPage() {
   return (

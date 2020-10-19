@@ -32,6 +32,10 @@ export default function LoginPage(props) {
     }
   }
 
+  function handleForgotPasswordClicked() {
+    history.push('/forgotpassword');
+  }
+
   return (
     <React.Fragment>
       <form onSubmit={attempt_login}>
@@ -64,6 +68,19 @@ export default function LoginPage(props) {
           Login
         </Button>
       </form>
+      <Button block bsSize="large" onClick={handleForgotPasswordClicked}>
+        Forgot Password
+      </Button>
+      <Button
+        block
+        bsSize="large"
+        type="submit"
+        onClick={() => {
+          history.goBack();
+        }}
+      >
+        Cancel
+      </Button>
       {loginFailed ? (
         <p style={{ color: 'red' }}>Incorrect username or password</p>
       ) : (

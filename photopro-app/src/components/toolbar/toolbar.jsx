@@ -25,17 +25,27 @@ function Toolbar() {
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
   };
 
+  const handleDiscoveryClicked = () => {
+    history.push('/');
+  };
+
   const handleUploadClicked = () => {
     history.push('/uploadphoto');
+  };
+
+  const handleChangePassClicked = () => {
+    history.push('/changepassword');
   };
 
   let buttons;
   if (loggedIn === 'true') {
     buttons = (
       <React.Fragment>
-        <div className="flex-container-buttons">
+        <div className="flex-container-buttons-2">
+          <button onClick={handleDiscoveryClicked}>Discovery</button>
           <button>Collections</button>
           <button onClick={handleProfileClicked}>Profile</button>
+          <button onClick={handleChangePassClicked}>Change Password</button>
           <button onClick={handleLogoutClicked}>Log Out</button>
         </div>
         <div className="toolbar-left">
@@ -47,7 +57,7 @@ function Toolbar() {
     buttons = (
       <React.Fragment>
         <div className="toolbar-left-placeholder"></div>
-        <div className="flex-container-buttons">
+        <div className="flex-container-buttons-1">
           <button onClick={handleSignInClicked}>Sign in</button>
           <button onClick={handleSignUpClicked}>Getting Started</button>
         </div>
