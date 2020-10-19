@@ -20,7 +20,7 @@ function SearchBar(props) {
     e.preventDefault();
     const images = onSearchSubmit(searchVal);
     images.then((imageResults) => {
-      //console.log(imageResults);
+      console.log(imageResults);
       // this means no images were found
       if (imageResults.data.result !== false) {
         setImgs(imageResults.data.result);

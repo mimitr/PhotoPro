@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from 'react';
 
-import MainPage from "./MainPage/MainPage";
-import LoginPage from "./LoginPage/LoginPage";
-import RegistrationPage from "./RegistrationPage/RegistrationPage";
-import ProfilePage from "./ProfilePage/ProfilePage";
-import PostInfo from "./PostInfo/PostInfo";
+import MainPage from './pages/MainPage';
+import LoginPage from './pages/LoginPage';
+import RegistrationPage from './pages/RegistrationPage';
+import ProfilePage from './pages/ProfilePage';
+import PostInfo from './pages/PostInfo/PostInfo';
+import CapturePhotoPage from './components/CapturePhotoPage';
 
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Switch, Route } from 'react-router-dom';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <RegistrationPage />
         </Route>
         <Route path="/profile" component={ProfilePage} />
+        <Route path="/uploadphoto" component={CapturePhotoPage} />
         <Route path="/post-:id" component={PostInfo} />
       </Switch>
     </React.Fragment>

@@ -7,8 +7,10 @@ import psycopg2
 
 def create_user(first, last, email, password, conn, cur):
     try:
-        cmd = "INSERT INTO users(first,last,email,password) VALUES('{}','{}','{}', '{}');".format(first, last, email,
-                                                                                                  password)
+        cur.execute('SAVEPOINT save_point')
+        cmd = "INSERT INTO users(first,last,email,password) VALUES('{}','{}','{}', '{}');".format(
+            first, last, email, password
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -17,17 +19,21 @@ def create_user(first, last, email, password, conn, cur):
     except psycopg2.errors.UniqueViolation as e:
         print(e)
         # return "Unable to create new account. Account with that email already exists."
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
 
 def login_user(email, password, conn, cur):
     try:
+        cur.execute('SAVEPOINT save_point')
         cmd = "SELECT * FROM users WHERE email='{}' AND password='{}'".format(
-            email, password)
+            email, password
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -47,18 +53,18 @@ def login_user(email, password, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False, None
 
 
 def change_password(email, password, new_password, conn, cur):
     try:
+        cur.execute('SAVEPOINT save_point')
         login_response = login_user(email, password, conn, cur)
 
         if login_response:
             cmd = "UPDATE users SET password = '{}' WHERE email='{}' AND password='{}'".format(
-                new_password,
-                email,
-                password
+                new_password, email, password
             )
             print(cmd)
             cur.execute(cmd)
@@ -69,11 +75,13 @@ def change_password(email, password, new_password, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
 
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
+        cur.execute('SAVEPOINT save_point')
         cmd = "SELECT * FROM users WHERE email='{}'".format(recipient)
         print(cmd)
         cur.execute(cmd)
@@ -86,7 +94,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
             return False
         elif length == 1:
             ssl_port = 587
-            email_server_password = 'WeCodeNotSleep3900'
+            email_server_password = "WeCodeNotSleep3900"
             context = ssl.create_default_context()
             with smtplib.SMTP("smtp.gmail.com", ssl_port) as server:
                 server.ehlo()
@@ -94,9 +102,9 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 sender = "2mjec390@gmail.com"
 
                 message = MIMEMultipart("alternative")
-                message['Subject'] = "PhotoPro: Reset Your Password"
-                message['From'] = sender
-                message['To'] = recipient
+                message["Subject"] = "PhotoPro: Reset Your Password"
+                message["From"] = sender
+                message["To"] = recipient
                 reset_url = "www.photopro.com/reset-password/id"
 
                 html = "\
@@ -108,8 +116,10 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                             If you didn't ask to reset your password, please get in touch at support@photopro.com. <br>\
                             </p>\
                         </body>\
-                    </html>".format(reset_url)
-                html = MIMEText(html, 'html')
+                    </html>".format(
+                    reset_url
+                )
+                html = MIMEText(html, "html")
                 message.attach(html)
 
                 server.login("2mjec390@gmail.com", email_server_password)
@@ -123,11 +133,13 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
 
 def post_image(uploader, caption, image, title, price, conn, cur):
     try:
+        cur.execute('SAVEPOINT save_point')
         cmd = """
             INSERT INTO images (caption, uploader, file, title, price) 
             VALUES (%s, %s, %s, %s, %s)
@@ -142,15 +154,18 @@ def post_image(uploader, caption, image, title, price, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
 
 def discovery(user_id, batch_size, conn, cur):
     try:
+        cur.execute('SAVEPOINT save_point')
         user_id = int(user_id)
         batch_size = int(batch_size)
         cmd = "SELECT * FROM images WHERE uploader!={} LIMIT {}".format(
-            user_id, batch_size)
+            user_id, batch_size
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -164,14 +179,18 @@ def discovery(user_id, batch_size, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
+
 
 def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     try:
+        cur.execute('SAVEPOINT save_point')
         user_id = int(user_id)
         batch_size = int(batch_size)
         cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
-            user_id, query, batch_size)
+            user_id, query, batch_size
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -187,21 +206,59 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
-def edit_post(user_id, image, title, price, caption, conn, cur):
+
+def profiles_photos(user_id, batch_size, conn, cur):
     try:
+        cur.execute('SAVEPOINT save_point')
+        user_id = int(user_id)
+        batch_size = int(batch_size)
+        if batch_size > 0:
+            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={} LIMIT {}".format(
+                user_id, batch_size
+            )
+        else:
+            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={}".format(
+                user_id
+            )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        data = cur.fetchmany(batch_size)
+
+        length = len(data)
+        print("retrieved", length, " profile photos")
+        if length == 0:
+            return False
+        else:
+            # print(data)
+            return data
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+
+
+def edit_post_caption(user_id, image, caption, conn, cur):
+    try:
+        cur.execute('SAVEPOINT save_point')
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "UPDATE images SET title = '{}', price = '{}', caption = '{}' WHERE uploader = {} AND image_id = {}".format(
-            title, int(price), caption, user_id, image)
-        #"SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
+        cmd = "UPDATE images SET caption = '{}' WHERE uploader = {} AND image_id = {}".format(
+            caption, user_id, image
+        )
+        # "SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
         return True
-    except Exception as e:
-        return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except Exception as e:
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
