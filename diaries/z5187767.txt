@@ -29,3 +29,17 @@ registration page, forgot password page, and change password page. These all req
 they only provide the bare minimum functionality. They also need to be integrated with each other through
 a routing system. I have also worked on the main wrapper to ensure that the discovery function uses our
 database. Also, I added optional query terms to our database which use the comments to filter as of current.
+
+October 11th:
+Today I figured out how to and implmented photo uploading and integerated the posting
+of the uploaded file and the API to the Postgres database. I also have been working on
+but have yet to complete direct photo capture from the desktop and then uploading
+that file.
+
+=======================    WEEK 5    =======================
+Today I added titles and prices to the photo uploading and updated the discovery functions and posting
+functions as a result of such.
+
+October 14th:
+Today I added the backend to query photos specifically for the user (their profile photos) or any other users.
+There can be a option batch size parameter.

@@ -1,13 +1,65 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './toolbar.css';
+import { useHistory } from 'react-router-dom';
 
-function Toolbar(props) {
+function Toolbar() {
+  const history = useHistory();
+  const loggedIn = localStorage.getItem('userLoggedIn');
+  console.log('buttons think ' + loggedIn);
+
+  const handleSignInClicked = () => {
+    history.push('/login');
+  };
+
+  const handleSignUpClicked = () => {
+    history.push('/signup');
+  };
+
+  const handleProfileClicked = function () {
+    history.push('/profile/1');
+  };
+
+  const handleLogoutClicked = () => {
+    localStorage.clear();
+    history.push('/');
+    history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
+  };
+
+  const handleUploadClicked = () => {
+    history.push('/uploadphoto');
+  };
+
+  let buttons;
+  if (loggedIn === 'true') {
+    buttons = (
+      <React.Fragment>
+        <div className="flex-container-buttons">
+          <button>Collections</button>
+          <button onClick={handleProfileClicked}>Profile</button>
+          <button onClick={handleLogoutClicked}>Log Out</button>
+        </div>
+        <div className="toolbar-left">
+          <button onClick={handleUploadClicked}>Upload Photo</button>
+        </div>
+      </React.Fragment>
+    );
+  } else {
+    buttons = (
+      <React.Fragment>
+        <div className="toolbar-left-placeholder"></div>
+        <div className="flex-container-buttons">
+          <button onClick={handleSignInClicked}>Sign in</button>
+          <button onClick={handleSignUpClicked}>Getting Started</button>
+        </div>
+      </React.Fragment>
+    );
+  }
+
   return (
     <React.Fragment>
-      <div className="flex-container">
-        <div className="toolbar-left"></div>
-        <h1 className="logo">Logo</h1>
-        <div className="toolbar-right"></div>
+      <div className="flex-container-toolbar">
+        <h1 className="toolbar-text">PhotoPro</h1>
+        {buttons}
       </div>
     </React.Fragment>
   );
