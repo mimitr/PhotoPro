@@ -114,17 +114,20 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
+    print("START QUERY")
     if query is not None:
         result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
-
+    print("END QUERY")
     if result:
 
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price = tup
+            id, caption, uploader, img, title, price, num_likes = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -140,6 +143,7 @@ def api_discovery():
                     "img": img,
                     "title": title,
                     "price": str(price),
+                    'num_likes': num_likes
                 }
             )
 
@@ -168,7 +172,9 @@ def api_profile_photos():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price = tup
+            id, caption, uploader, img, title, price, num_likes = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -184,6 +190,7 @@ def api_profile_photos():
                     "img": img,
                     "title": title,
                     "price": str(price),
+                    "num_likes": num_likes
                 }
             )
 
