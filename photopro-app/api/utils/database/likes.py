@@ -21,6 +21,25 @@ def post_like(image_id, user_id, conn, cur):
         cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
+def delete_like(image_id, user_id, conn, cur):
+    try:
+        cur.execute('SAVEPOINT save_point')
+        cmd = "DELETE FROM LIKES WHERE image_id={} AND liker={}".format(image_id, user_id)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except psycopg2.errors.UniqueViolation as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except psycopg2.Error as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except Exception as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
 
 def get_num_likes(image_id, conn, cur):
     try:

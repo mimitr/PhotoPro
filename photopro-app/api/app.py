@@ -19,7 +19,7 @@ from utils.database.general_user import (
     edit_post_caption,
     profiles_photos,
 )
-from utils.database.likes import post_like, get_num_likes, get_likers
+from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
 from utils.database.watermark import apply_watermark
 
 print(conn, cur)
@@ -218,6 +218,19 @@ def api_post_like_to_image():
     user_id = app.user_id
     if image_id is not None and user_id is not None:
         result = post_like(image_id, user_id, conn, cur)
+        return jsonify({
+            'result': result
+        })
+    return jsonify({
+        'result': False
+    })
+
+@app.route("/delete_like_from_image")
+def api_delete_like_from_image():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = delete_like(image_id, user_id, conn, cur)
         return jsonify({
             'result': result
         })
