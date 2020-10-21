@@ -39,8 +39,8 @@ def login_user(email, password, conn, cur):
             # return "Incorrect email or password! Please try again.", None
             return False, None
         elif length == 1:
-            (id, first, last, email, password) = data[0]
-            print(id, first, last, email, password)
+            (id, first, last, email, password, last_activity) = data[0]
+            print(id, first, last, email, password, last_activity)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -131,7 +131,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
 def post_image(uploader, caption, image, title, price, conn, cur):
     try:
         cmd = """
-            INSERT INTO images (caption, uploader, file, title, price) 
+            INSERT INTO images (caption, uploader, file, title, price)
             VALUES (%s, %s, %s, %s, %s)
             """
         print(cmd, uploader, caption, title, price)
@@ -146,12 +146,29 @@ def post_image(uploader, caption, image, title, price, conn, cur):
         print(error)
         return False
 
+def delete_image_post(image_id, conn, cur):
+    try:
+        cmd = """
+            DELETE FROM images
+            WHERE image_id = %s;
+            """
+        print(cmd)
+        cur.execute(cmd, (image_id,))
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
 
 def discovery(user_id, batch_size, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT * FROM images WHERE uploader!={} LIMIT {}".format(
+        cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} " \
+              "LIMIT {}".format(
             user_id, batch_size
         )
         print(cmd)
@@ -174,7 +191,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+        cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
             user_id, query, batch_size
         )
         print(cmd)
@@ -231,12 +248,64 @@ def edit_post(user_id, image, title, price, caption, conn, cur):
         cmd = "UPDATE images SET title = '{}', price = '{}', caption = '{}' WHERE uploader = {} AND image_id = {}".format(
             title, price, caption, user_id, image
         )
-        # "SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
         return True
     except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+#adds a tag to an image given image_id and does not add duplicates
+def add_tag(image_id, tag,conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = """UPDATE images SET tags = array_cat(tags, '{%s}') WHERE image_id = %d AND NOT ('%s' = ANY(tags)) """ % (tag, image_id,tag)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+#simply removes a tag from an image given an image_id
+def remove_tag(image_id, tag,conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = """UPDATE images SET tags = array_remove(tags, '%s') WHERE image_id = %d AND ('%s' = ANY(tags)) """ % (tag, image_id,tag)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+#Fetches the tag for an image given the image_id
+def get_tags(image_id,conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = """select tags from images where image_id=%d """ % (image_id)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        found_tags = query_result[0][0]
+        return found_tags
+    except Exception as e:
+        print(e)
         return False
     except psycopg2.Error as e:
         error = e.pgcode
