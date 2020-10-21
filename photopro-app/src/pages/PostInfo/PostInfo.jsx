@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./PostInfo.css";
 import Toolbar from "../../components/toolbar/toolbar";
-import PostImage from "./PostImage/PostImage";
+import Likes from "../../components/likes/Likes";
 
 const PostInfo = (props) => {
   //console.log(props.location.state);
@@ -17,13 +17,10 @@ const PostInfo = (props) => {
             <button className="btn">Follow</button>
           </div>
           <div className="like">
-            <button className="btn like-btn" type="button">
-              <svg width="25" height="25">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
-              </svg>
-            </button>
-
-            <div className="numLikes"></div>
+            <Likes
+              num_likes={props.location.state.num_likes}
+              image_id={props.location.state.id}
+            />
           </div>
           <div className="bookmark">
             <button className="btn bookmark-btn">
@@ -45,7 +42,7 @@ const PostInfo = (props) => {
             <h3>Tags:</h3>
           </div>
           <div className="postPrice">
-            <h2>Price: {props.location.state.price}</h2>
+            <h2>Price: ${props.location.state.price}</h2>
             <button>Add to Cart</button>
           </div>
           <div className="postComments">

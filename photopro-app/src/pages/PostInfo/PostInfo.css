@@ -25,7 +25,7 @@
 .postInfo {
   grid-row: auto / span 2;
   display: grid;
-  grid-auto-rows: 50px;
+  grid-template-rows: 1fr 1fr 1.5fr 1fr 8fr;
 }
 
 .username > p {
@@ -35,10 +35,6 @@
 .btn {
   margin: 0 auto;
   display: block;
-}
-
-.follow {
-  grid-row: auto / span 2;
 }
 
 .postFeed-nested {

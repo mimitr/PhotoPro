@@ -45,6 +45,7 @@ class ImageCard extends Component {
               price: `${this.props.image.price}`,
               title: `${this.props.image.title}`,
               uploader: `${this.props.image.uploader}`,
+              num_likes: `${this.props.image.num_likes}`,
             },
           }}
         />
