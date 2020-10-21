@@ -39,8 +39,8 @@ def login_user(email, password, conn, cur):
             # return "Incorrect email or password! Please try again.", None
             return False, None
         elif length == 1:
-            (id, first, last, email, password, last_activity) = data[0]
-            print(id, first, last, email, password, last_activity)
+            (id, first, last, email, password, last_active) = data[0]
+            print(id, first, last, email, password, last_active)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -217,11 +217,11 @@ def profiles_photos(user_id, batch_size, conn, cur):
         user_id = int(user_id)
         batch_size = int(batch_size)
         if batch_size > 0:
-            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={} LIMIT {}".format(
+            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} LIMIT {}".format(
                 user_id, batch_size
             )
         else:
-            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={}".format(
+            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={}".format(
                 user_id
             )
         print(cmd)
