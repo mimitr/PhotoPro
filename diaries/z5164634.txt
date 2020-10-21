@@ -51,3 +51,8 @@ functionalities have yet to be tested
 I started the notifications user story of the web app, which is supposed to return notifications for a logged user such
 as comments or likes on any of their posted photos. However, I am having a hard time trying to figure out how to implement this.
 For know, I've created a separate file related to this user story.
+
+21/10/2020
+I modified the comments and likes tables to include a timestamp which should record the time that a like/comment was posted on
+any image. I also included a timestamp in the users table which records the time of the last activity that a logged on user has
+performed. These changes were essential for the notifications functionality.

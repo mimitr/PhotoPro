@@ -242,3 +242,17 @@ def edit_post(user_id, image, title, price, caption, conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+def user_timestamp(user_id, conn, cur):
+    try:
+        cmd = "UPDATE users SET last_active = NOW() WHERE id = {}".format(user_id)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
