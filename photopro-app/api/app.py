@@ -125,7 +125,7 @@ def api_discovery():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price = tup
+            id, caption, uploader, img, title, price, created_at = tup
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -141,6 +141,7 @@ def api_discovery():
                     "img": img,
                     "title": title,
                     "price": str(price),
+                    "created_at": created_at
                 }
             )
 
@@ -169,7 +170,7 @@ def api_profile_photos():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price = tup
+            id, caption, uploader, img, title, price, created_at = tup
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -185,6 +186,7 @@ def api_profile_photos():
                     "img": img,
                     "title": title,
                     "price": str(price),
+                    "created_at":created_at
                 }
             )
 
