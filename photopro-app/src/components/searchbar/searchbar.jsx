@@ -2,11 +2,20 @@ import React, { useState } from 'react';
 import './searchbar.css';
 import axios from 'axios';
 import Feed from '../feed/feed';
-import { InputGroup, Button, FormControl } from 'react-bootstrap';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(1),
+    width: '100ch',
+  },
+}));
 
 function SearchBar(props) {
   const [imgs, setImgs] = useState([]);
   const [searchVal, setSearchVal] = useState('');
+  const classes = useStyles();
 
   const onSearchSubmit = async function (term) {
     const response = await axios.get('http://localhost:5000/discovery', {
@@ -31,24 +40,35 @@ function SearchBar(props) {
 
   return (
     <React.Fragment>
-      <form onSubmit={handleSubmit} className="flexContainer">
+      {/* <form onSubmit={handleSubmit} className="flexContainer">
         <input
           className="inputStyle"
           type="text"
           value={searchVal}
           onChange={(event) => setSearchVal(event.target.value)}
         />
-      </form>
-      <InputGroup className="mb-3">
-        <FormControl
-          placeholder="Recipient's username"
-          aria-label="Recipient's username"
-          aria-describedby="basic-addon2"
-        />
-        <InputGroup.Append>
-          <Button variant="outline-secondary">Button</Button>
-        </InputGroup.Append>
-      </InputGroup>
+      </form> */}
+
+      <div className="searchBar">
+        <form
+          onSubmit={handleSubmit}
+          className={classes.root}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            className={classes.text}
+            id="outlined-basic"
+            label="Search for stock photos"
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={searchVal}
+            onChange={(event) => setSearchVal(event.target.value)}
+          />
+        </form>
+      </div>
+
       <Feed foundImages={imgs} />
     </React.Fragment>
   );
