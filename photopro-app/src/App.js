@@ -1,5 +1,7 @@
 import React from 'react';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
