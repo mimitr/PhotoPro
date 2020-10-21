@@ -39,8 +39,8 @@ def login_user(email, password, conn, cur):
             # return "Incorrect email or password! Please try again.", None
             return False, None
         elif length == 1:
-            (id, first, last, email, password) = data[0]
-            print(id, first, last, email, password)
+            (id, first, last, email, password, last_activity) = data[0]
+            print(id, first, last, email, password, last_activity)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -167,7 +167,8 @@ def discovery(user_id, batch_size, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT * FROM images WHERE uploader!={} LIMIT {}".format(
+        cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} " \
+              "LIMIT {}".format(
             user_id, batch_size
         )
         print(cmd)
@@ -190,7 +191,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+        cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
             user_id, query, batch_size
         )
         print(cmd)
@@ -247,7 +248,6 @@ def edit_post_caption(user_id, image, caption, conn, cur):
         cmd = "UPDATE images SET caption = '{}' WHERE uploader = {} AND image_id = {}".format(
             caption, user_id, image
         )
-        # "SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
