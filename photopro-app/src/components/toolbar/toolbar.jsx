@@ -1,6 +1,8 @@
 import React from 'react';
 import './toolbar.css';
 import { useHistory } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 
 function Toolbar() {
   const history = useHistory();
@@ -58,8 +60,12 @@ function Toolbar() {
       <React.Fragment>
         <div className="toolbar-left-placeholder"></div>
         <div className="flex-container-buttons-1">
-          <button onClick={handleSignInClicked}>Sign in</button>
-          <button onClick={handleSignUpClicked}>Getting Started</button>
+          <Button style={{ color: 'white' }} onClick={handleSignInClicked}>
+            Sign in
+          </Button>
+          <Button style={{ color: 'white' }} onClick={handleSignUpClicked}>
+            Getting Started
+          </Button>
         </div>
       </React.Fragment>
     );
