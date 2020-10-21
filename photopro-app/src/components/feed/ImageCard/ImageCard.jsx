@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import './ImageCard.css';
-import { Redirect } from 'react-router-dom';
+import React, { Component } from "react";
+import "./ImageCard.css";
+import { Redirect } from "react-router-dom";
 
 class ImageCard extends Component {
   constructor(props) {
@@ -13,7 +13,7 @@ class ImageCard extends Component {
   }
 
   componentDidMount() {
-    this.imageRef.current.addEventListener('load', this.setSpans);
+    this.imageRef.current.addEventListener("load", this.setSpans);
   }
 
   setSpans = () => {
@@ -23,17 +23,17 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
-    console.log('image clicked');
+    // console.log('image clicked');
     this.setState({ image_clicked: true });
     console.log(this.state.image_clicked);
   };
 
   render() {
-    console.log('rendered with state ' + this.state.image_clicked);
+    // console.log('rendered with state ' + this.state.image_clicked);
     let component;
     if (this.state.image_clicked) {
-      console.log('if clicked');
-      console.log(this.props.image);
+      // console.log('if clicked');
+      // console.log(this.props.image);
       component = (
         <Redirect
           to={{
@@ -50,7 +50,7 @@ class ImageCard extends Component {
         />
       );
     } else {
-      console.log('else clicked');
+      //console.log("else clicked");
       component = (
         <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
           <div onClick={this.handleImageClicked} className="photo-container">
