@@ -20,6 +20,8 @@ from utils.database.general_user import (
     profiles_photos,
 )
 from utils.database.watermark import apply_watermark
+from utils.database.comments import post_comment_to_image, post_comment_to_comment, delete_comment, \
+    get_comments_to_image, get_comments_to_image, get_comments_to_comment
 
 print(conn, cur)
 
@@ -177,7 +179,7 @@ def api_profile_photos():
                     "img": img,
                     "title": title,
                     "price": str(price),
-                    "created_at":created_at
+                    "created_at": created_at
                 }
             )
 
@@ -192,10 +194,99 @@ def api_profile_photos():
 
 @app.route("/edit_post")
 def api_edit_post():
-
     image_id = request.args.get("image_id")
     caption = request.args.get("caption")
     result = edit_post_caption(app.user_id, image_id, caption, conn, cur)
 
     return jsonify({"result": result})
 
+
+@app.route("/post_comment_to_image")
+def api_post_comment_to_image():
+    image_id = request.args.get("image_id")
+    commenter = app.user_id
+    comment = request.args.get("comment")
+
+    if image_id is None or comment is None or commenter is None:
+        return jsonify({"result": False})
+    else:
+        result = post_comment_to_image(image_id, commenter, comment, conn, cur)
+        return jsonify({"result": result})
+
+
+@app.route("/post_comment_to_comment")
+def api_post_comment_to_comment():
+    comment_id = request.args.get("comment_id")
+    commenter = app.user_id
+    comment = request.args.get("comment")
+
+    if comment_id is None or comment is None or commenter is None:
+        return jsonify({"result": False})
+    else:
+        result = post_comment_to_comment(comment_id, commenter, comment, conn, cur)
+        return jsonify({"result": result})
+
+
+@app.route("/post_delete_comment")
+def api_delete_comment():
+    comment_id = request.args.get("comment_id")
+    user_id = app.user_id
+    if comment_id is None or user_id is None:
+        return jsonify({"result": False})
+    else:
+        result = delete_comment(comment_id, user_id, conn, cur)
+        return jsonify({"result": result})
+
+
+@app.route("/get_comments_to_image")
+def api_get_comments_to_image():
+    image_id = request.args.get("image_id")
+    batch_size = request.args.get("batch_size")
+    if image_id is None or batch_size is None:
+        return jsonify({"result": False})
+    else:
+        result = get_comments_to_image(image_id, batch_size, conn, cur)
+        if not result:
+            return jsonify({"result": result})
+        else:
+            processed_result = []
+            for tup in result:
+                comment_id, image_id, commenter, comment, reply_id, created_at = tup
+                processed_result.append(
+                    {
+                        'comment_id': comment_id,
+                        'image_id': image_id,
+                        'commenter': commenter,
+                        'comment': comment,
+                        'reply_id': reply_id,
+                        'created_at': created_at
+                    }
+                )
+            return jsonify({"result": processed_result})
+
+
+@app.route("/get_comments_to_comment")
+def api_get_comments_to_comment():
+    comment_id = request.args.get("comment_id")
+    batch_size = request.args.get("batch_size")
+    if comment_id is None or batch_size is None:
+        return jsonify({"result": False})
+    else:
+        result = get_comments_to_comment(comment_id, batch_size, conn, cur)
+        if not result:
+            return jsonify({"result": result})
+        else:
+            processed_result = []
+            for tup in result:
+                comment_id, image_id, commenter, comment, reply_id, created_at = tup
+                processed_result.append(
+                    {
+                        'comment_id': comment_id,
+                        'image_id': image_id,
+                        'commenter': commenter,
+                        'comment': comment,
+                        'reply_id': reply_id,
+                        'created_at': created_at
+                    }
+                )
+            return jsonify({"result": processed_result})
