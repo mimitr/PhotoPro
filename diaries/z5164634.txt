@@ -56,3 +56,7 @@ For know, I've created a separate file related to this user story.
 I modified the comments and likes tables to include a timestamp which should record the time that a like/comment was posted on
 any image. I also included a timestamp in the users table which records the time of the last activity that a logged on user has
 performed. These changes were essential for the notifications functionality.
+
+22/10/2020
+I added some additional views to the database that should help with the notifications functionality, pulling from the likes and
+comments tables. Also revised my functions which have not been tested yet.
