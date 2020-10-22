@@ -43,3 +43,7 @@ functions as a result of such.
 October 14th:
 Today I added the backend to query photos specifically for the user (their profile photos) or any other users.
 There can be a option batch size parameter.
+
+October 17th:
+Today I added like functions to post likes to images, count the likes of images
+and query the likers first,last names from the db. These functions are tested and available in the API.

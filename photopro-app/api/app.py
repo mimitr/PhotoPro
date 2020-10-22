@@ -19,7 +19,7 @@ from utils.database.general_user import (
     edit_post_caption,
     profiles_photos,
 )
-from utils.database.likes import post_like, get_num_likes, get_likers
+from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
 from utils.database.watermark import apply_watermark
 
 print(conn, cur)
@@ -45,7 +45,6 @@ def api_login():
 
 @app.route("/logout", methods=["GET", "POST"])
 def app_logout():
-
     app.user_id = None
 
     return jsonify({"result": True})
@@ -115,17 +114,20 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
+    print("START QUERY")
     if query is not None:
         result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
-
+    print("END QUERY")
     if result:
 
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, created_at = tup
+            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -142,6 +144,7 @@ def api_discovery():
                     "title": title,
                     "price": str(price),
                     "created_at": created_at
+                    'num_likes': num_likes
                 }
             )
 
@@ -170,7 +173,9 @@ def api_profile_photos():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, created_at = tup
+            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -187,6 +192,7 @@ def api_profile_photos():
                     "title": title,
                     "price": str(price),
                     "created_at":created_at
+                    "num_likes": num_likes
                 }
             )
 
@@ -201,10 +207,71 @@ def api_profile_photos():
 
 @app.route("/edit_post")
 def api_edit_post():
-
     image_id = request.args.get("image_id")
     caption = request.args.get("caption")
     result = edit_post_caption(app.user_id, image_id, caption, conn, cur)
 
     return jsonify({"result": result})
 
+
+@app.route("/post_like_to_image")
+def api_post_like_to_image():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = post_like(image_id, user_id, conn, cur)
+        return jsonify({
+            'result': result
+        })
+    return jsonify({
+        'result': False
+    })
+
+@app.route("/delete_like_from_image")
+def api_delete_like_from_image():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = delete_like(image_id, user_id, conn, cur)
+        return jsonify({
+            'result': result
+        })
+    return jsonify({
+        'result': False
+    })
+
+
+@app.route("/get_num_likes_of_image")
+def api_get_num_likes_of_image():
+    image_id = request.args.get("image_id")
+    if image_id is not None and app.user_id is not None:
+        result = get_num_likes(image_id, conn, cur)
+        return jsonify({
+            'result': result
+        })
+    return jsonify({
+        'result': False
+    })
+
+@app.route("/get_likers_of_image")
+def api_get_likers_of_image():
+    image_id = request.args.get("image_id")
+    limit = request.args.get("batch_size")
+    if image_id is not None and app.user_id is not None and limit is not None:
+        result = get_likers(image_id, limit, conn, cur)
+
+        processed_result = []
+        for tup in result:
+            id, first, last = tup
+            processed_result.append({
+                'user_id': id,
+                'first_name': first,
+                'last_name': last
+            })
+
+        return jsonify({
+            'result': processed_result
+        })
+    return jsonify({
+        'result': False
+    })

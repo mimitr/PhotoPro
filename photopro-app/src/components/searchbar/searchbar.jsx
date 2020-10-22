@@ -21,6 +21,10 @@ function SearchBar(props) {
     const response = await axios.get('http://localhost:5000/discovery', {
       params: { query: term, batch_size: 30 }, //user_id: 1
     });
+
+    console.log(response.data.result);
+    // getLikes(response);
+
     console.log(response);
 
     return response;

@@ -207,20 +207,20 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                    WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
             user_id, query, batch_size
         )
-        print(cmd)
+        # print(cmd)
         cur.execute(cmd)
         conn.commit()
         data = cur.fetchmany(batch_size)
-
+        # print(data)
         length = len(data)
-        # print(length)
         if length == 0:
             return False
         else:
-            # print(data)
             return data
     except psycopg2.Error as e:
         error = e.pgcode
@@ -235,7 +235,8 @@ def profiles_photos(user_id, batch_size, conn, cur):
         user_id = int(user_id)
         batch_size = int(batch_size)
         if batch_size > 0:
-            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} LIMIT {}".format(
+            cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id WHERE uploader={} LIMIT {}".format(
                 user_id, batch_size
             )
         else:
