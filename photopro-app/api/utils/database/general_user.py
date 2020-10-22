@@ -312,7 +312,7 @@ def get_tags(image_id,conn, cur):
         print(error)
         return False
 
-def user_timestamp(user_id, conn, cur):
+def set_user_timestamp(user_id, conn, cur):
     try:
         cmd = "UPDATE users SET last_active = NOW() WHERE id = {}".format(user_id)
         print(cmd)

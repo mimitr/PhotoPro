@@ -20,6 +20,8 @@ from utils.database.general_user import (
     profiles_photos,
 )
 from utils.database.watermark import apply_watermark
+from utils.database.notifications import get_like_notification, \
+    get_comment_notification, get_user_timestamp
 
 print(conn, cur)
 
@@ -201,3 +203,39 @@ def api_edit_post():
 
     return jsonify({"result": result})
 
+@app.route("/fetch_notification")
+def api_fetch_notifications():
+    user_id = app.user_id
+    timestamp = get_user_timestamp(user_id, conn, cur)
+
+    like_notifs = get_like_notification(user_id, timestamp, conn, cur)
+    comment_notifs = get_comment_notification(user_id, timestamp, conn, cur)
+
+    results = []
+
+    if like_notifs != False:
+        for tup in like_notifs:
+            image, liker, created_at = tup
+            results.append({
+                'image_id': image,
+                'liker': liker,
+                'created_at': created_at
+            })
+    if comment_notifs != False:
+        for tup in comment_notifs:
+            image, commenter, comment, created_at = tup
+            results.append({
+                'image_id': image,
+                'commenter': commenter,
+                'comment': comment,
+                'created_at': created_at
+            })
+    if results:
+        results = sorted(results, key=lambda x: x['created_at'])
+        return jsonify({
+            'notifications': results
+        })
+
+    return jsonify({
+        'result' : False
+    })
