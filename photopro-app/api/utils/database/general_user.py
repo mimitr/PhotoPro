@@ -235,11 +235,11 @@ def profiles_photos(user_id, batch_size, conn, cur):
         user_id = int(user_id)
         batch_size = int(batch_size)
         if batch_size > 0:
-            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={} LIMIT {}".format(
+            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} LIMIT {}".format(
                 user_id, batch_size
             )
         else:
-            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={}".format(
+            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={}".format(
                 user_id
             )
         print(cmd)
