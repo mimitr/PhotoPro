@@ -60,3 +60,5 @@ performed. These changes were essential for the notifications functionality.
 22/10/2020
 I added some additional views to the database that should help with the notifications functionality, pulling from the likes and
 comments tables. Also revised my functions which have not been tested yet.
+UPDATE
+I tested and revised my functions, so that they now returned the proper array of tuples
