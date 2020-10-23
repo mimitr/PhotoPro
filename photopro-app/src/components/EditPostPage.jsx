@@ -6,7 +6,9 @@ export default function EditPostPage() {
   const [caption, set_caption] = useState('');
   const [title, set_title] = useState('');
   const [price, set_price] = useState('');
-  const [tags, set_tags] = useState('')
+  const [tags, set_tags] = useState('');
+  const { match } = props;
+  console.log(match.params.id);
 
   function validate_title() {
     return title.length > 0 && title.length < 50;
@@ -25,7 +27,7 @@ export default function EditPostPage() {
     event.preventDefault();
 
     var response = await axios.get('http://localhost:5000/edit_post', {
-      params: { image_id: placeholder, title: title, price: price, caption: caption, tags: tags},
+      params: { image_id: match, title: title, price: price, caption: caption, tags: tags},
     });
     console.log(response);
   }
@@ -74,7 +76,7 @@ export default function EditPostPage() {
         <Button
           variant="primary"
           disabled={
-            !validate_caption() || !validate_title() || !validate_price()
+            !validate_caption() || !validate_title() || !validate_price() || !validate_tags()
           }
           type="submit"
         >
