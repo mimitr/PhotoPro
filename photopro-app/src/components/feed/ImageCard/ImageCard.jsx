@@ -52,9 +52,9 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
-    console.log('Image clicked');
+    console.log(this.props.image.uploader);
+
     this.setState({ image_clicked: true });
-    console.log(this.state.image_clicked);
   };
 
   handleLikeClicked = (e) => {
@@ -74,6 +74,7 @@ class ImageCard extends Component {
 
   render() {
     let component;
+    let deleteButton;
     if (this.state.image_clicked) {
       component = (
         <Redirect
