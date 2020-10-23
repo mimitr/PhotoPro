@@ -12,14 +12,14 @@ const Feed = (props) => {
     <React.Fragment>
       <h2>Found Images: {props.foundImages.length}</h2>
       {/* update the start position of the next batch */}
-      {/* <InfiniteScroll
+      <InfiniteScroll
         dataLength={props.foundImages.length}
         next={props.fetchImgs(props.query)}
         hasMore={true}
         loader={"Loading!"}
-      > */}
+      >
       <div className="image-list">{imgs}</div>
-      {/* </InfiniteScroll> */}
+      </InfiniteScroll>
     </React.Fragment>
   );
 };

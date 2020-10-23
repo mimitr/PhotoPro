@@ -6,7 +6,6 @@ import Feed from "../feed/feed";
 function SearchBar(props) {
   const [imgs, setImgs] = useState([]);
   const [searchVal, setSearchVal] = useState("");
-  const [startImg, setstartImg] = useState["1"];
 
   const fetchImages = (term) => {
     let cancel;

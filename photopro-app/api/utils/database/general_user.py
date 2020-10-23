@@ -19,12 +19,12 @@ def create_user(first, last, email, password, conn, cur):
     except psycopg2.errors.UniqueViolation as e:
         print(e)
         # return "Unable to create new account. Account with that email already exists."
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
 
 
@@ -53,7 +53,7 @@ def login_user(email, password, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False, None
 
 
@@ -75,7 +75,7 @@ def change_password(email, password, new_password, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
 
 
@@ -133,7 +133,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
 
 
@@ -154,16 +154,18 @@ def post_image(uploader, caption, image, title, price, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
 
 
-def discovery(user_id, batch_size, conn, cur):
+def discovery(user_id, batch_size, start_point, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT * FROM images WHERE uploader!={} LIMIT {}".format(
+        cmd = "SELECT images.image_id, caption, uploader, file, title, price, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                     WHERE uploader!={} LIMIT {}".format(
             user_id, batch_size
         )
         print(cmd)
@@ -179,19 +181,20 @@ def discovery(user_id, batch_size, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
+        # conn.rollback()
         return False
 
 
-def discovery_with_search_term(user_id, batch_size, query, conn, cur):
+def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
         user_id = int(user_id)
         batch_size = int(batch_size)
         cmd = "select images.image_id, caption, uploader, file, title, price, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
-            user_id, query, batch_size
+                    WHERE images.image_id> {} AND uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+            start_point, user_id, query, batch_size
         )
         # print(cmd)
         cur.execute(cmd)
@@ -206,7 +209,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
 
 
@@ -239,7 +242,7 @@ def profiles_photos(user_id, batch_size, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
 
 
@@ -258,8 +261,8 @@ def edit_post_caption(user_id, image, caption, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
     except Exception as e:
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        conn.rollback()
         return False
