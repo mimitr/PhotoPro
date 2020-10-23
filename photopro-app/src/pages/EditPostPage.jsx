@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
-export default function EditPostPage() {
+export default function EditPostPage(props) {
   const [caption, set_caption] = useState('');
   const [title, set_title] = useState('');
   const [price, set_price] = useState('');
+  const { match } = props;
+  const history = useHistory();
+  console.log(match.params.id);
 
   function validate_title() {
     return title.length > 0 && title.length < 50;
@@ -67,6 +71,13 @@ export default function EditPostPage() {
           type="submit"
         >
           Submit
+        </Button>
+        <Button
+          onClick={() => {
+            history.push('/profile');
+          }}
+        >
+          Cancel
         </Button>
       </form>
     </div>
