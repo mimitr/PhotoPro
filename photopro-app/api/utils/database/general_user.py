@@ -165,7 +165,6 @@ def delete_image_post(image_id, uploader, conn, cur):
         cur.execute(cmd)
         conn.commit()
 
-        cur.execute('SAVEPOINT save_point')
         cmd = "DELETE FROM likes WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
         conn.commit()
