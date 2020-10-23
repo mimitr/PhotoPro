@@ -25,8 +25,6 @@ function ProfilePage() {
     });
   }, []);
 
-  console.log(profileImgs);
-
   return (
     <React.Fragment>
       <Toolbar />
