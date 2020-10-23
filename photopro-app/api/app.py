@@ -215,27 +215,31 @@ def api_fetch_notifications():
 
     if like_notifs != False:
         for tup in like_notifs:
-            image, liker, created_at = tup
+            title, image, liker, created_at = tup
+            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
             results.append({
+                'title': title,
                 'image_id': image,
                 'liker': liker,
                 'created_at': created_at
             })
     if comment_notifs != False:
         for tup in comment_notifs:
-            image, commenter, comment, created_at = tup
+            title, image, commenter, comment, created_at = tup
+            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
             results.append({
+                'title': title,
                 'image_id': image,
                 'commenter': commenter,
                 'comment': comment,
                 'created_at': created_at
             })
     if results:
-        results = sorted(results, key=lambda x: x['created_at'])
+        results = sorted(results, key=lambda x: x['created_at'], reverse=True)
         return jsonify({
             'notifications': results
         })
 
     return jsonify({
-        'result' : False
+        'notifications': False
     })
