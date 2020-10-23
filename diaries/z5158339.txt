@@ -18,7 +18,11 @@ Solved the issue with React 'props' that I have faced with last week. Successful
 
 Week 5
 
+Started implementing the like, comment and bookmark buttons, so that as you hover on each photo card on the discover page, those 3 buttons appear and allow the user to use those functionalities. Started learning how to use grids in CSS in order to build the pages to portray the photo along with it's price, likes, comments, author and other related photos.
+
+
 Week 6
+Struggled with arranging the grids in CSS, by the middle of the week successfully learnt how to use it, and built the basic look of the photos information page. Started learning how to implement infinite scrolling for the main display page.
 
 Week 7
 
