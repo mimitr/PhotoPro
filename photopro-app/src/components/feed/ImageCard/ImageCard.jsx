@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./ImageCard.css";
 import { Redirect } from "react-router-dom";
 import Likes from "../../likes/Likes";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 class ImageCard extends Component {
   constructor(props) {

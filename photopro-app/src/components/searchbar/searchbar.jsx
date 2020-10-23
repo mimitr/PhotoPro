@@ -6,30 +6,34 @@ import Feed from "../feed/feed";
 function SearchBar(props) {
   const [imgs, setImgs] = useState([]);
   const [searchVal, setSearchVal] = useState("");
+  const [startImg, setstartImg] = useState["1"];
 
-  const onSearchSubmit = async function (term) {
-    const response = await axios.get("http://localhost:5000/discovery", {
-      params: { query: term, batch_size: 30 }, //user_id: 1
-    });
+  const fetchImages = (term) => {
+    let cancel;
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/discovery",
+      params: { query: term, batch_size: 20 }, //user_id: 1
+      cancelToken: new axios.CancelToken((c) => (cancel = c)),
+    })
+      .then((res) => {
+        if (res.data.result != null) {
+          setImgs(imgs.concat(res.data.result));
+        }
 
-    console.log(response.data.result);
-    // getLikes(response);
-
-    console.log(response);
-
-    return response;
+        console.log(res);
+        console.log(imgs);
+        console.log(term);
+      })
+      .catch((e) => {
+        if (axios.isCancel(e)) return;
+      });
+    return () => cancel();
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const images = onSearchSubmit(searchVal);
-    images.then((imageResults) => {
-      console.log(imageResults);
-      // this means no images were found
-      if (imageResults.data.result !== false) {
-        setImgs(imageResults.data.result);
-      }
-    });
+    fetchImages(searchVal);
   };
 
   return (
@@ -42,7 +46,7 @@ function SearchBar(props) {
           onChange={(event) => setSearchVal(event.target.value)}
         />
       </form>
-      <Feed foundImages={imgs} />
+      <Feed foundImages={imgs} fetchImgs={fetchImages} query={searchVal} />
     </React.Fragment>
   );
 }

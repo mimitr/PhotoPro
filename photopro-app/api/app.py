@@ -1,13 +1,6 @@
 #!/usr/bin/env python
-from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin
-import sys
-import base64
-
-for i in sys.path:
-    print(i)
-
-from utils.database.connect import conn, cur
+from utils.database.watermark import apply_watermark
+from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
 from utils.database.general_user import (
     create_user,
     login_user,
@@ -19,8 +12,15 @@ from utils.database.general_user import (
     edit_post_caption,
     profiles_photos,
 )
-from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
-from utils.database.watermark import apply_watermark
+from utils.database.connect import conn, cur
+from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
+import sys
+import base64
+
+for i in sys.path:
+    print(i)
+
 
 print(conn, cur)
 
@@ -116,7 +116,8 @@ def api_discovery():
     query = request.args.get("query")
     print("START QUERY")
     if query is not None:
-        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+        result = discovery_with_search_term(
+            user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
     print("END QUERY")
@@ -225,6 +226,7 @@ def api_post_like_to_image():
         'result': False
     })
 
+
 @app.route("/delete_like_from_image")
 def api_delete_like_from_image():
     image_id = request.args.get("image_id")
@@ -250,6 +252,7 @@ def api_get_num_likes_of_image():
     return jsonify({
         'result': False
     })
+
 
 @app.route("/get_likers_of_image")
 def api_get_likers_of_image():
