@@ -9,6 +9,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const deletePostRequest = async function (imageID) {
   const response = await axios.get('http://localhost:5000/delete_image_post', {
@@ -41,10 +42,19 @@ const styles = {
   delete: {
     left: '8%',
     top: '10%',
-    width: '10%',
-    height: '10%',
+    width: '13%',
+    height: '13%',
     '&:hover': {
       backgroundColor: 'rgba(180, 65, 65, 0.82)',
+    },
+  },
+  edit: {
+    left: '92%',
+    top: '10%',
+    width: '14%',
+    height: '18%',
+    '&:hover': {
+      backgroundColor: 'rgba(219, 193, 20, 0.71)',
     },
   },
 };
@@ -96,6 +106,12 @@ class ImageCard extends Component {
     window.location.reload();
   };
 
+  handleEditClicked = (e) => {
+    console.log('edit button clicked');
+
+    e.stopPropagation();
+  };
+
   render() {
     let component;
     if (this.state.image_clicked) {
@@ -128,6 +144,21 @@ class ImageCard extends Component {
             onClick={this.handleDeleteClicked}
           >
             <DeleteIcon />
+          </IconButton>
+        ) : (
+          <Button></Button>
+        );
+
+      let editButton =
+        uploaderID === userID ? (
+          <IconButton
+            variant="contained"
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.edit}`,
+            }}
+            onClick={this.handleEditClicked}
+          >
+            <EditIcon />
           </IconButton>
         ) : (
           <Button></Button>
@@ -172,6 +203,7 @@ class ImageCard extends Component {
             </IconButton>
 
             {deleteButton}
+            {editButton}
           </div>
         </div>
       );
