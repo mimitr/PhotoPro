@@ -199,7 +199,8 @@ def api_edit_post():
     title = request.args.get("title")
     price = int(request.args.get("price"))
     caption = request.args.get("caption")
-    result = edit_post(app.user_id, image_id, title, price, caption, conn, cur)
+    tags = request.args.get("tags")
+    result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
 
     return jsonify({"result": result})
 

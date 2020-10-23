@@ -6,6 +6,7 @@ export default function EditPostPage() {
   const [caption, set_caption] = useState('');
   const [title, set_title] = useState('');
   const [price, set_price] = useState('');
+  const [tags, set_tags] = useState('')
 
   function validate_title() {
     return title.length > 0 && title.length < 50;
@@ -13,16 +14,18 @@ export default function EditPostPage() {
   function validate_caption() {
     return caption.length > 0 && caption.length < 50;
   }
-
   function validate_price() {
     return parseInt(price) > 0 && price.length > 0;
+  }
+  function validate_tags(){
+    return tags.length >0 && tags.length < 100;
   }
 
   async function edit_post(event) {
     event.preventDefault();
 
     var response = await axios.get('http://localhost:5000/edit_post', {
-      params: { title: title, price: price, caption: caption },
+      params: { image_id: placeholder, title: title, price: price, caption: caption, tags: tags},
     });
     console.log(response);
   }
@@ -56,6 +59,15 @@ export default function EditPostPage() {
             Type="caption"
             value={caption}
             onChange={(e) => set_caption(e.target.value)}
+          />
+        </FormGroup>
+
+        <FormGroup controlId="tags" bsSize="large">
+          <FormLabel>Caption</FormLabel>
+          <FormControl
+            Type="tags"
+            value={tags}
+            onChange={(e) => set_tags(e.target.value)}
           />
         </FormGroup>
 

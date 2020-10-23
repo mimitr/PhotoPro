@@ -242,12 +242,16 @@ def profiles_photos(user_id, batch_size, conn, cur):
         return False
 
 
-def edit_post(user_id, image, title, price, caption, conn, cur):
+def edit_post(user_id, image, title, price, caption, tags, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "UPDATE images SET title = '{}', price = '{}', caption = '{}' WHERE uploader = {} AND image_id = {}".format(
-            title, price, caption, user_id, image
-        )
+        cmd = """UPDATE images SET title = '%s', price = %d, caption = '%s', tags = '{%s}'
+                 WHERE uploader = %d and image_id = %d""" % (title, price, caption, tags, user_id, image)
+
+        #cmd = "UPDATE images SET title = '{}', price = '{}', caption = '{}', tags = '{{%s}}' " \
+        #      "WHERE uploader = {} AND image_id = {}".format(
+        #    title, price, caption, tags, user_id, image
+        #)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
