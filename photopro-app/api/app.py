@@ -18,6 +18,7 @@ from utils.database.general_user import (
     discovery_with_search_term,
     edit_post_caption,
     profiles_photos,
+    delete_image_post
 )
 from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
 from utils.database.watermark import apply_watermark
@@ -242,6 +243,14 @@ def api_get_num_likes_of_image():
         return jsonify({"result": result})
     return jsonify({"result": False})
 
+@app.route("/delete_image_post")
+def api_delete_image_post():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = delete_image_post(image_id, user_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
 
 @app.route("/get_likers_of_image")
 def api_get_likers_of_image():
