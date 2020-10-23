@@ -165,10 +165,11 @@ def delete_image_post(image_id, uploader, conn, cur):
             WHERE image_id = %s AND uploader = %s;
             """
         print(cmd)
-        cur.execute(cmd, (image_id,uploader))
+        cur.execute(cmd, (image_id, uploader))
         conn.commit()
         return True
     except Exception as e:
+        print(e)
         return False
     except psycopg2.Error as e:
         error = e.pgcode

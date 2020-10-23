@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './ImageCard.css';
 import { Redirect } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
@@ -9,12 +10,19 @@ import BookmarkIcon from '@material-ui/icons/Bookmark';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+const deletePostRequest = async function (imageID) {
+  const response = await axios.get('http://localhost:5000/delete_image_post', {
+    params: { image_id: String(imageID) }, //user_id: 1
+  });
+
+  return response;
+};
+
 // matrial-ui component style override
 const styles = {
   root: {
     top: '60%',
     left: '50%',
-    // minWidth: '50px',
     width: '52px',
     backgroundColor: 'rgba(226, 227, 233, 0.82)',
     '&:hover': {
@@ -82,6 +90,8 @@ class ImageCard extends Component {
 
   handleDeleteClicked = (e) => {
     console.log('delete button clicked');
+    let response = deletePostRequest(this.props.image.id);
+    console.log(response);
     e.stopPropagation();
   };
 
