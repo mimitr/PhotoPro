@@ -160,6 +160,16 @@ def post_image(uploader, caption, image, title, price, conn, cur):
 
 def delete_image_post(image_id, uploader, conn, cur):
     try:
+        cur.execute('SAVEPOINT save_point')
+        cmd = "DELETE FROM comments WHERE image_id = {}".format(image_id)
+        cur.execute(cmd)
+        conn.commit()
+
+        cur.execute('SAVEPOINT save_point')
+        cmd = "DELETE FROM likes WHERE image_id = {}".format(image_id)
+        cur.execute(cmd)
+        conn.commit()
+
         cmd = """
             DELETE FROM images
             WHERE image_id = %s AND uploader = %s;
@@ -169,10 +179,13 @@ def delete_image_post(image_id, uploader, conn, cur):
         conn.commit()
         return True
     except Exception as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
 
