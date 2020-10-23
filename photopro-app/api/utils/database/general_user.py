@@ -158,14 +158,14 @@ def post_image(uploader, caption, image, title, price, conn, cur):
         return False
 
 
-def delete_image_post(image_id, conn, cur):
+def delete_image_post(image_id, uploader, conn, cur):
     try:
         cmd = """
             DELETE FROM images
-            WHERE image_id = %s;
+            WHERE image_id = %s AND uploader = %s;
             """
         print(cmd)
-        cur.execute(cmd, (image_id,))
+        cur.execute(cmd, (image_id,uploader))
         conn.commit()
         return True
     except Exception as e:
