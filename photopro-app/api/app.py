@@ -143,8 +143,8 @@ def api_discovery():
                     "img": img,
                     "title": title,
                     "price": str(price),
-                    "created_at": created_at
-                    'num_likes': num_likes
+                    "created_at": created_at,
+                    "num_likes": num_likes,
                 }
             )
 
@@ -191,8 +191,8 @@ def api_profile_photos():
                     "img": img,
                     "title": title,
                     "price": str(price),
-                    "created_at":created_at
-                    "num_likes": num_likes
+                    "created_at": created_at,
+                    "num_likes": num_likes,
                 }
             )
 
@@ -220,12 +220,9 @@ def api_post_like_to_image():
     user_id = app.user_id
     if image_id is not None and user_id is not None:
         result = post_like(image_id, user_id, conn, cur)
-        return jsonify({
-            'result': result
-        })
-    return jsonify({
-        'result': False
-    })
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
 
 @app.route("/delete_like_from_image")
 def api_delete_like_from_image():
@@ -233,12 +230,8 @@ def api_delete_like_from_image():
     user_id = app.user_id
     if image_id is not None and user_id is not None:
         result = delete_like(image_id, user_id, conn, cur)
-        return jsonify({
-            'result': result
-        })
-    return jsonify({
-        'result': False
-    })
+        return jsonify({"result": result})
+    return jsonify({"result": False})
 
 
 @app.route("/get_num_likes_of_image")
@@ -246,12 +239,9 @@ def api_get_num_likes_of_image():
     image_id = request.args.get("image_id")
     if image_id is not None and app.user_id is not None:
         result = get_num_likes(image_id, conn, cur)
-        return jsonify({
-            'result': result
-        })
-    return jsonify({
-        'result': False
-    })
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
 
 @app.route("/get_likers_of_image")
 def api_get_likers_of_image():
@@ -263,15 +253,10 @@ def api_get_likers_of_image():
         processed_result = []
         for tup in result:
             id, first, last = tup
-            processed_result.append({
-                'user_id': id,
-                'first_name': first,
-                'last_name': last
-            })
+            processed_result.append(
+                {"user_id": id, "first_name": first, "last_name": last}
+            )
 
-        return jsonify({
-            'result': processed_result
-        })
-    return jsonify({
-        'result': False
-    })
+        return jsonify({"result": processed_result})
+    return jsonify({"result": False})
+
