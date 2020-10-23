@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 // matrial-ui component style override
 const styles = {
@@ -28,6 +29,15 @@ const styles = {
   },
   buy: {
     left: '80%',
+  },
+  delete: {
+    left: '8%',
+    top: '10%',
+    width: '10%',
+    height: '10%',
+    '&:hover': {
+      backgroundColor: 'rgba(180, 65, 65, 0.82)',
+    },
   },
 };
 
@@ -52,8 +62,6 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
-    console.log(this.props.image.uploader);
-
     this.setState({ image_clicked: true });
   };
 
@@ -72,9 +80,13 @@ class ImageCard extends Component {
     e.stopPropagation();
   };
 
+  handleDeleteClicked = (e) => {
+    console.log('delete button clicked');
+    e.stopPropagation();
+  };
+
   render() {
     let component;
-    let deleteButton;
     if (this.state.image_clicked) {
       component = (
         <Redirect
@@ -93,6 +105,23 @@ class ImageCard extends Component {
         />
       );
     } else {
+      let uploaderID = String(this.props.image.uploader);
+      let userID = localStorage.getItem('userID');
+      let deleteButton =
+        uploaderID === userID ? (
+          <IconButton
+            variant="contained"
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.delete}`,
+            }}
+            onClick={this.handleDeleteClicked}
+          >
+            <DeleteIcon />
+          </IconButton>
+        ) : (
+          <Button></Button>
+        );
+
       component = (
         <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
           <div onClick={this.handleImageClicked} className="photo-container">
@@ -130,6 +159,8 @@ class ImageCard extends Component {
             >
               <ShoppingCartIcon />
             </IconButton>
+
+            {deleteButton}
           </div>
         </div>
       );

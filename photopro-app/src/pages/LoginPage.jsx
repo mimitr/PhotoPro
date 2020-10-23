@@ -26,6 +26,7 @@ export default function LoginPage(props) {
 
     if (response.data.result) {
       localStorage.setItem('userLoggedIn', true);
+      localStorage.setItem('userID', response.data.user_id);
       history.push('/');
     } else {
       setLoginFailed(true);
