@@ -93,6 +93,7 @@ class ImageCard extends Component {
     let response = deletePostRequest(this.props.image.id);
     console.log(response);
     e.stopPropagation();
+    window.location.reload();
   };
 
   render() {
