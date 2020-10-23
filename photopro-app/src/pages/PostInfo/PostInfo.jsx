@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./PostInfo.css";
 import Toolbar from "../../components/toolbar/toolbar";
 import Likes from "../../components/likes/Likes";
+import Comments from "../../components/comments/Comments";
 
 const PostInfo = (props) => {
   //console.log(props.location.state);
@@ -35,6 +36,12 @@ const PostInfo = (props) => {
             src={`data:image/jpg;base64,${props.location.state.url}`}
             alt={props.location.state.caption}
           />
+          <div className="recImages-nested">
+            <h1> Related Photos:</h1>
+            <div className="recImage"></div>
+            <div className="recImage"></div>
+            <div className="recImage"></div>
+          </div>
         </div>
         <div className="postFeed-nested">
           <div className="postTags">
@@ -47,13 +54,8 @@ const PostInfo = (props) => {
           </div>
           <div className="postComments">
             <h2>Comments:</h2>
+            <Comments className="comments" />
           </div>
-        </div>
-        <div className="recImages-nested">
-          <h1> Related Photos:</h1>
-          <div className="recImage"></div>
-          <div className="recImage"></div>
-          <div className="recImage"></div>
         </div>
       </div>
     </React.Fragment>
