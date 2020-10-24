@@ -8,6 +8,7 @@ import PostInfo from './pages/PostInfo/PostInfo';
 import CapturePhotoPage from './pages/CapturePhotoPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import EditPostPage from './pages/EditPostPage';
 
 import { Switch, Route } from 'react-router-dom';
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/profile" component={ProfilePage} />
         <Route path="/uploadphoto" component={CapturePhotoPage} />
         <Route path="/post-:id" component={PostInfo} />
+        <Route path="/editpost/:id" component={EditPostPage} />
       </Switch>
     </React.Fragment>
   );

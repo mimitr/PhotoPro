@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './ImageCard.css';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core';
@@ -66,7 +66,7 @@ class ImageCard extends Component {
     // CreateRef is used to access the DOM
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
-    this.state = { image_clicked: false, spans: 0 };
+    this.state = { redirect: null, spans: 0 };
   }
 
   componentDidMount() {
@@ -80,7 +80,7 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
-    this.setState({ image_clicked: true });
+    this.setState({ redirect: `/post-${this.props.image.id}` });
   };
 
   handleLikeClicked = (e) => {
@@ -108,17 +108,19 @@ class ImageCard extends Component {
 
   handleEditClicked = (e) => {
     console.log('edit button clicked');
-
+    this.setState({ redirect: `/editpost/${this.props.image.id}` });
     e.stopPropagation();
   };
 
   render() {
     let component;
-    if (this.state.image_clicked) {
+
+    if (this.state.redirect) {
       component = (
         <Redirect
+          push
           to={{
-            pathname: `/post-${this.props.image.id}`,
+            pathname: `${this.state.redirect}`,
             state: {
               id: `${this.props.image.id}`,
               url: `${this.props.image.img}`,

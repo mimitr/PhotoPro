@@ -16,12 +16,17 @@ from utils.database.general_user import (
     post_image,
     discovery,
     discovery_with_search_term,
-    edit_post_caption,
+    edit_post,
     profiles_photos,
     delete_image_post,
 )
 from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
 from utils.database.watermark import apply_watermark
+from utils.database.notifications import (
+    get_like_notification,
+    get_comment_notification,
+    get_user_timestamp,
+)
 
 print(conn, cur)
 
@@ -209,8 +214,11 @@ def api_profile_photos():
 @app.route("/edit_post")
 def api_edit_post():
     image_id = request.args.get("image_id")
+    title = request.args.get("title")
+    price = int(request.args.get("price"))
     caption = request.args.get("caption")
-    result = edit_post_caption(app.user_id, image_id, caption, conn, cur)
+    tags = request.args.get("tags")
+    result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
 
     return jsonify({"result": result})
 
@@ -270,4 +278,46 @@ def api_get_likers_of_image():
 
         return jsonify({"result": processed_result})
     return jsonify({"result": False})
+
+
+@app.route("/fetch_notification")
+def api_fetch_notifications():
+    user_id = app.user_id
+    timestamp = get_user_timestamp(user_id, conn, cur)
+
+    like_notifs = get_like_notification(user_id, timestamp, conn, cur)
+    comment_notifs = get_comment_notification(user_id, timestamp, conn, cur)
+
+    results = []
+
+    if like_notifs != False:
+        for tup in like_notifs:
+            title, image, liker, created_at = tup
+            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
+            results.append(
+                {
+                    "title": title,
+                    "image_id": image,
+                    "liker": liker,
+                    "created_at": created_at,
+                }
+            )
+    if comment_notifs != False:
+        for tup in comment_notifs:
+            title, image, commenter, comment, created_at = tup
+            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
+            results.append(
+                {
+                    "title": title,
+                    "image_id": image,
+                    "commenter": commenter,
+                    "comment": comment,
+                    "created_at": created_at,
+                }
+            )
+    if results:
+        results = sorted(results, key=lambda x: x["created_at"], reverse=True)
+        return jsonify({"notifications": results})
+
+    return jsonify({"notifications": False})
 
