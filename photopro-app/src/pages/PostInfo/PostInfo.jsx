@@ -54,7 +54,8 @@ const PostInfo = (props) => {
           </div>
           <div className="postComments">
             <h2>Comments:</h2>
-            <Comments className="comments" />
+            {/* <Comments className="comments" /> */}
+            <Comments />
           </div>
         </div>
       </div>

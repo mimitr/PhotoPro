@@ -1,23 +1,10 @@
-import React, { useState } from "react";
-import "./Comments.css";
-import { CommentsHeader } from "./CommentsHeader/CommentsHeader";
-import { AddComments } from "./AddComments/AddComments";
-import { Comment } from "./Comment/Comment";
+import React from "react";
+import Comment from "./comment/Comment";
 
-import axios from "axios";
-
-function Comments(props) {
+export default function Comments() {
   return (
-    <React.Fragment>
-      <div>
-        <CommentsHeader amountComments={0} />
-        <AddComments />
-        <Comment />
-        <Comment />
-        <Comment />
-      </div>
-    </React.Fragment>
+    <div class="comments-container">
+      <Comment />
+    </div>
   );
 }
-
-export default Comments;
