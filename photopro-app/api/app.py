@@ -219,7 +219,7 @@ def api_post_like_to_image():
     })
 
 
-@app.route("/post_comment_to_image")
+@app.route("/post_comment_to_image", methods=["GET", "POST"])
 def api_post_comment_to_image():
     image_id = request.args.get("image_id")
     commenter = app.user_id
@@ -232,7 +232,7 @@ def api_post_comment_to_image():
         return jsonify({"result": result})
 
 
-@app.route("/post_comment_to_comment")
+@app.route("/post_comment_to_comment", methods=["GET", "POST"])
 def api_post_comment_to_comment():
     comment_id = request.args.get("comment_id")
     commenter = app.user_id
@@ -246,7 +246,7 @@ def api_post_comment_to_comment():
         return jsonify({"result": result})
 
 
-@app.route("/post_delete_comment")
+@app.route("/post_delete_comment", methods=["GET", "POST"])
 def api_delete_comment():
     comment_id = request.args.get("comment_id")
     user_id = app.user_id
@@ -257,7 +257,7 @@ def api_delete_comment():
         return jsonify({"result": result})
 
 
-@app.route("/get_comments_to_image")
+@app.route("/get_comments_to_image", methods=["GET", "POST"])
 def api_get_comments_to_image():
     image_id = request.args.get("image_id")
     batch_size = request.args.get("batch_size")
@@ -284,7 +284,7 @@ def api_get_comments_to_image():
             return jsonify({"result": processed_result})
 
 
-@app.route("/get_comments_to_comment")
+@app.route("/get_comments_to_comment", methods=["GET", "POST"])
 def api_get_comments_to_comment():
     comment_id = request.args.get("comment_id")
     batch_size = request.args.get("batch_size")
