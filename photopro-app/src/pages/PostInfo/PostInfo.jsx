@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import "./PostInfo.css";
-import Toolbar from "../../components/toolbar/toolbar";
-import Likes from "../../components/likes/Likes";
+import React, { Component } from 'react';
+import './PostInfo.css';
+import Toolbar from '../../components/toolbar/toolbar';
+import Likes from '../../components/likes/Likes';
 
 const PostInfo = (props) => {
-  //console.log(props.location.state);
+  console.log(props.location.state);
   return (
     <React.Fragment>
       <Toolbar />
