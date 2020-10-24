@@ -11,6 +11,7 @@ export default function EditPostPage(props) {
   const { match } = props;
   const history = useHistory();
   console.log(parseInt(match.params.id));
+  console.log(props.location);
 
   function validate_title() {
     return title.length > 0 && title.length < 50;
@@ -39,8 +40,8 @@ export default function EditPostPage(props) {
     });
     console.log(response);
   }
-  //TODO: Find a way to extract image_id from an image
-  //To test, replace 'image_id' with any valid image_id from the database
+
+  console.log(props.location);
 
   return (
     <div>
@@ -101,6 +102,7 @@ export default function EditPostPage(props) {
           Cancel
         </Button>
       </form>
+      <div>{/* <h1>{props.location}</h1> */}</div>
     </div>
   );
 }

@@ -222,7 +222,16 @@ class ImageCard extends Component {
             </IconButton>
 
             {deleteButton}
-            <Link to={`/editpost/${this.props.image.id}`}>{editButton}</Link>
+            <Link
+              to={{
+                pathname: `/editpost/${this.props.image.id}`,
+                state: {
+                  image_clicked: true,
+                },
+              }}
+            >
+              {editButton}
+            </Link>
           </div>
         </div>
       );
