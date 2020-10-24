@@ -1,11 +1,33 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import "./PostInfo.css";
 import Toolbar from "../../components/toolbar/toolbar";
 import Likes from "../../components/likes/Likes";
 import Comments from "../../components/comments/Comments";
+import axios from "axios";
 
 const PostInfo = (props) => {
-  //console.log(props.location.state);
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    // fetch the comments given the photo id
+    fetchComments(props.location.state.id);
+    //console.log(props.location.state);
+  });
+
+  const fetchComments = (id) => {
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/get_comments_to_image",
+      params: { comment_id: id, batch_size: 20 }, //user_id: 1
+    }).then((res) => {
+      if (res.data.result != false) {
+        setComments(comments.concat(res.data.result));
+      }
+
+      console.log(res);
+    });
+  };
+
   return (
     <React.Fragment>
       <Toolbar />
@@ -55,7 +77,10 @@ const PostInfo = (props) => {
           <div className="postComments">
             <h2>Comments:</h2>
             {/* <Comments className="comments" /> */}
-            <Comments />
+            <Comments
+              image_id={props.location.state.id}
+              comments_list={comments}
+            />
           </div>
         </div>
       </div>

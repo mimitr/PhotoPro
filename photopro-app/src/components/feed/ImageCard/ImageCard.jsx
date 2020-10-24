@@ -35,6 +35,7 @@ class ImageCard extends Component {
     if (this.state.image_clicked) {
       // console.log('if clicked');
       // console.log(this.props.image);
+      console.log(this.props);
       component = (
         <Redirect
           to={{
