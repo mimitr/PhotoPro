@@ -25,7 +25,7 @@ export default function Comments(props) {
 
   const postComments = (comment_input) => {
     axios({
-      method: "GET",
+      method: "POST",
       url: "http://localhost:5000/post_comment_to_image",
       params: { comment: comment_input, image_id: props.image_id },
     }).then((res) => {
