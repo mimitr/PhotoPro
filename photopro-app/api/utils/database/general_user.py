@@ -43,8 +43,8 @@ def login_user(email, password, conn, cur):
             # return "Incorrect email or password! Please try again.", None
             return False, None
         elif length == 1:
-            (id, first, last, email, password, last_activity) = data[0]
-            print(id, first, last, email, password, last_activity)
+            (id, first, last, email, password, last_active) = data[0]
+            print(id, first, last, email, password, last_active)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -274,13 +274,24 @@ def profiles_photos(user_id, batch_size, conn, cur):
         return False
 
 
-def edit_post_caption(user_id, image, caption, conn, cur):
+def edit_post(user_id, image, title, price, caption, tags, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "UPDATE images SET caption = '{}' WHERE uploader = {} AND image_id = {}".format(
-            caption, user_id, image
+        cmd = """UPDATE images SET title = '%s', price = %d, caption = '%s', tags = '{%s}'
+                 WHERE uploader = %d and image_id = %d""" % (
+            title,
+            price,
+            caption,
+            tags,
+            user_id,
+            image,
         )
+
+        # cmd = "UPDATE images SET title = '{}', price = '{}', caption = '{}', tags = '{{%s}}' " \
+        #      "WHERE uploader = {} AND image_id = {}".format(
+        #    title, price, caption, tags, user_id, image
+        # )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -347,6 +358,21 @@ def get_tags(image_id, conn, cur):
         return found_tags
     except Exception as e:
         print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
+def set_user_timestamp(user_id, conn, cur):
+    try:
+        cmd = "UPDATE users SET last_active = NOW() WHERE id = {}".format(user_id)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
         return False
     except psycopg2.Error as e:
         error = e.pgcode

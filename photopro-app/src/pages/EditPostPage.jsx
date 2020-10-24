@@ -7,6 +7,7 @@ export default function EditPostPage(props) {
   const [caption, set_caption] = useState('');
   const [title, set_title] = useState('');
   const [price, set_price] = useState('');
+  const [tags, set_tags] = useState('');
   const { match } = props;
   const history = useHistory();
   console.log(match.params.id);
@@ -17,16 +18,24 @@ export default function EditPostPage(props) {
   function validate_caption() {
     return caption.length > 0 && caption.length < 50;
   }
-
   function validate_price() {
     return parseInt(price) > 0 && price.length > 0;
+  }
+  function validate_tags() {
+    return tags.length > 0 && tags.length < 100;
   }
 
   async function edit_post(event) {
     event.preventDefault();
 
     var response = await axios.get('http://localhost:5000/edit_post', {
-      params: { title: title, price: price, caption: caption },
+      params: {
+        image_id: match,
+        title: title,
+        price: price,
+        caption: caption,
+        tags: tags,
+      },
     });
     console.log(response);
   }
@@ -63,10 +72,22 @@ export default function EditPostPage(props) {
           />
         </FormGroup>
 
+        <FormGroup controlId="tags" bsSize="large">
+          <FormLabel>Caption</FormLabel>
+          <FormControl
+            Type="tags"
+            value={tags}
+            onChange={(e) => set_tags(e.target.value)}
+          />
+        </FormGroup>
+
         <Button
           variant="primary"
           disabled={
-            !validate_caption() || !validate_title() || !validate_price()
+            !validate_caption() ||
+            !validate_title() ||
+            !validate_price() ||
+            !validate_tags()
           }
           type="submit"
         >
