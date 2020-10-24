@@ -10,7 +10,7 @@ export default function EditPostPage(props) {
   const [tags, set_tags] = useState('');
   const { match } = props;
   const history = useHistory();
-  console.log(match.params.id);
+  console.log(parseInt(match.params.id));
 
   function validate_title() {
     return title.length > 0 && title.length < 50;
@@ -30,7 +30,7 @@ export default function EditPostPage(props) {
 
     var response = await axios.get('http://localhost:5000/edit_post', {
       params: {
-        image_id: match,
+        image_id: parseInt(match.params.id),
         title: title,
         price: price,
         caption: caption,
@@ -73,7 +73,7 @@ export default function EditPostPage(props) {
         </FormGroup>
 
         <FormGroup controlId="tags" bsSize="large">
-          <FormLabel>Caption</FormLabel>
+          <FormLabel>tags</FormLabel>
           <FormControl
             Type="tags"
             value={tags}

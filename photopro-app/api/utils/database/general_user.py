@@ -278,8 +278,8 @@ def edit_post(user_id, image, title, price, caption, tags, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """UPDATE images SET title = '%s', price = %d, caption = '%s', tags = '{%s}'
-                 WHERE uploader = %d and image_id = %d""" % (
+        cmd = """UPDATE images SET title = '%s', price = %s, caption = '%s', tags = '{%s}'
+                 WHERE uploader = %s and image_id = %s""" % (
             title,
             price,
             caption,
@@ -298,6 +298,7 @@ def edit_post(user_id, image, title, price, caption, tags, conn, cur):
         return True
     except psycopg2.Error as e:
         error = e.pgcode
+        print("%d is type %s" % (price, type(price)))
         print(error)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
