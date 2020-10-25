@@ -208,3 +208,8 @@ def api_edit_post():
 
     return jsonify({"result": result})
 
+@app.route("/get_tags")
+def api_get_tags():
+    image_id = request.args.get("image_id")
+    result = get_tags(image_id, conn, cur)
+    return jsonify({"result": result})

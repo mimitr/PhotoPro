@@ -280,12 +280,12 @@ def edit_post_caption(user_id, image, caption, conn, cur):
 
 
 # adds a tag to an image given image_id and does not add duplicates
-def add_tag(image_id, tag, conn, cur):
+def add_tag(user_id, image_id, tag, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
         cmd = (
-            """UPDATE images SET tags = array_cat(tags, '{%s}') WHERE image_id = %d AND NOT ('%s' = ANY(tags)) """
-            % (tag, image_id, tag)
+            """UPDATE images SET tags = array_cat(tags, '{%s}') WHERE uploader = %s AND image_id = %d AND NOT ('%s' = ANY(tags)) """
+            % (tag, user_id, image_id, tag)
         )
         print(cmd)
         cur.execute(cmd)
@@ -301,12 +301,12 @@ def add_tag(image_id, tag, conn, cur):
 
 
 # simply removes a tag from an image given an image_id
-def remove_tag(image_id, tag, conn, cur):
+def remove_tag(user_id,image_id, tag, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
         cmd = (
-            """UPDATE images SET tags = array_remove(tags, '%s') WHERE image_id = %d AND ('%s' = ANY(tags)) """
-            % (tag, image_id, tag)
+            """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' = ANY(tags)) """
+            % (tag, user_id, image_id, tag)
         )
         print(cmd)
         cur.execute(cmd)
