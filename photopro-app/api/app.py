@@ -213,3 +213,15 @@ def api_get_tags():
     image_id = request.args.get("image_id")
     result = get_tags(image_id, conn, cur)
     return jsonify({"result": result})
+
+@app.route("/add_tag")
+def api_add_tag():
+    image_id = request.args.get("image_id")
+    result = add_tag(app.user_id, image_id, tag, conn, cur)
+    return jsonify({"result": result})
+
+@app.route("/remove_tag")
+def api_remove_tag():
+    image_id = request.args.get("image_id")
+    result = remove_tag(app.user_id, image_id, tag, conn, cur)
+    return jsonify({"result": result})
