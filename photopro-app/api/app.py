@@ -10,8 +10,9 @@ from utils.database.general_user import (
     post_image,
     discovery,
     discovery_with_search_term,
-    edit_post_caption,
+    edit_post,
     profiles_photos,
+    delete_image_post,
 )
 from utils.database.connect import conn, cur
 from flask import Flask, request, jsonify
@@ -22,6 +23,21 @@ import base64
 for i in sys.path:
     print(i)
 
+from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
+from utils.database.watermark import apply_watermark
+from utils.database.notifications import (
+    get_like_notification,
+    get_comment_notification,
+    get_user_timestamp,
+)
+from utils.database.comments import (
+    post_comment_to_image,
+    post_comment_to_comment,
+    delete_comment,
+    get_comments_to_image,
+    get_comments_to_image,
+    get_comments_to_comment,
+)
 
 print(conn, cur)
 
@@ -41,7 +57,7 @@ def api_login():
 
     app.user_id = user_id
 
-    return jsonify({"result": result})
+    return jsonify({"result": result, "user_id": user_id})
 
 
 @app.route("/create_user")
@@ -120,7 +136,7 @@ def api_discovery():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, num_likes = tup
+            id, caption, uploader, img, title, price, num_likes, created_at = tup
             if not num_likes:
                 num_likes = 0
             file = "image.jpeg"
@@ -138,7 +154,8 @@ def api_discovery():
                     "img": img,
                     "title": title,
                     "price": str(price),
-                    'num_likes': num_likes
+                    "created_at": created_at,
+                    "num_likes": num_likes,
                 }
             )
 
@@ -167,7 +184,9 @@ def api_profile_photos():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, created_at = tup
+            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -183,7 +202,8 @@ def api_profile_photos():
                     "img": img,
                     "title": title,
                     "price": str(price),
-                    "created_at": created_at
+                    "created_at": created_at,
+                    "num_likes": num_likes,
                 }
             )
 
@@ -199,8 +219,11 @@ def api_profile_photos():
 @app.route("/edit_post")
 def api_edit_post():
     image_id = request.args.get("image_id")
+    title = request.args.get("title")
+    price = int(request.args.get("price"))
     caption = request.args.get("caption")
-    result = edit_post_caption(app.user_id, image_id, caption, conn, cur)
+    tags = request.args.get("tags")
+    result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
 
     return jsonify({"result": result})
 
@@ -211,15 +234,100 @@ def api_post_like_to_image():
     user_id = app.user_id
     if image_id is not None and user_id is not None:
         result = post_like(image_id, user_id, conn, cur)
-        return jsonify({
-            'result': result
-        })
-    return jsonify({
-        'result': False
-    })
+        return jsonify({"result": result})
+    return jsonify({"result": False})
 
 
-@app.route("/post_comment_to_image", methods=["GET", "POST"])
+@app.route("/delete_like_from_image")
+def api_delete_like_from_image():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = delete_like(image_id, user_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
+@app.route("/get_num_likes_of_image")
+def api_get_num_likes_of_image():
+    image_id = request.args.get("image_id")
+    if image_id is not None and app.user_id is not None:
+        result = get_num_likes(image_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
+@app.route("/delete_image_post")
+def api_delete_image_post():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = delete_image_post(image_id, user_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
+@app.route("/get_likers_of_image")
+def api_get_likers_of_image():
+    image_id = request.args.get("image_id")
+    limit = request.args.get("batch_size")
+    if image_id is not None and app.user_id is not None and limit is not None:
+        result = get_likers(image_id, limit, conn, cur)
+
+        processed_result = []
+        for tup in result:
+            id, first, last = tup
+            processed_result.append(
+                {"user_id": id, "first_name": first, "last_name": last}
+            )
+
+        return jsonify({"result": processed_result})
+    return jsonify({"result": False})
+
+
+@app.route("/fetch_notification")
+def api_fetch_notifications():
+    user_id = app.user_id
+    timestamp = get_user_timestamp(user_id, conn, cur)
+
+    like_notifs = get_like_notification(user_id, timestamp, conn, cur)
+    comment_notifs = get_comment_notification(user_id, timestamp, conn, cur)
+
+    results = []
+
+    if like_notifs != False:
+        for tup in like_notifs:
+            title, image, liker, created_at = tup
+            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
+            results.append(
+                {
+                    "title": title,
+                    "image_id": image,
+                    "liker": liker,
+                    "created_at": created_at,
+                }
+            )
+    if comment_notifs != False:
+        for tup in comment_notifs:
+            title, image, commenter, comment, created_at = tup
+            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
+            results.append(
+                {
+                    "title": title,
+                    "image_id": image,
+                    "commenter": commenter,
+                    "comment": comment,
+                    "created_at": created_at,
+                }
+            )
+    if results:
+        results = sorted(results, key=lambda x: x["created_at"], reverse=True)
+        return jsonify({"notifications": results})
+
+    return jsonify({"notifications": False})
+
+
+@app.route("/post_comment_to_image")
 def api_post_comment_to_image():
     image_id = request.args.get("image_id")
     commenter = app.user_id
@@ -275,12 +383,12 @@ def api_get_comments_to_image():
                 comment_id, image_id, commenter, comment, reply_id, created_at = tup
                 processed_result.append(
                     {
-                        'comment_id': comment_id,
-                        'image_id': image_id,
-                        'commenter': commenter,
-                        'comment': comment,
-                        'reply_id': reply_id,
-                        'created_at': created_at
+                        "comment_id": comment_id,
+                        "image_id": image_id,
+                        "commenter": commenter,
+                        "comment": comment,
+                        "reply_id": reply_id,
+                        "created_at": created_at,
                     }
                 )
             return jsonify({"result": processed_result})
@@ -302,12 +410,12 @@ def api_get_comments_to_comment():
                 comment_id, image_id, commenter, comment, reply_id, created_at = tup
                 processed_result.append(
                     {
-                        'comment_id': comment_id,
-                        'image_id': image_id,
-                        'commenter': commenter,
-                        'comment': comment,
-                        'reply_id': reply_id,
-                        'created_at': created_at
+                        "comment_id": comment_id,
+                        "image_id": image_id,
+                        "commenter": commenter,
+                        "comment": comment,
+                        "reply_id": reply_id,
+                        "created_at": created_at,
                     }
                 )
             return jsonify({"result": processed_result})

@@ -7,10 +7,18 @@
   background-color: rgb(58, 106, 138);
 }
 
-.flex-container-buttons {
+.flex-container-buttons-1 {
   order: 3;
   display: flex;
   width: 15rem;
+
+  justify-content: space-around;
+}
+
+.flex-container-buttons-2 {
+  order: 3;
+  display: flex;
+  width: 30rem;
 
   justify-content: space-around;
 }
@@ -23,7 +31,7 @@
 
 .toolbar-left {
   order: 1;
-  width: 10rem;
+  width: 25rem;
   text-align: center;
 }
 

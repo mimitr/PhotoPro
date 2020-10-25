@@ -26,10 +26,15 @@ export default function LoginPage(props) {
 
     if (response.data.result) {
       localStorage.setItem('userLoggedIn', true);
+      localStorage.setItem('userID', response.data.user_id);
       history.push('/');
     } else {
       setLoginFailed(true);
     }
+  }
+
+  function handleForgotPasswordClicked() {
+    history.push('/forgotpassword');
   }
 
   return (
@@ -64,6 +69,19 @@ export default function LoginPage(props) {
           Login
         </Button>
       </form>
+      <Button block bsSize="large" onClick={handleForgotPasswordClicked}>
+        Forgot Password
+      </Button>
+      <Button
+        block
+        bsSize="large"
+        type="submit"
+        onClick={() => {
+          history.goBack();
+        }}
+      >
+        Cancel
+      </Button>
       {loginFailed ? (
         <p style={{ color: 'red' }}>Incorrect username or password</p>
       ) : (
