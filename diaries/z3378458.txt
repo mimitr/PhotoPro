@@ -2,17 +2,40 @@
 
 10/10/2020
 
-I created a function, 'delete_image_post' in general_user.py to implement the databse backend 
-side of deleting user posts. Some strange behaviour by my dev enviroment led to the images
-table in the database being deleted. The function which takes image_id as an argument 
-does not seem to recieve the image_id correctly from the function argument and when you
-manually insert the integer post id to delete, it works. The test file i wrote is
-simply opening a connection and calling the function with a predefine value, but for some
-reason the argument is not being passed properly and is the value 10 regardless of what,
-value the function is called with. I will instal windows and the linux subsystem on my computer
-rather than continuning to use Macosx as this strange behabiour may be solved. I do belive though
-that the function is correct, and hence was pushed to my branch db-functions.
+I created a function, 'delete_image_post' in general_user.py to implement the
+database backend side of deleting user posts. Some strange behaviour by my dev
+enviroment led to the images table in the database being deleted. The function
+which takes image_id as an argument does not seem to recieve the image_id
+correctly from the function argument and when you
+manually insert the integer post id to delete, it works. The test file i wrote
+is simply opening a connection and calling the function with a predefine value,
+but for some reason the argument is not being passed properly and is the value
+10 regardless of what, value the function is called with. I will instal windows
+and the linux subsystem on my computer rather than continuning to use Macosx as
+this strange behabiour may be solved. I do belive though that the function is
+correct, and hence was pushed to my branch db-functions.
 UPDATE:
-It seems that differences in carriage return on mac caused the second line of the sql query specifing the entry
-to be deleted was not parsed properly causing all entries in the images table to be deleted. When run on ubuntu
+It seems that differences in carriage return on mac caused the second line of
+the sql query specifing the entry to be deleted was not parsed properly causing
+all entries in the images table to be deleted. When run on ubuntu
 this problem is not encountered
+
+
+
+
+===== Week 5 =====
+
+
+16/10/2020
+Today we had out first demo, progressive demo A.
+Everything functioned as expected and went smoothly. This week I responded to
+other team memebrs queires and tried to assist where possible, and also
+performed further testing on the delete_post function I finished last week.
+I haven't been able to do as much work on the project this week as I have had a
+combined 35% of assement in my other subjects this past week. I'm keen to get
+back to work on it next week. I have the tag functions in mind which are a story
+in the next sprint
+{talk about making sure no errors in delete_post function but manioly doing work
+for other subjeccts}
+
+
