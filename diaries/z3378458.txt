@@ -103,4 +103,24 @@ programing principles where O is closed for modification and open for extension.
 He would have extended the add and remove functions to create and edit_post
 function.
 
+25/10/2020
+
+Today I added routing to all three of my functions: get_tags, add_tag and
+remove_tag. As I was adding the routing functions I realised that add_tag and
+remove_tag should only be able to be done if the owner of those images was the
+one making the request. As such I changed the functions from
+def remove_tag(image_id, tag, conn, cur)
+to
+def remove_tag(user_id,image_id, tag, conn, cur)
+
+and
+def add_tag(image_id, tag, conn, cur)
+to
+def add_tag(user_id, image_id, tag, conn, cur)
+.
+I was fit to leave get_tags to note requiring a user_id as anyone should be
+able to view the tags on a post regardless of whether they are logged in or the
+owner of the image etc.
+in the routes, for user_id i passed in app.user_id which represents the user
+logged into the web app
 
