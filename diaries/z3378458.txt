@@ -65,4 +65,35 @@ millions of users, so the easier to implement architecture is fine for our
 purposes.
 
 
+23/10/2020
+This week I've work on the tags system for the photopro website, by taking the
+"As a contributor, I want to be able to add tags to my uploaded photos so that
+users can more easily find them based on their interests." User story from the
+availible stories for the sprint in order to implement it. I first decided to
+implement the get tags function. The way it is set up in the database is that
+the tags are stored in array which is stored in a column of the image entry for
+a given image in the images table. Matt told me how the array was to be
+accessed which was using syntax I hadn't encountered before. The syntax to for
+example do a tag insertion/update was
+"UPDATE images
+SET    tags = tags || tag_to_insert
+WHERE  image_id = 555
+AND    NOT (tags @> ARRAY[tag_to_insert]);""
+. I tried implementing this however it did not work. After searching google I
+Eventually found an alternative way to add and delete from this array in the
+column by doing the following:
+cmd = (
+        """UPDATE images SET tags = array_remove(tags, '%s')
+        WHERE image_id = %d AND ('%s' = ANY(tags)) """
+        % (tag, image_id, tag)
+    )
+and seemed to work without issue.
+I used this to create a get_tags function, add_tag, and remove_tag functions.
+I tested them using a testfile name "image_delete_test.py" where I took a list
+of tags added them into the array for a given image, fetched the tags and then
+deleted the tags from the same image and fetched the tags again to make sure,
+the functions were working. I then commited these changes and merged to master.
+
+
+
 
