@@ -29,12 +29,19 @@ export default function Comments(props) {
       url: "http://localhost:5000/post_comment_to_image",
       params: { comment: comment_input, image_id: props.image_id },
     }).then((res) => {
-      //   if (res.data.result != false) {
-      //     setComments(comments.concat(res.data.result));
-      //   }
-
+      // if (res.data.result != false) {
+      //   setComments(comments.concat(res.data.result));
+      // }
       console.log(res);
     });
+    //     axios
+    //       .post("http://localhost:5000/post_comment_to_image", {
+    //         comment: comment_input,
+    //         image_id: props.image_id,
+    //       })
+    //       .then((res) => {
+    //         console.log(res);
+    //       });
   };
 
   return (

@@ -224,10 +224,12 @@ def api_post_comment_to_image():
     image_id = request.args.get("image_id")
     commenter = app.user_id
     comment = request.args.get("comment")
-
+    print("NYIO NYIO")
     if image_id is None or comment is None or commenter is None:
+        print("meow")
         return jsonify({"result": False})
     else:
+        print("meow meow?")
         result = post_comment_to_image(image_id, commenter, comment, conn, cur)
         return jsonify({"result": result})
 
