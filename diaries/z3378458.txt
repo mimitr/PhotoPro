@@ -94,6 +94,13 @@ of tags added them into the array for a given image, fetched the tags and then
 deleted the tags from the same image and fetched the tags again to make sure,
 the functions were working. I then commited these changes and merged to master.
 
-
+24/10/2020
+I saw today that ethan had effectively duplicated in functionality in his
+edit_post function he was discussing on discord. I think we need better
+communication. Ideally he would have used my add_tag, and remove_tag functions
+to create an edit_post function following the O in S.O.L.I.D objected oriented
+programing principles where O is closed for modification and open for extension.
+He would have extended the add and remove functions to create and edit_post
+function.
 
 
