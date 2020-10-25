@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './ImageCard.css';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core';
@@ -9,6 +9,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const deletePostRequest = async function (imageID) {
   const response = await axios.get('http://localhost:5000/delete_image_post', {
@@ -41,10 +42,19 @@ const styles = {
   delete: {
     left: '8%',
     top: '10%',
-    width: '10%',
-    height: '10%',
+    width: '13%',
+    height: '13%',
     '&:hover': {
       backgroundColor: 'rgba(180, 65, 65, 0.82)',
+    },
+  },
+  edit: {
+    left: '92%',
+    top: '10%',
+    width: '14%',
+    height: '18%',
+    '&:hover': {
+      backgroundColor: 'rgba(219, 193, 20, 0.71)',
     },
   },
 };
@@ -56,7 +66,7 @@ class ImageCard extends Component {
     // CreateRef is used to access the DOM
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
-    this.state = { image_clicked: false, spans: 0 };
+    this.state = { redirect: null, spans: 0 };
   }
 
   componentDidMount() {
@@ -70,7 +80,7 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
-    this.setState({ image_clicked: true });
+    this.setState({ redirect: `/post-${this.props.image.id}` });
   };
 
   handleLikeClicked = (e) => {
@@ -96,13 +106,21 @@ class ImageCard extends Component {
     window.location.reload();
   };
 
+  handleEditClicked = (e) => {
+    console.log('edit button clicked');
+    this.setState({ redirect: `/editpost/${this.props.image.id}` });
+    e.stopPropagation();
+  };
+
   render() {
     let component;
-    if (this.state.image_clicked) {
+
+    if (this.state.redirect) {
       component = (
         <Redirect
+          push
           to={{
-            pathname: `/post-${this.props.image.id}`,
+            pathname: `${this.state.redirect}`,
             state: {
               id: `${this.props.image.id}`,
               url: `${this.props.image.img}`,
@@ -128,6 +146,21 @@ class ImageCard extends Component {
             onClick={this.handleDeleteClicked}
           >
             <DeleteIcon />
+          </IconButton>
+        ) : (
+          <Button></Button>
+        );
+
+      let editButton =
+        uploaderID === userID ? (
+          <IconButton
+            variant="contained"
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.edit}`,
+            }}
+            onClick={this.handleEditClicked}
+          >
+            <EditIcon />
           </IconButton>
         ) : (
           <Button></Button>
@@ -172,6 +205,7 @@ class ImageCard extends Component {
             </IconButton>
 
             {deleteButton}
+            {editButton}
           </div>
         </div>
       );
