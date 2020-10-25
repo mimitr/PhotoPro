@@ -327,7 +327,7 @@ def api_fetch_notifications():
     return jsonify({"notifications": False})
 
 
-@app.route("/post_comment_to_image")
+@app.route("/post_comment_to_image", methods=["GET", "POST"])
 def api_post_comment_to_image():
     image_id = request.args.get("image_id")
     commenter = app.user_id
