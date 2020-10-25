@@ -38,4 +38,31 @@ in the next sprint
 {talk about making sure no errors in delete_post function but manioly doing work
 for other subjeccts}
 
+===== Week 6 =====
+21/10/2020
+Today Matt and I assisted ethan with the backend design of the notificaitons
+system. The main to issues to solve were how to store the notifications, and how
+to generate them. Ethan originally had thought to have a system where the
+backend polled the database for changes and presented them to the user when
+the polling detected them. I thought this was complex and conmsumed too much CPU
+and that it was better to have an event driven system where when changes were
+made to state on the system such as posts, pruchases and likes that the users
+concerned be notified by generating a notification to be stored in a
+notification table, effectively following an observer design pattern. Matt
+thought of a simpler approach which was to just record the last time active of
+each user and then on a new page refresh or login, query all the tables to
+gather all activity since the last active recorded time that would form the
+notifications for that user. For example if user was last active at 7:43pm and
+then someone liked on of their photos, that like would be recoreded with a time
+stamp in the likes table. On refresh at 7:45pm the like table would be querired
+and found that the like had taken place since last active so would be prpesented
+as a notification for that user. As i rightly pointed out this fast become
+ineffecient for a growing number of users as multiple tables such as likes,
+purhases uploads and more are queried each refresh for every user, instead of
+just generated notifcaions at time of mofication to store in a notifications
+table, however Matts solution was easier to implement and we do not anticipate
+millions of users, so the easier to implement architecture is fine for our
+purposes.
+
+
 
