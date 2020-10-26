@@ -372,8 +372,10 @@ def api_get_comments_to_image():
     image_id = request.args.get("image_id")
     batch_size = request.args.get("batch_size")
     if image_id is None or batch_size is None:
+        print("no params")
         return jsonify({"result": False})
     else:
+        print("yes params?")
         result = get_comments_to_image(image_id, batch_size, conn, cur)
         if not result:
             return jsonify({"result": result})

@@ -18,7 +18,7 @@ const PostInfo = (props) => {
     axios({
       method: "GET",
       url: "http://localhost:5000/get_comments_to_image",
-      params: { comment_id: id, batch_size: 20 }, //user_id: 1
+      params: { image_id: id, batch_size: 20 },
     }).then((res) => {
       if (res.data.result != false) {
         setComments(comments.concat(res.data.result));
