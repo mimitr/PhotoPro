@@ -195,7 +195,7 @@ def discovery(user_id, batch_size, conn, cur):
         batch_size = int(batch_size)
         cmd = (
             "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} "
-            "LIMIT {}".format(user_id, batch_size)
+            "ORDER BY created_at DESC LIMIT {}".format(user_id, batch_size)
         )
         print(cmd)
         cur.execute(cmd)
@@ -221,7 +221,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         batch_size = int(batch_size)
         cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+                    WHERE uploader!={} AND caption ILIKE '%{}%' ORDER BY created_at DESC LIMIT {}".format(
             user_id, query, batch_size
         )
         print(cmd)
@@ -250,11 +250,13 @@ def profiles_photos(user_id, batch_size, conn, cur):
         batch_size = int(batch_size)
         if batch_size > 0:
             cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
-                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id WHERE uploader={} LIMIT {}".format(
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                     WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
                 user_id, batch_size
             )
         else:
-            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={}".format(
+            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} " \
+                  "ORDER BY created_at DESC ".format(
                 user_id
             )
         print(cmd)
