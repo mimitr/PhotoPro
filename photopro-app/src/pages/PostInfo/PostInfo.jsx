@@ -7,10 +7,12 @@ import axios from "axios";
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
+  const [commentUpdated, updateComments] = useState("");
 
   useEffect(() => {
     fetchComments(props.location.state.id);
-  }, [comments]);
+    console.log("update comment called");
+  }, [commentUpdated]);
 
   const fetchComments = (id) => {
     axios({
@@ -19,11 +21,8 @@ const PostInfo = (props) => {
       params: { image_id: id, batch_size: 20 },
     }).then((res) => {
       if (res.data.result != false) {
-        //setComments(comments.concat(res.data.result));
         setComments(res.data.result);
       }
-
-      console.log(res);
     });
   };
 
@@ -79,7 +78,7 @@ const PostInfo = (props) => {
             <Comments
               image_id={props.location.state.id}
               comments_list={comments}
-              setComments={setComments}
+              updateComments={updateComments}
             />
           </div>
         </div>

@@ -1,14 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Comment from "./comment/Comment";
 import "./Comments.css";
 import axios from "axios";
-
-//  APIS FOR COMMENTS:
-//  /get_comments_to_image: image_id, batch_size => comment_id, image_id, commenter, comment, reply_id, created_at
-//  /post_comment_to_image
-//  /post_comment_to_comment
-//  /post_delete_comment
-//  /get_comments_to_comment: comment_id, batch_size => comment_id, image_id, commenter, comment, reply_id, created_at
 
 export default function Comments(props) {
   const [comment_input, set_comment_input] = useState("");
@@ -19,7 +12,6 @@ export default function Comments(props) {
 
   const handlePostClick = (e) => {
     e.preventDefault();
-    console.log(comment_input);
     postComments(comment_input);
   };
 
@@ -28,15 +20,11 @@ export default function Comments(props) {
       method: "POST",
       url: "http://localhost:5000/post_comment_to_image",
       params: { comment: comment_input, image_id: props.image_id },
-    }).then((res) => {
-      // if (res.data.result != false) {
-      //   setComments(comments.concat(res.data.result));
-      // }
-
-      // if result is true => commment posted successfully
-      // then create a new comment
-      console.log(res);
-      props.setComments(props.comments_list.concat(comment_input));
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(`comment posted successfully with ${response.data.result}`);
+        props.updateComments(props.comments_list.concat(comment_input));
+      }
     });
   };
 
