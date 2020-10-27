@@ -10,7 +10,7 @@ const PostInfo = (props) => {
 
   useEffect(() => {
     fetchComments(props.location.state.id);
-  }, []);
+  }, [comments]);
 
   const fetchComments = (id) => {
     axios({
