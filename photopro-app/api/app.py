@@ -18,6 +18,9 @@ from utils.database.general_user import (
     discovery_with_search_term,
     edit_post_caption,
     profiles_photos,
+    add_tag,
+    get_tags,
+    remove_tag
 )
 from utils.database.likes import post_like, get_num_likes, get_likers
 from utils.database.watermark import apply_watermark
@@ -211,17 +214,27 @@ def api_edit_post():
 @app.route("/get_tags")
 def api_get_tags():
     image_id = request.args.get("image_id")
+    if image_id is None:
+        return jsonify({"result": False})
     result = get_tags(image_id, conn, cur)
     return jsonify({"result": result})
 
 @app.route("/add_tag")
 def api_add_tag():
     image_id = request.args.get("image_id")
+    tag = request.args.get("tag")
+    if image_id is None or tag is None:
+        return jsonify({"result": False})
+
     result = add_tag(app.user_id, image_id, tag, conn, cur)
     return jsonify({"result": result})
 
 @app.route("/remove_tag")
 def api_remove_tag():
     image_id = request.args.get("image_id")
+    tag = request.args.get("tag")
+    if image_id is None or tag is None:
+        return jsonify({"result": False})
+
     result = remove_tag(app.user_id, image_id, tag, conn, cur)
     return jsonify({"result": result})
