@@ -47,3 +47,10 @@ There can be a option batch size parameter.
 October 17th:
 Today I added like functions to post likes to images, count the likes of images
 and query the likers first,last names from the db. These functions are tested and available in the API.
+
+=======================    WEEK 6    =======================
+I completed the backend to the likes and comments api whereby I was able to post comments to images and other comments,
+delete comments, and get comments to images and get comments to other comments. The likes api functions include posting
+likes, getting likes and and getting the likers of photos. I also updated the discovery functions so that they can
+be effectively live streamed without repeating the same photos. I helped out the front-end whenever they had an extra
+request for the backend or had an issue debugging anything involving the backend.
