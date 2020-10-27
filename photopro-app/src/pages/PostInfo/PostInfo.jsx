@@ -22,6 +22,7 @@ const PostInfo = (props) => {
     }).then((res) => {
       if (res.data.result != false) {
         setComments(res.data.result);
+        console.log(res.data.result);
       }
     });
   };
