@@ -341,16 +341,18 @@ def api_post_comment_to_image():
 
 @app.route("/post_comment_to_comment", methods=["GET", "POST"])
 def api_post_comment_to_comment():
+    image_id = request.args.get("image_id")
     comment_id = request.args.get("comment_id")
     commenter = app.user_id
     comment = request.args.get("comment")
 
-    if comment_id is None or comment is None or commenter is None:
+    if image_id is None or comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
-        result = post_comment_to_comment(
-            comment_id, commenter, comment, conn, cur)
+        result = post_comment_to_comment(image_id, commenter, comment, comment_id, conn, cur)
         return jsonify({"result": result})
+
+     return jsonify({"result": result})
 
 
 @app.route("/post_delete_comment", methods=["GET", "POST"])

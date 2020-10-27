@@ -9,9 +9,14 @@ import axios from "axios";
 export default function Comment(props) {
   const [reply_input, set_reply_input] = useState("");
   const [show_reply_form, set_show_reply_form] = useState(false);
+  const [has_replies, set_has_replies] = useState(false);
 
   let commenterID = String(props.comment_info.commenter);
   let userID = localStorage.getItem("userID");
+
+  if (props.comment_info.reply_id) {
+    set_has_replies(true);
+  }
 
   const deleteComment = (commentID) => {
     axios({
@@ -41,11 +46,32 @@ export default function Comment(props) {
 
   const handleReplyClicked = () => {
     // open the form
-    set_show_reply_form(true);
+    if (show_reply_form) {
+      set_show_reply_form(false);
+    } else {
+      set_show_reply_form(true);
+    }
   };
 
-  const handleReplySubmitted = () => {
-    // open the form
+  const handleReplySubmitted = (e) => {
+    e.preventDefault();
+    post_reply_comments(reply_input);
+  };
+
+  const post_reply_comments = (reply_input) => {
+    axios({
+      method: "POST",
+      url: "http://localhost:5000//post_comment_to_comment",
+      params: {
+        comment_id: props.comment_info.comment_id,
+        comment: reply_input,
+        image_id: props.comment_info.image_id,
+      },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response);
+      }
+    });
   };
 
   return (
@@ -82,6 +108,12 @@ export default function Comment(props) {
                 />
               </div>
             </form>
+          </div>
+        ) : null}
+
+        {has_replies ? (
+          <div className="reply_form">
+            <p>See replies</p>
           </div>
         ) : null}
       </div>
