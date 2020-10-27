@@ -32,16 +32,12 @@ export default function Comments(props) {
       // if (res.data.result != false) {
       //   setComments(comments.concat(res.data.result));
       // }
+
+      // if result is true => commment posted successfully
+      // then create a new comment
       console.log(res);
+      props.setComments(props.comments_list.concat(comment_input));
     });
-    //     axios
-    //       .post("http://localhost:5000/post_comment_to_image", {
-    //         comment: comment_input,
-    //         image_id: props.image_id,
-    //       })
-    //       .then((res) => {
-    //         console.log(res);
-    //       });
   };
 
   return (
@@ -58,10 +54,7 @@ export default function Comments(props) {
           </div>
         </form>
       </div>
-      <div className="comments-container">
-        <Comment />
-        {comments}
-      </div>
+      <div className="comments-container">{comments}</div>
     </React.Fragment>
   );
 }

@@ -1,7 +1,9 @@
 import React from "react";
 import "./Comment.css";
 
-export default function Comment() {
+export default function Comment(props) {
+  console.log(props.comment_info);
+
   return (
     <div class="card v-card v-sheet theme--light elevation-2">
       <div class="header">
@@ -9,14 +11,13 @@ export default function Comment() {
           <div class="v-avatar avatar">
             <img src="https://images.unsplash.com/photo-1490894641324-cfac2f5cd077?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=70"></img>
           </div>
-          <span class="displayName title">Robert</span>{" "}
-          <span class="displayName caption">2 months ago</span>
+          <span class="displayName title">{props.comment_info.commenter}</span>{" "}
+          <span class="displayName caption">
+            {props.comment_info.created_at}
+          </span>
         </div>
         <div class="wrapper comment">
-          <p>
-            Fusce sodales magna id porta egestas. Nulla massa est, hendrerit nec
-            auctor vitae, porta ut est.
-          </p>
+          <p>{props.comment_info.comment}</p>
         </div>
       </div>
     </div>
