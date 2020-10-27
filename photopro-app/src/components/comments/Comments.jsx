@@ -7,7 +7,9 @@ export default function Comments(props) {
   const [comment_input, set_comment_input] = useState("");
 
   const comments = props.comments_list.map((comment) => {
-    return <Comment comment_info={comment} />;
+    return (
+      <Comment updateComments={props.updateComments} comment_info={comment} />
+    );
   });
 
   const handlePostClick = (e) => {

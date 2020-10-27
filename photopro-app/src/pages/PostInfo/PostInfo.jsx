@@ -33,23 +33,20 @@ const PostInfo = (props) => {
         <div className="postInfo">
           <div className="username">
             <p>@{props.location.state.uploader}</p>
-          </div>
-          <div className="follow">
             <button className="btn">Follow</button>
-          </div>
-          <div className="like">
             <Likes
               num_likes={props.location.state.num_likes}
               image_id={props.location.state.id}
             />
-          </div>
-          <div className="bookmark">
             <button className="btn bookmark-btn">
               <svg width="25" height="25">
                 <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"></path>
               </svg>
             </button>
           </div>
+          {/* <div className="follow"></div>
+          <div className="like"></div>
+          <div className="bookmark"></div> */}
         </div>
         <div className="postImage">
           <img
