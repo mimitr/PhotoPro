@@ -7,7 +7,7 @@ import psycopg2
 
 def create_user(first, last, email, password, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         cmd = "INSERT INTO users(first,last,email,password) VALUES('{}','{}','{}', '{}');".format(
             first, last, email, password
         )
@@ -19,18 +19,18 @@ def create_user(first, last, email, password, conn, cur):
     except psycopg2.errors.UniqueViolation as e:
         print(e)
         # return "Unable to create new account. Account with that email already exists."
-        conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
 def login_user(email, password, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         cmd = "SELECT * FROM users WHERE email='{}' AND password='{}'".format(
             email, password
         )
@@ -43,8 +43,8 @@ def login_user(email, password, conn, cur):
             # return "Incorrect email or password! Please try again.", None
             return False, None
         elif length == 1:
-            (id, first, last, email, password) = data[0]
-            print(id, first, last, email, password)
+            (id, first, last, email, password, last_active) = data[0]
+            print(id, first, last, email, password, last_active)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -53,13 +53,13 @@ def login_user(email, password, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False, None
 
 
 def change_password(email, password, new_password, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         login_response = login_user(email, password, conn, cur)
 
         if login_response:
@@ -75,13 +75,13 @@ def change_password(email, password, new_password, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         cmd = "SELECT * FROM users WHERE email='{}'".format(recipient)
         print(cmd)
         cur.execute(cmd)
@@ -133,15 +133,15 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
 def post_image(uploader, caption, image, title, price, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         cmd = """
-            INSERT INTO images (caption, uploader, file, title, price) 
+            INSERT INTO images (caption, uploader, file, title, price)
             VALUES (%s, %s, %s, %s, %s)
             """
         print(cmd, uploader, caption, title, price)
@@ -154,19 +154,48 @@ def post_image(uploader, caption, image, title, price, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
-def discovery(user_id, batch_size, start_point, conn, cur):
+def delete_image_post(image_id, uploader, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
+        cmd = "DELETE FROM comments WHERE image_id = {}".format(image_id)
+        cur.execute(cmd)
+        conn.commit()
+
+        cmd = "DELETE FROM likes WHERE image_id = {}".format(image_id)
+        cur.execute(cmd)
+        conn.commit()
+
+        cmd = """
+            DELETE FROM images
+            WHERE image_id = %s AND uploader = %s;
+            """
+        print(cmd)
+        cur.execute(cmd, (image_id, uploader))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+
+def discovery(user_id, batch_size, conn, cur):
+    try:
+        cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT images.image_id, caption, uploader, file, title, price, num_likes FROM num_likes_per_image\
-                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                     WHERE uploader!={} LIMIT {}".format(
-            user_id, batch_size
+        cmd = (
+            "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} "
+            "LIMIT {}".format(user_id, batch_size)
         )
         print(cmd)
         cur.execute(cmd)
@@ -181,50 +210,51 @@ def discovery(user_id, batch_size, start_point, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
-        # conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
-def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cur):
+def discovery_with_search_term(user_id, batch_size, query, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "select images.image_id, caption, uploader, file, title, price, num_likes FROM num_likes_per_image\
+        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE images.image_id> {} AND uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
-            start_point, user_id, query, batch_size
+                    WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+            user_id, query, batch_size
         )
-        # print(cmd)
+        print(cmd)
         cur.execute(cmd)
         conn.commit()
         data = cur.fetchmany(batch_size)
-        # print(data)
+
         length = len(data)
+        # print(length)
         if length == 0:
             return False
         else:
+            # print(data)
             return data
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
 def profiles_photos(user_id, batch_size, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
         if batch_size > 0:
-            cmd = "select images.image_id, caption, uploader, file, title, price, num_likes FROM num_likes_per_image\
+            cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id WHERE uploader={} LIMIT {}".format(
                 user_id, batch_size
             )
         else:
-            cmd = "SELECT image_id, caption, uploader, file, title, price FROM images WHERE uploader={}".format(
+            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={}".format(
                 user_id
             )
         print(cmd)
@@ -242,27 +272,114 @@ def profiles_photos(user_id, batch_size, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
-def edit_post_caption(user_id, image, caption, conn, cur):
+def edit_post(user_id, image, title, price, caption, tags, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "UPDATE images SET caption = '{}' WHERE uploader = {} AND image_id = {}".format(
-            caption, user_id, image
+        cmd = """UPDATE images SET title = '%s', price = %s, caption = '%s', tags = '{%s}'
+                 WHERE uploader = %s and image_id = %s""" % (
+            title,
+            price,
+            caption,
+            tags,
+            user_id,
+            image,
         )
-        # "SELECT * FROM images WHERE uploader={} AND image_id={} ".format(user_id, image)
+
+        # cmd = "UPDATE images SET title = '{}', price = '{}', caption = '{}', tags = '{{%s}}' " \
+        #      "WHERE uploader = {} AND image_id = {}".format(
+        #    title, price, caption, tags, user_id, image
+        # )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
         return True
+    except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print("%d is type %s" % (price, type(price)))
+        print(error)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+
+# adds a tag to an image given image_id and does not add duplicates
+def add_tag(image_id, tag, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = (
+            """UPDATE images SET tags = array_cat(tags, '{%s}') WHERE image_id = %d AND NOT ('%s' = ANY(tags)) """
+            % (tag, image_id, tag)
+        )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        conn.rollback()
         return False
+
+
+# simply removes a tag from an image given an image_id
+def remove_tag(image_id, tag, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = (
+            """UPDATE images SET tags = array_remove(tags, '%s') WHERE image_id = %d AND ('%s' = ANY(tags)) """
+            % (tag, image_id, tag)
+        )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
     except Exception as e:
-        conn.rollback()
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
+# Fetches the tag for an image given the image_id
+def get_tags(image_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = """select tags from images where image_id=%d """ % (image_id)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        found_tags = query_result[0][0]
+        return found_tags
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
+def set_user_timestamp(user_id, conn, cur):
+    try:
+        cmd = "UPDATE users SET last_active = NOW() WHERE id = {}".format(user_id)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
         return False

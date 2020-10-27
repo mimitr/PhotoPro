@@ -1,17 +1,27 @@
-import React, { useState } from "react";
-import "./searchbar.css";
-import axios from "axios";
-import Feed from "../feed/feed";
+import React, { useState } from 'react';
+import './searchbar.css';
+import axios from 'axios';
+import Feed from '../feed/feed';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(1),
+    width: '100ch',
+  },
+}));
 
 function SearchBar(props) {
   const [imgs, setImgs] = useState([]);
-  const [searchVal, setSearchVal] = useState("");
+  const [searchVal, setSearchVal] = useState('');
+  const classes = useStyles();
 
   const fetchImages = (term) => {
     let cancel;
     axios({
-      method: "GET",
-      url: "http://localhost:5000/discovery",
+      method: 'GET',
+      url: 'http://localhost:5000/discovery',
       params: { query: term, batch_size: 20 }, //user_id: 1
       cancelToken: new axios.CancelToken((c) => (cancel = c)),
     })
@@ -37,15 +47,27 @@ function SearchBar(props) {
 
   return (
     <React.Fragment>
-      <form onSubmit={handleSubmit} className="flexContainer">
-        <input
-          className="inputStyle"
-          type="text"
-          value={searchVal}
-          onChange={(event) => setSearchVal(event.target.value)}
-        />
-      </form>
-      <Feed foundImages={imgs} fetchImgs={fetchImages} query={searchVal} />
+      <div className="searchBar">
+        <form
+          onSubmit={handleSubmit}
+          className={classes.root}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            className={classes.text}
+            id="outlined-basic"
+            label="Search for stock photos"
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={searchVal}
+            onChange={(event) => setSearchVal(event.target.value)}
+          />
+        </form>
+      </div>
+
+      <Feed foundImages={imgs} />
     </React.Fragment>
   );
 }

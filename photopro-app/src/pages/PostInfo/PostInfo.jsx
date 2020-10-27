@@ -1,11 +1,32 @@
-import React, { Component } from "react";
-import "./PostInfo.css";
-import Toolbar from "../../components/toolbar/toolbar";
-import Likes from "../../components/likes/Likes";
-import Comments from "../../components/comments/Comments";
+import React, { useState, useEffect } from 'react';
+import './PostInfo.css';
+import Toolbar from '../../components/toolbar/toolbar';
+import Likes from '../../components/likes/Likes';
+import Comments from '../../components/comments/Comments';
+import axios from 'axios';
 
 const PostInfo = (props) => {
-  //console.log(props.location.state);
+  const [comments, setComments] = useState([]);
+  const [commentUpdated, updateComments] = useState('');
+
+  useEffect(() => {
+    fetchComments(props.location.state.id);
+    console.log('update comment called');
+  }, [commentUpdated]);
+
+  const fetchComments = (id) => {
+    axios({
+      method: 'GET',
+      url: 'http://localhost:5000/get_comments_to_image',
+      params: { image_id: id, batch_size: 20 },
+    }).then((res) => {
+      if (res.data.result != false) {
+        setComments(res.data.result);
+        console.log(res.data.result);
+      }
+    });
+  };
+
   return (
     <React.Fragment>
       <Toolbar />
@@ -54,7 +75,12 @@ const PostInfo = (props) => {
           </div>
           <div className="postComments">
             <h2>Comments:</h2>
-            <Comments className="comments" />
+            {/* <Comments className="comments" /> */}
+            <Comments
+              image_id={props.location.state.id}
+              comments_list={comments}
+              updateComments={updateComments}
+            />
           </div>
         </div>
       </div>

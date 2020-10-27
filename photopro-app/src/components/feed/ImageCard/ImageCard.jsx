@@ -1,8 +1,63 @@
-import React, { Component } from "react";
-import "./ImageCard.css";
-import { Redirect } from "react-router-dom";
-import Likes from "../../likes/Likes";
-import InfiniteScroll from "react-infinite-scroll-component";
+import React, { Component } from 'react';
+import axios from 'axios';
+import './ImageCard.css';
+import { Redirect, Link } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/core';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+
+const deletePostRequest = async function (imageID) {
+  const response = await axios.get('http://localhost:5000/delete_image_post', {
+    params: { image_id: String(imageID) }, //user_id: 1
+  });
+
+  return response;
+};
+
+// matrial-ui component style override
+const styles = {
+  root: {
+    top: '60%',
+    left: '50%',
+    width: '52px',
+    backgroundColor: 'rgba(226, 227, 233, 0.82)',
+    '&:hover': {
+      backgroundColor: 'rgba(140, 140, 140, 0.82)',
+    },
+  },
+  like: {
+    left: '50%',
+  },
+  bookmark: {
+    left: '20%',
+  },
+  buy: {
+    left: '80%',
+  },
+  delete: {
+    left: '8%',
+    top: '10%',
+    width: '13%',
+    height: '13%',
+    '&:hover': {
+      backgroundColor: 'rgba(180, 65, 65, 0.82)',
+    },
+  },
+  edit: {
+    left: '92%',
+    top: '10%',
+    width: '14%',
+    height: '18%',
+    '&:hover': {
+      backgroundColor: 'rgba(219, 193, 20, 0.71)',
+    },
+  },
+};
 
 class ImageCard extends Component {
   constructor(props) {
@@ -11,11 +66,11 @@ class ImageCard extends Component {
     // CreateRef is used to access the DOM
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
-    this.state = { image_clicked: false, spans: 0 };
+    this.state = { redirect: null, spans: 0 };
   }
 
   componentDidMount() {
-    this.imageRef.current.addEventListener("load", this.setSpans);
+    this.imageRef.current.addEventListener('load', this.setSpans);
   }
 
   setSpans = () => {
@@ -25,21 +80,47 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
-    // console.log('image clicked');
-    this.setState({ image_clicked: true });
-    console.log(this.state.image_clicked);
+    this.setState({ redirect: `/post-${this.props.image.id}` });
+  };
+
+  handleLikeClicked = (e) => {
+    console.log('like button clicked');
+    e.stopPropagation();
+  };
+
+  handleBookmarkClicked = (e) => {
+    console.log('bookmark button clicked');
+    e.stopPropagation();
+  };
+
+  handleBuyClicked = (e) => {
+    console.log('buy button clicked');
+    e.stopPropagation();
+  };
+
+  handleDeleteClicked = (e) => {
+    console.log('delete button clicked');
+    let response = deletePostRequest(this.props.image.id);
+    console.log(response);
+    e.stopPropagation();
+    window.location.reload();
+  };
+
+  handleEditClicked = (e) => {
+    console.log('edit button clicked');
+    this.setState({ redirect: `/editpost/${this.props.image.id}` });
+    e.stopPropagation();
   };
 
   render() {
-    // console.log('rendered with state ' + this.state.image_clicked);
     let component;
-    if (this.state.image_clicked) {
-      // console.log('if clicked');
-      // console.log(this.props.image);
+
+    if (this.state.redirect) {
       component = (
         <Redirect
+          push
           to={{
-            pathname: `/post-${this.props.image.id}`,
+            pathname: `${this.state.redirect}`,
             state: {
               id: `${this.props.image.id}`,
               url: `${this.props.image.img}`,
@@ -53,7 +134,38 @@ class ImageCard extends Component {
         />
       );
     } else {
-      //console.log("else clicked");
+      let uploaderID = String(this.props.image.uploader);
+      let userID = localStorage.getItem('userID');
+      let deleteButton =
+        uploaderID === userID ? (
+          <IconButton
+            variant="contained"
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.delete}`,
+            }}
+            onClick={this.handleDeleteClicked}
+          >
+            <DeleteIcon />
+          </IconButton>
+        ) : (
+          <Button></Button>
+        );
+
+      let editButton =
+        uploaderID === userID ? (
+          <IconButton
+            variant="contained"
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.edit}`,
+            }}
+            onClick={this.handleEditClicked}
+          >
+            <EditIcon />
+          </IconButton>
+        ) : (
+          <Button></Button>
+        );
+
       component = (
         <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
           <div onClick={this.handleImageClicked} className="photo-container">
@@ -62,23 +174,39 @@ class ImageCard extends Component {
               src={`data:image/jpg;base64,${this.props.image.img}`}
               alt={this.props.caption}
             />
+            <IconButton
+              variant="contained"
+              classes={{
+                root: `${this.props.classes.root} ${this.props.classes.like}`,
+              }}
+              onClick={this.handleLikeClicked}
+            >
+              <FavoriteIcon />
+            </IconButton>
+
+            <IconButton
+              variant="contained"
+              classes={{
+                root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
+              }}
+              onClick={this.handleBookmarkClicked}
+            >
+              <BookmarkIcon />
+            </IconButton>
+
+            <IconButton
+              variant="contained"
+              classes={{
+                root: `${this.props.classes.root} ${this.props.classes.buy}`,
+              }}
+              onClick={this.handleBuyClicked}
+            >
+              <ShoppingCartIcon />
+            </IconButton>
+
+            {deleteButton}
+            {editButton}
           </div>
-          <Likes
-            num_likes={this.props.image.num_likes}
-            image_id={this.props.image.id}
-          />
-
-          <button className="btn bookmark-btn">
-            <svg width="25" height="25">
-              <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"></path>
-            </svg>
-          </button>
-
-          <button className="btn buy-btn">
-            <svg width="25" height="25">
-              <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"></path>
-            </svg>
-          </button>
         </div>
       );
     }
@@ -86,4 +214,4 @@ class ImageCard extends Component {
   }
 }
 
-export default ImageCard;
+export default withStyles(styles)(ImageCard);
