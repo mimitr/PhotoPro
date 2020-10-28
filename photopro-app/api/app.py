@@ -351,7 +351,6 @@ def api_post_comment_to_comment():
     else:
         result = post_comment_to_comment(image_id, commenter, comment, comment_id, conn, cur)
         return jsonify({"result": result})
-
     return jsonify({"result": result})
 
 

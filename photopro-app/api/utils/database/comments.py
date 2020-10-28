@@ -71,7 +71,7 @@ def get_comments_to_image(image_id, batch_size, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
         cmd = "SELECT comment_id, image_id, commenter, comment, reply_id, created_at FROM comments WHERE image_id={} " \
-              "AND reply_id is null LIMIT {}".format(image_id, batch_size)
+              "AND reply_id is null ORDER BY created_at DESC LIMIT {}".format(image_id, batch_size)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -102,7 +102,7 @@ def get_comments_to_comment(reply_id, batch_size, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
         cmd = "SELECT comment_id, image_id, commenter, comment, reply_id, created_at FROM comments WHERE reply_id={} " \
-              "LIMIT {}".format(reply_id, batch_size)
+              "ORDER BY created_at DESC LIMIT {}".format(reply_id, batch_size)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
