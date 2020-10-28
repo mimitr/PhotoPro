@@ -70,8 +70,9 @@ def delete_comment(comment_id, user_id, conn, cur):
 def get_comments_to_image(image_id, batch_size, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
-        cmd = "SELECT comment_id, image_id, commenter, comment, reply_id, created_at FROM comments WHERE image_id={} " \
-              "AND reply_id is null ORDER BY created_at DESC LIMIT {}".format(image_id, batch_size)
+        cmd = "SELECT comments.comment_id, image_id, commenter, comment, comments.reply_id, created_at, count FROM " \
+              "comments LEFT JOIN reply_count ON comments.comment_id=reply_count.reply_id WHERE image_id={} AND " \
+              "comments.reply_id IS NULL ORDER BY created_at DESC LIMIT {}".format(image_id, batch_size)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -101,8 +102,9 @@ def get_comments_to_image(image_id, batch_size, conn, cur):
 def get_comments_to_comment(reply_id, batch_size, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
-        cmd = "SELECT comment_id, image_id, commenter, comment, reply_id, created_at FROM comments WHERE reply_id={} " \
-              "ORDER BY created_at DESC LIMIT {}".format(reply_id, batch_size)
+        cmd = "SELECT comments.comment_id, image_id, commenter, comment, comments.reply_id, created_at, count FROM " \
+              "comments LEFT JOIN reply_count ON comments.comment_id=reply_count.reply_id WHERE comments.reply_id={}" \
+              " ORDER BY created_at DESC LIMIT {}".format(reply_id, batch_size)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
