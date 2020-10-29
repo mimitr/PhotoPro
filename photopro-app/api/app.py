@@ -18,7 +18,10 @@ from utils.database.general_user import (
     discovery_with_search_term,
     edit_post,
     profiles_photos,
-    delete_image_post,
+    add_tags,
+    get_tags,
+    remove_tag,
+    delete_image_post
 )
 from utils.database.connect import conn, cur
 from flask import Flask, request, jsonify
@@ -112,13 +115,15 @@ def api_post_image():
         image = request.form["image"]
         price = str(request.form["price"])
         title = request.form["title"]
+        tags = str(request.form["tags"])
+        tags = tags.split(',')
 
         print(price, title)
 
         image = image.split(",")[-1]
         image = base64.b64decode(image)
 
-        result = post_image(user_id, caption, image, title, price, conn, cur)
+        result = post_image(user_id, caption, image, title, price, tags, conn, cur)
 
         return jsonify({"result": result})
 
@@ -435,19 +440,29 @@ def api_get_comments_to_comment():
 @app.route("/get_tags")
 def api_get_tags():
     image_id = request.args.get("image_id")
+    if image_id is None:
+        return jsonify({"result": False})
     result = get_tags(image_id, conn, cur)
     return jsonify({"result": result})
 
-
-@app.route("/add_tag")
-def api_add_tag():
+@app.route("/add_tags")
+def api_add_tags():
     image_id = request.args.get("image_id")
-    result = add_tag(app.user_id, image_id, tag, conn, cur)
+    tags = request.args.get("tags")
+    tags = tags.split(',')
+    if image_id is None or tags is None:
+        return jsonify({"result": False})
+
+    result = add_tags(app.user_id, image_id, tags, conn, cur)
     return jsonify({"result": result})
 
 
 @app.route("/remove_tag")
 def api_remove_tag():
     image_id = request.args.get("image_id")
+    tag = request.args.get("tag")
+    if image_id is None or tag is None:
+        return jsonify({"result": False})
+
     result = remove_tag(app.user_id, image_id, tag, conn, cur)
     return jsonify({"result": result})

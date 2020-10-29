@@ -54,3 +54,11 @@ delete comments, and get comments to images and get comments to other comments. 
 likes, getting likes and and getting the likers of photos. I also updated the discovery functions so that they can
 be effectively live streamed without repeating the same photos. I helped out the front-end whenever they had an extra
 request for the backend or had an issue debugging anything involving the backend.
+
+=======================    WEEK 7    =======================
+I have added tags functionality to the uploading photos and updated the setting tags function and also the
+post photo function so that tags are set as an array instead of a single tag at a time. I also made a small
+modification to the react code so that the tags are taken in a text input in the form of a csv, however this
+needs to be improved upon for a good user experience.
+I have also been working on auto captioning of photos that are uploaded, from which we can extract nouns from the autocaptoining which
+we will then use as tags for the recommender system.
