@@ -135,3 +135,8 @@ So I wrote my function to be able to add tags one by one. Matt asked whether
 my function added tags one, by one and I realised that the front end
 implementation lended itself more to passing in a list of tags with one 
 function call reather than one tag at a time.
+
+29/10/2020
+
+Today I worked on the restospective A report with christian. I also discussed
+the conclusion of the current sprint, as well as planning of the next sprint.
