@@ -23,6 +23,8 @@ const PostInfo = (props) => {
       if (res.data.result != false) {
         setComments(res.data.result);
         console.log(res.data.result);
+      } else {
+        console.log(`comment posting failed with retval - ${res.data.result}`);
       }
     });
   };

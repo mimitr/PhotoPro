@@ -1,7 +1,7 @@
-import React from "react";
-import "./feed.css";
-import ImageCard from "./ImageCard/ImageCard";
-import InfiniteScroll from "react-infinite-scroll-component";
+import React from 'react';
+import './feed.css';
+import ImageCard from './ImageCard/ImageCard';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const Feed = (props) => {
   const imgs = props.foundImages.map((img) => {
@@ -14,11 +14,11 @@ const Feed = (props) => {
       {/* update the start position of the next batch */}
       <InfiniteScroll
         dataLength={props.foundImages.length}
-        next={props.fetchImgs(props.query)}
+        next={props.fetchImages(props.query)}
         hasMore={true}
-        loader={"Loading!"}
+        loader={'Loading!'}
       >
-      <div className="image-list">{imgs}</div>
+        <div className="image-list">{imgs}</div>
       </InfiniteScroll>
     </React.Fragment>
   );

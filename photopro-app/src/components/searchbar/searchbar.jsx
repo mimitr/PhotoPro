@@ -67,7 +67,7 @@ function SearchBar(props) {
         </form>
       </div>
 
-      <Feed foundImages={imgs} />
+      <Feed foundImages={imgs} fetchImages={fetchImages} query={searchVal} />
     </React.Fragment>
   );
 }
