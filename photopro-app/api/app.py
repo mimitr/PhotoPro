@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin
-import sys
-import base64
-
-for i in sys.path:
-    print(i)
-
-from utils.database.connect import conn, cur
+from utils.database.comments import (
+    post_comment_to_image,
+    post_comment_to_comment,
+    delete_comment,
+    get_comments_to_image,
+    get_comments_to_image,
+    get_comments_to_comment,
+)
+from utils.database.watermark import apply_watermark
 from utils.database.general_user import (
     create_user,
     login_user,
@@ -16,14 +16,37 @@ from utils.database.general_user import (
     post_image,
     discovery,
     discovery_with_search_term,
-    edit_post_caption,
+    edit_post,
     profiles_photos,
     add_tags,
     get_tags,
-    remove_tag
+    remove_tag,
+    delete_image_post
 )
-from utils.database.likes import post_like, get_num_likes, get_likers
+from utils.database.connect import conn, cur
+from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
+import sys
+import base64
+
+for i in sys.path:
+    print(i)
+
+from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
 from utils.database.watermark import apply_watermark
+from utils.database.notifications import (
+    get_like_notification,
+    get_comment_notification,
+    get_user_timestamp,
+)
+from utils.database.comments import (
+    post_comment_to_image,
+    post_comment_to_comment,
+    delete_comment,
+    get_comments_to_image,
+    get_comments_to_image,
+    get_comments_to_comment,
+)
 
 print(conn, cur)
 
@@ -43,15 +66,7 @@ def api_login():
 
     app.user_id = user_id
 
-    return jsonify({"result": result})
-
-
-@app.route("/logout", methods=["GET", "POST"])
-def app_logout():
-
-    app.user_id = None
-
-    return jsonify({"result": True})
+    return jsonify({"result": result, "user_id": user_id})
 
 
 @app.route("/create_user")
@@ -120,17 +135,20 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
+    print("START QUERY")
     if query is not None:
         result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
-
+    print("END QUERY")
     if result:
 
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, created_at = tup
+            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -146,7 +164,8 @@ def api_discovery():
                     "img": img,
                     "title": title,
                     "price": str(price),
-                    "created_at": created_at
+                    "created_at": created_at,
+                    "num_likes": num_likes,
                 }
             )
 
@@ -175,7 +194,9 @@ def api_profile_photos():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, created_at = tup
+            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -191,7 +212,8 @@ def api_profile_photos():
                     "img": img,
                     "title": title,
                     "price": str(price),
-                    "created_at":created_at
+                    "created_at": created_at,
+                    "num_likes": num_likes,
                 }
             )
 
@@ -206,12 +228,214 @@ def api_profile_photos():
 
 @app.route("/edit_post")
 def api_edit_post():
-
     image_id = request.args.get("image_id")
+    title = request.args.get("title")
+    price = int(request.args.get("price"))
     caption = request.args.get("caption")
-    result = edit_post_caption(app.user_id, image_id, caption, conn, cur)
+    tags = request.args.get("tags")
+    result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
 
     return jsonify({"result": result})
+
+
+@app.route("/post_like_to_image")
+def api_post_like_to_image():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = post_like(image_id, user_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
+@app.route("/delete_like_from_image")
+def api_delete_like_from_image():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = delete_like(image_id, user_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
+@app.route("/get_num_likes_of_image")
+def api_get_num_likes_of_image():
+    image_id = request.args.get("image_id")
+    if image_id is not None and app.user_id is not None:
+        result = get_num_likes(image_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
+@app.route("/delete_image_post")
+def api_delete_image_post():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is not None and user_id is not None:
+        result = delete_image_post(image_id, user_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
+@app.route("/get_likers_of_image")
+def api_get_likers_of_image():
+    image_id = request.args.get("image_id")
+    limit = request.args.get("batch_size")
+    if image_id is not None and app.user_id is not None and limit is not None:
+        result = get_likers(image_id, limit, conn, cur)
+
+        processed_result = []
+        for tup in result:
+            id, first, last = tup
+            processed_result.append(
+                {"user_id": id, "first_name": first, "last_name": last}
+            )
+
+        return jsonify({"result": processed_result})
+    return jsonify({"result": False})
+
+
+@app.route("/fetch_notification")
+def api_fetch_notifications():
+    user_id = app.user_id
+    timestamp = get_user_timestamp(user_id, conn, cur)
+
+    like_notifs = get_like_notification(user_id, timestamp, conn, cur)
+    comment_notifs = get_comment_notification(user_id, timestamp, conn, cur)
+
+    results = []
+
+    if like_notifs != False:
+        for tup in like_notifs:
+            title, image, liker, created_at = tup
+            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
+            results.append(
+                {
+                    "title": title,
+                    "image_id": image,
+                    "liker": liker,
+                    "created_at": created_at,
+                }
+            )
+    if comment_notifs != False:
+        for tup in comment_notifs:
+            title, image, commenter, comment, created_at = tup
+            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
+            results.append(
+                {
+                    "title": title,
+                    "image_id": image,
+                    "commenter": commenter,
+                    "comment": comment,
+                    "created_at": created_at,
+                }
+            )
+    if results:
+        results = sorted(results, key=lambda x: x["created_at"], reverse=True)
+        return jsonify({"notifications": results})
+
+    return jsonify({"notifications": False})
+
+
+@app.route("/post_comment_to_image", methods=["GET", "POST"])
+def api_post_comment_to_image():
+    image_id = request.args.get("image_id")
+    commenter = app.user_id
+    comment = request.args.get("comment")
+    if image_id is None or comment is None or commenter is None:
+        return jsonify({"result": False})
+    else:
+        result = post_comment_to_image(image_id, commenter, comment, conn, cur)
+        return jsonify({"result": result})
+
+
+@app.route("/post_comment_to_comment", methods=["GET", "POST"])
+def api_post_comment_to_comment():
+    image_id = request.args.get("image_id")
+    comment_id = request.args.get("comment_id")
+    commenter = app.user_id
+    comment = request.args.get("comment")
+
+    if image_id is None or comment_id is None or comment is None or commenter is None:
+        return jsonify({"result": False})
+    else:
+        result = post_comment_to_comment(image_id, commenter, comment, comment_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": result})
+
+
+@app.route("/post_delete_comment", methods=["GET", "POST"])
+def api_delete_comment():
+    comment_id = request.args.get("comment_id")
+    user_id = app.user_id
+    if comment_id is None or user_id is None:
+        return jsonify({"result": False})
+    else:
+        result = delete_comment(comment_id, user_id, conn, cur)
+        return jsonify({"result": result})
+
+
+@app.route("/get_comments_to_image", methods=["GET", "POST"])
+def api_get_comments_to_image():
+    image_id = request.args.get("image_id")
+    batch_size = request.args.get("batch_size")
+    if image_id is None or batch_size is None:
+        print("no params")
+        return jsonify({"result": False})
+    else:
+        print("yes params?")
+        result = get_comments_to_image(image_id, batch_size, conn, cur)
+        if not result:
+            return jsonify({"result": result})
+        else:
+            processed_result = []
+            for tup in result:
+                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                if count is None:
+                    count = 0
+                processed_result.append(
+                    {
+                        "comment_id": comment_id,
+                        "image_id": image_id,
+                        "commenter": commenter,
+                        "comment": comment,
+                        "reply_id": reply_id,
+                        "created_at": created_at,
+                        'count': count
+                    }
+                )
+            return jsonify({"result": processed_result})
+
+
+@app.route("/get_comments_to_comment", methods=["GET", "POST"])
+def api_get_comments_to_comment():
+    comment_id = request.args.get("comment_id")
+    batch_size = request.args.get("batch_size")
+    if comment_id is None or batch_size is None:
+        return jsonify({"result": False})
+    else:
+        result = get_comments_to_comment(comment_id, batch_size, conn, cur)
+        if not result:
+            return jsonify({"result": result})
+        else:
+            processed_result = []
+            for tup in result:
+                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                if count is None:
+                    count = 0
+                processed_result.append(
+                    {
+                        "comment_id": comment_id,
+                        "image_id": image_id,
+                        "commenter": commenter,
+                        "comment": comment,
+                        "reply_id": reply_id,
+                        "created_at": created_at,
+                        'count': count
+                    }
+                )
+            return jsonify({"result": processed_result})
+
 
 @app.route("/get_tags")
 def api_get_tags():
@@ -231,6 +455,7 @@ def api_add_tags():
 
     result = add_tags(app.user_id, image_id, tags, conn, cur)
     return jsonify({"result": result})
+
 
 @app.route("/remove_tag")
 def api_remove_tag():

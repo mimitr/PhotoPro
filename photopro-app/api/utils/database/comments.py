@@ -45,10 +45,11 @@ def post_comment_to_comment(image_id, commenter, comment, reply_id, conn, cur):
         return False
 
 
-def delete_comment(comment_id, conn, cur):
+def delete_comment(comment_id, user_id, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
-        cmd = "DELETE FROM comments WHERE comment_id={}".format(comment_id)
+        cmd = "DELETE FROM comments WHERE comment_id={} AND commenter={}".format(
+            comment_id, user_id)
         cur.execute(cmd)
         conn.commit()
         return True
@@ -69,10 +70,22 @@ def delete_comment(comment_id, conn, cur):
 def get_comments_to_image(image_id, batch_size, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
-        cmd = "SELECT * FROM comments WHERE image_id={} AND reply_id is null LIMIT {}".format(image_id, batch_size)
+        cmd = "SELECT comments.comment_id, image_id, commenter, comment, comments.reply_id, created_at, count FROM " \
+              "comments LEFT JOIN reply_count ON comments.comment_id=reply_count.reply_id WHERE image_id={} AND " \
+              "comments.reply_id IS NULL ORDER BY created_at DESC LIMIT {}".format(
+                  image_id, batch_size)
+        print(cmd)
         cur.execute(cmd)
         conn.commit()
-        return True
+        data = cur.fetchmany(int(batch_size))
+
+        length = len(data)
+        # print(length)
+        if length == 0:
+            return False
+        else:
+            # print(data)
+            return data
     except psycopg2.errors.UniqueViolation as e:
         print(e)
         cur.execute('ROLLBACK TO SAVEPOINT save_point')
@@ -90,10 +103,21 @@ def get_comments_to_image(image_id, batch_size, conn, cur):
 def get_comments_to_comment(reply_id, batch_size, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
-        cmd = "DELETE FROM comments WHERE reply_id={} LIMIT {}".format(reply_id, batch_size)
+        cmd = "SELECT comments.comment_id, image_id, commenter, comment, comments.reply_id, created_at, count FROM " \
+              "comments LEFT JOIN reply_count ON comments.comment_id=reply_count.reply_id WHERE comments.reply_id={}" \
+              " ORDER BY created_at DESC LIMIT {}".format(reply_id, batch_size)
+        print(cmd)
         cur.execute(cmd)
         conn.commit()
-        return True
+        data = cur.fetchmany(int(batch_size))
+
+        length = len(data)
+        # print(length)
+        if length == 0:
+            return False
+        else:
+            # print(data)
+            return data
     except psycopg2.errors.UniqueViolation as e:
         print(e)
         cur.execute('ROLLBACK TO SAVEPOINT save_point')

@@ -1,4 +1,5 @@
 import React from 'react';
+import ImageCard from '../feed/ImageCard/ImageCard';
 
 const UserPhotos = (props) => {
   const imgs = props.postedImages.map((img) => {
@@ -13,4 +14,4 @@ const UserPhotos = (props) => {
   );
 };
 
-export default Feed;
+export default UserPhotos;

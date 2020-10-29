@@ -124,3 +124,19 @@ owner of the image etc.
 in the routes, for user_id i passed in app.user_id which represents the user
 logged into the web app
 
+===== Week 7 =====
+
+28/10/2020
+
+Had a short discussion with Matt about my add_tag function. When I wrote the
+function I wan't really sure how the front end was going to add tags, and if
+they were going to itterate a list on the front end or add tags individually,
+So I wrote my function to be able to add tags one by one. Matt asked whether 
+my function added tags one, by one and I realised that the front end
+implementation lended itself more to passing in a list of tags with one 
+function call reather than one tag at a time.
+
+29/10/2020
+
+Today I worked on the restospective A report with christian. I also discussed
+the conclusion of the current sprint, as well as planning of the next sprint.

@@ -1,26 +1,30 @@
-import React, { useState } from 'react';
-import './searchbar.css';
-import axios from 'axios';
-import Feed from '../feed/feed';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import React, { useState } from "react";
+import "./searchbar.css";
+import axios from "axios";
+import Feed from "../feed/feed";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
-    width: '100ch',
+    width: "100ch",
   },
 }));
 
 function SearchBar(props) {
   const [imgs, setImgs] = useState([]);
-  const [searchVal, setSearchVal] = useState('');
+  const [searchVal, setSearchVal] = useState("");
   const classes = useStyles();
 
   const onSearchSubmit = async function (term) {
-    const response = await axios.get('http://localhost:5000/discovery', {
+    const response = await axios.get("http://localhost:5000/discovery", {
       params: { query: term, batch_size: 30 }, //user_id: 1
     });
+
+    console.log(response.data.result);
+    // getLikes(response);
+
     console.log(response);
 
     return response;

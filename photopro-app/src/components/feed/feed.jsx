@@ -1,6 +1,6 @@
-import React from 'react';
-import './feed.css';
-import ImageCard from './ImageCard/ImageCard';
+import React from "react";
+import "./feed.css";
+import ImageCard from "./ImageCard/ImageCard";
 
 const Feed = (props) => {
   const imgs = props.foundImages.map((img) => {
