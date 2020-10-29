@@ -43,3 +43,12 @@ functions as a result of such.
 October 14th:
 Today I added the backend to query photos specifically for the user (their profile photos) or any other users.
 There can be a option batch size parameter.
+
+
+=======================    WEEK 7    =======================
+I have added tags functionality to the uploading photos and updated the setting tags function and also the
+post photo function so that tags are set as an array instead of a single tag at a time. I also made a small
+modification to the react code so that the tags are taken in a text input in the form of a csv, however this
+needs to be improved upon for a good user experience.
+I have also been working on auto captioning of photos that are uploaded, from which we can extract nouns from the autocaptoining which
+we will then use as tags for the recommender system. 

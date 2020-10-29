@@ -137,15 +137,18 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
         return False
 
 
-def post_image(uploader, caption, image, title, price, conn, cur):
+def post_image(uploader, caption, image, title, price, tags, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = """
-            INSERT INTO images (caption, uploader, file, title, price)
-            VALUES (%s, %s, %s, %s, %s)
-            """
-        print(cmd, uploader, caption, title, price)
-        cur.execute(cmd, (caption, uploader, image, title, price))
+
+        # array = "ARRAY["
+        # for i in set(tags):
+        #     array = array + "\'" + i + "\',"
+        # array = array[:len(array) - 1] + "]"
+
+        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s)"
+        # print(cmd, uploader, caption, title, price, tags)
+        cur.execute(cmd, (caption, uploader, image, title, price, tags))
         conn.commit()
         return True
     except Exception as e:
@@ -280,13 +283,25 @@ def edit_post_caption(user_id, image, caption, conn, cur):
 
 
 # adds a tag to an image given image_id and does not add duplicates
-def add_tag(user_id, image_id, tag, conn, cur):
+def add_tags(user_id, image_id, tags, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = (
-            """UPDATE images SET tags = array_cat(tags, '{%s}') WHERE uploader = %s AND image_id = %d AND NOT ('%s' = ANY(tags)) """
-            % (tag, user_id, image_id, tag)
-        )
+        array = "ARRAY["
+        for i in set(tags):
+            array = array + "\'" + i + "\',"
+        array = array[:len(array) - 1] + "]"
+
+        cmd = "UPDATE images SET tags = \
+                (SELECT array_agg(distinct e) FROM \
+                UNNEST(tags || {}) e) WHERE uploader={} \
+                AND image_id={} AND NOT tags @> {}".format(array, user_id, image_id, array)
+
+        # cmd = (
+        #     """UPDATE images SET tags = array_cat(tags, {}) \
+        #     WHERE uploader = %s AND image_id = %d AND NOT (
+        #     '%s' = ANY(tags)) """
+        #     % (tag, user_id, image_id)
+        # )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -305,7 +320,8 @@ def remove_tag(user_id,image_id, tag, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
         cmd = (
-            """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' = ANY(tags)) """
+            """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' = 
+            ANY(tags)) """
             % (tag, user_id, image_id, tag)
         )
         print(cmd)

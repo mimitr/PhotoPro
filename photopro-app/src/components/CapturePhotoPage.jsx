@@ -5,6 +5,7 @@ import axios from 'axios';
 
 var caption = '';
 var title = '';
+var tags = '';
 var price = '0';
 var img = null;
 
@@ -21,6 +22,7 @@ async function attempt_login() {
   form_data.append('caption', caption);
   form_data.append('title', title);
   form_data.append('price', price);
+  form_data.append('tags', tags);
 
   const response = await axios.post('http://localhost:5000/post', form_data);
   return response;
@@ -86,6 +88,13 @@ class CapturePhotoPage extends React.Component {
               type="number"
               step="0.01"
               onChange={(e) => (price = e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup bsSize="large">
+            <FormLabel>Tags: </FormLabel>
+            <FormControl
+              autoFocus
+              onChange={(e) => (tags = e.target.value)}
             />
           </FormGroup>
           <Button block bsSize="large" disabled={isValid()} type="submit">
