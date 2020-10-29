@@ -224,15 +224,17 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
                     WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
             user_id, query, batch_size
         )
-        # print(cmd)
+        print(cmd)
         cur.execute(cmd)
         conn.commit()
         data = cur.fetchmany(batch_size)
-        # print(data)
+
         length = len(data)
+        # print(length)
         if length == 0:
             return False
         else:
+            # print(data)
             return data
     except psycopg2.Error as e:
         error = e.pgcode
@@ -296,6 +298,8 @@ def edit_post(user_id, image, title, price, caption, tags, conn, cur):
         cur.execute(cmd)
         conn.commit()
         return True
+    except Exception as e:
+        return False
     except psycopg2.Error as e:
         error = e.pgcode
         print("%d is type %s" % (price, type(price)))

@@ -48,7 +48,8 @@ def post_comment_to_comment(image_id, commenter, comment, reply_id, conn, cur):
 def delete_comment(comment_id, user_id, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
-        cmd = "DELETE FROM comments WHERE comment_id={} AND commenter={}".format(comment_id, user_id)
+        cmd = "DELETE FROM comments WHERE comment_id={} AND commenter={}".format(
+            comment_id, user_id)
         cur.execute(cmd)
         conn.commit()
         return True
@@ -74,7 +75,7 @@ def get_comments_to_image(image_id, batch_size, conn, cur):
         print(cmd)
         cur.execute(cmd)
         conn.commit()
-        data = cur.fetchmany(batch_size)
+        data = cur.fetchmany(int(batch_size))
 
         length = len(data)
         # print(length)

@@ -1,13 +1,7 @@
 #!/usr/bin/env python
-from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin
-import sys
-import base64
-
-for i in sys.path:
-    print(i)
-
-from utils.database.connect import conn, cur
+from utils.database.comments import post_comment_to_image, post_comment_to_comment, delete_comment, \
+    get_comments_to_image, get_comments_to_image, get_comments_to_comment
+from utils.database.watermark import apply_watermark
 from utils.database.general_user import (
     create_user,
     login_user,
@@ -20,6 +14,15 @@ from utils.database.general_user import (
     profiles_photos,
     delete_image_post,
 )
+from utils.database.connect import conn, cur
+from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
+import sys
+import base64
+
+for i in sys.path:
+    print(i)
+
 from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
 from utils.database.watermark import apply_watermark
 from utils.database.notifications import (
@@ -55,13 +58,6 @@ def api_login():
     app.user_id = user_id
 
     return jsonify({"result": result, "user_id": user_id})
-
-
-@app.route("/logout", methods=["GET", "POST"])
-def app_logout():
-    app.user_id = None
-
-    return jsonify({"result": True})
 
 
 @app.route("/create_user")
@@ -130,7 +126,8 @@ def api_discovery():
     query = request.args.get("query")
     print("START QUERY")
     if query is not None:
-        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+        result = discovery_with_search_term(
+            user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
     print("END QUERY")
@@ -330,20 +327,22 @@ def api_fetch_notifications():
     return jsonify({"notifications": False})
 
 
-@app.route("/post_comment_to_image")
+@app.route("/post_comment_to_image", methods=["GET", "POST"])
 def api_post_comment_to_image():
     image_id = request.args.get("image_id")
     commenter = app.user_id
     comment = request.args.get("comment")
-
+    print("NYIO NYIO")
     if image_id is None or comment is None or commenter is None:
+        print("meow")
         return jsonify({"result": False})
     else:
+        print("meow meow?")
         result = post_comment_to_image(image_id, commenter, comment, conn, cur)
         return jsonify({"result": result})
 
 
-@app.route("/post_comment_to_comment")
+@app.route("/post_comment_to_comment", methods=["GET", "POST"])
 def api_post_comment_to_comment():
     comment_id = request.args.get("comment_id")
     commenter = app.user_id
@@ -352,11 +351,12 @@ def api_post_comment_to_comment():
     if comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
-        result = post_comment_to_comment(comment_id, commenter, comment, conn, cur)
+        result = post_comment_to_comment(
+            comment_id, commenter, comment, conn, cur)
         return jsonify({"result": result})
 
 
-@app.route("/post_delete_comment")
+@app.route("/post_delete_comment", methods=["GET", "POST"])
 def api_delete_comment():
     comment_id = request.args.get("comment_id")
     user_id = app.user_id
@@ -367,13 +367,15 @@ def api_delete_comment():
         return jsonify({"result": result})
 
 
-@app.route("/get_comments_to_image")
+@app.route("/get_comments_to_image", methods=["GET", "POST"])
 def api_get_comments_to_image():
     image_id = request.args.get("image_id")
     batch_size = request.args.get("batch_size")
     if image_id is None or batch_size is None:
+        print("no params")
         return jsonify({"result": False})
     else:
+        print("yes params?")
         result = get_comments_to_image(image_id, batch_size, conn, cur)
         if not result:
             return jsonify({"result": result})
@@ -394,7 +396,7 @@ def api_get_comments_to_image():
             return jsonify({"result": processed_result})
 
 
-@app.route("/get_comments_to_comment")
+@app.route("/get_comments_to_comment", methods=["GET", "POST"])
 def api_get_comments_to_comment():
     comment_id = request.args.get("comment_id")
     batch_size = request.args.get("batch_size")

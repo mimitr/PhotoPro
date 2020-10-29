@@ -4,12 +4,29 @@ Group formed. We created the Jira board and github repo and have begun planning 
 
 
 Week 2 
+
 Worked on the proposal. I split the user stories into three categories: general, explorer and contributer in order to better cover the project scope in out product backlog and to improve organisation. Did some research on similar sights such as shutterstock and unsplash by having a look at their UI and features
 
 Week 3
+
 Proposal finished. Basic setup added with react boilerplate using the toolchain create-react-app. For this project I have decided to use react hooks over the normal class based components due to the easier to read and more intuitive code which I feel will be important in a team based project such as this. I needed to revise some CSS, in particular flexbox and grid which will be important for laying out the photos. At the moment I have just added a basic header with sign in and sign up buttons and have begun work on implementing the feed. Mimi will take care of testing the feed with the API while I try to get a UI library known as ant design working properly. 
 
 
 Week 4
 
 As of now the library works but am experiencing an issue with the css files global scope overwriting all other existing css on the page. There are apparently ways around this but non have worked so far.I decided to leave this and partially import some of the css so it does not affect the global scope. For now I will focus more on the feed and the rest of the stories as functionality should be most important. 
+
+
+Week 5
+
+Have been working on refactoring the code to be more React hook friendly as I realised there is alot of easy to use functionality and integration with React hooks that are not as easily available with the old class based components of React. Have also been working on the routing of the project using a React router dom library which handles all of the page transitions to the profile page, login screen and so on. As of now we can upload photos, log in, log out, change password and so on with smooth transitions thanks to the router. 
+
+
+Week 6
+
+Have been working on integrating the back-end functionality of post deletion and editing with the front-end. These stories were delayed a bit due to issues with front-end and getting more familiar with the workflow of React routing but as of now it is working. In addition I have been learning how to properly make use of a react ui library known as Material-UI which so far has been the most intuitive and easy to work with as most of the buttons and text forms in the project have also been replaced with these UI components. As opposed to the other libraries this library does not use global css but rather provides a workflow that allows users to inject or implement CSS directly into a component without affecting any other component in React, which makes it really flexible and is exactly what I was looking for. 
+
+
+Week 7
+
+Currently working on the infinite scrolling feed so far with a few attempts that didn't work. The back-end needs to be modified in a way that allowed for frequent querying based on scroll activity while also ensuring it returns the NEXT batch of images rather than returning it from the start resulting in duplicates. 
