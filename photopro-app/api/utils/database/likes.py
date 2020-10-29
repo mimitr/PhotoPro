@@ -65,7 +65,8 @@ def get_num_likes(image_id, conn, cur):
 def get_likers(image_id, limit, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
-        cmd = "SELECT liker,first,last FROM users_likes WHERE image_id={} LIMIT {}".format(image_id, limit)
+        cmd = "SELECT liker,first,last FROM users_likes WHERE image_id={} \
+                ORDER BY created_at DESC LIMIT {}".format(image_id, limit)
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()

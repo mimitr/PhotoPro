@@ -1,6 +1,12 @@
 #!/usr/bin/env python
-from utils.database.comments import post_comment_to_image, post_comment_to_comment, delete_comment, \
-    get_comments_to_image, get_comments_to_image, get_comments_to_comment
+from utils.database.comments import (
+    post_comment_to_image,
+    post_comment_to_comment,
+    delete_comment,
+    get_comments_to_image,
+    get_comments_to_image,
+    get_comments_to_comment,
+)
 from utils.database.watermark import apply_watermark
 from utils.database.general_user import (
     create_user,
@@ -126,8 +132,7 @@ def api_discovery():
     query = request.args.get("query")
     print("START QUERY")
     if query is not None:
-        result = discovery_with_search_term(
-            user_id, batch_size, query, conn, cur)
+        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
     print("END QUERY")
@@ -332,28 +337,30 @@ def api_post_comment_to_image():
     image_id = request.args.get("image_id")
     commenter = app.user_id
     comment = request.args.get("comment")
-    print("NYIO NYIO")
     if image_id is None or comment is None or commenter is None:
-        print("meow")
         return jsonify({"result": False})
     else:
-        print("meow meow?")
         result = post_comment_to_image(image_id, commenter, comment, conn, cur)
         return jsonify({"result": result})
 
 
 @app.route("/post_comment_to_comment", methods=["GET", "POST"])
 def api_post_comment_to_comment():
+    image_id = request.args.get("image_id")
     comment_id = request.args.get("comment_id")
     commenter = app.user_id
     comment = request.args.get("comment")
 
-    if comment_id is None or comment is None or commenter is None:
+    if image_id is None or comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
-        result = post_comment_to_comment(
-            comment_id, commenter, comment, conn, cur)
+<<<<<<< HEAD
+        result = post_comment_to_comment(image_id, commenter, comment, comment_id, conn, cur)
+=======
+        result = post_comment_to_comment(comment_id, commenter, comment, conn, cur)
+>>>>>>> master
         return jsonify({"result": result})
+    return jsonify({"result": result})
 
 
 @app.route("/post_delete_comment", methods=["GET", "POST"])
@@ -382,7 +389,9 @@ def api_get_comments_to_image():
         else:
             processed_result = []
             for tup in result:
-                comment_id, image_id, commenter, comment, reply_id, created_at = tup
+                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                if count is None:
+                    count = 0
                 processed_result.append(
                     {
                         "comment_id": comment_id,
@@ -391,6 +400,7 @@ def api_get_comments_to_image():
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
+                        'count': count
                     }
                 )
             return jsonify({"result": processed_result})
@@ -409,7 +419,9 @@ def api_get_comments_to_comment():
         else:
             processed_result = []
             for tup in result:
-                comment_id, image_id, commenter, comment, reply_id, created_at = tup
+                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                if count is None:
+                    count = 0
                 processed_result.append(
                     {
                         "comment_id": comment_id,
@@ -418,6 +430,28 @@ def api_get_comments_to_comment():
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
+                        'count': count
                     }
                 )
             return jsonify({"result": processed_result})
+
+
+@app.route("/get_tags")
+def api_get_tags():
+    image_id = request.args.get("image_id")
+    result = get_tags(image_id, conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/add_tag")
+def api_add_tag():
+    image_id = request.args.get("image_id")
+    result = add_tag(app.user_id, image_id, tag, conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/remove_tag")
+def api_remove_tag():
+    image_id = request.args.get("image_id")
+    result = remove_tag(app.user_id, image_id, tag, conn, cur)
+    return jsonify({"result": result})
