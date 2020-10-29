@@ -337,27 +337,30 @@ def api_post_comment_to_image():
     image_id = request.args.get("image_id")
     commenter = app.user_id
     comment = request.args.get("comment")
-    print("NYIO NYIO")
     if image_id is None or comment is None or commenter is None:
-        print("meow")
         return jsonify({"result": False})
     else:
-        print("meow meow?")
         result = post_comment_to_image(image_id, commenter, comment, conn, cur)
         return jsonify({"result": result})
 
 
 @app.route("/post_comment_to_comment", methods=["GET", "POST"])
 def api_post_comment_to_comment():
+    image_id = request.args.get("image_id")
     comment_id = request.args.get("comment_id")
     commenter = app.user_id
     comment = request.args.get("comment")
 
-    if comment_id is None or comment is None or commenter is None:
+    if image_id is None or comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
+<<<<<<< HEAD
+        result = post_comment_to_comment(image_id, commenter, comment, comment_id, conn, cur)
+=======
         result = post_comment_to_comment(comment_id, commenter, comment, conn, cur)
+>>>>>>> master
         return jsonify({"result": result})
+    return jsonify({"result": result})
 
 
 @app.route("/post_delete_comment", methods=["GET", "POST"])
@@ -386,7 +389,9 @@ def api_get_comments_to_image():
         else:
             processed_result = []
             for tup in result:
-                comment_id, image_id, commenter, comment, reply_id, created_at = tup
+                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                if count is None:
+                    count = 0
                 processed_result.append(
                     {
                         "comment_id": comment_id,
@@ -395,6 +400,7 @@ def api_get_comments_to_image():
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
+                        'count': count
                     }
                 )
             return jsonify({"result": processed_result})
@@ -413,7 +419,9 @@ def api_get_comments_to_comment():
         else:
             processed_result = []
             for tup in result:
-                comment_id, image_id, commenter, comment, reply_id, created_at = tup
+                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                if count is None:
+                    count = 0
                 processed_result.append(
                     {
                         "comment_id": comment_id,
@@ -422,6 +430,7 @@ def api_get_comments_to_comment():
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
+                        'count': count
                     }
                 )
             return jsonify({"result": processed_result})
