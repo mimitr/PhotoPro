@@ -354,11 +354,7 @@ def api_post_comment_to_comment():
     if image_id is None or comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
-<<<<<<< HEAD
         result = post_comment_to_comment(image_id, commenter, comment, comment_id, conn, cur)
-=======
-        result = post_comment_to_comment(comment_id, commenter, comment, conn, cur)
->>>>>>> master
         return jsonify({"result": result})
     return jsonify({"result": result})
 
