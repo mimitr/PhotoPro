@@ -1,0 +1,14 @@
+.searchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 10ch;
+}
+
+.inputStyle {
+  font-size: 1.3em;
+  padding: 5px;
+  display: inline-block;
+  width: 50%;
+}
