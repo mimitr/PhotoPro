@@ -380,7 +380,9 @@ def api_get_comments_to_image():
         else:
             processed_result = []
             for tup in result:
-                comment_id, image_id, commenter, comment, reply_id, created_at = tup
+                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                if count is None:
+                    count = 0
                 processed_result.append(
                     {
                         "comment_id": comment_id,
@@ -389,6 +391,7 @@ def api_get_comments_to_image():
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
+                        'count': count
                     }
                 )
             return jsonify({"result": processed_result})
@@ -407,7 +410,9 @@ def api_get_comments_to_comment():
         else:
             processed_result = []
             for tup in result:
-                comment_id, image_id, commenter, comment, reply_id, created_at = tup
+                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                if count is None:
+                    count = 0
                 processed_result.append(
                     {
                         "comment_id": comment_id,
@@ -416,6 +421,7 @@ def api_get_comments_to_comment():
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
+                        'count': count
                     }
                 )
             return jsonify({"result": processed_result})

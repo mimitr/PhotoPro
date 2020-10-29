@@ -8,7 +8,11 @@ export default function Comments(props) {
 
   const comments = props.comments_list.map((comment) => {
     return (
-      <Comment updateComments={props.updateComments} comment_info={comment} />
+      <Comment
+        updateComments={props.updateComments}
+        updateReplies={props.updateReplies}
+        comment_info={comment}
+      />
     );
   });
 

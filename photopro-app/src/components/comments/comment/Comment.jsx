@@ -5,24 +5,25 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
-import replyComment from "./replyComment/replyComment";
+import ReplyComments from "./replyComments/ReplyComments";
 
 export default function Comment(props) {
   const [reply_input, set_reply_input] = useState("");
   const [show_reply_form, set_show_reply_form] = useState(false);
-  const [has_replies, set_has_replies] = useState(false);
+
+  const [showViewReplies, setShowViewReplies] = useState(false);
+
+  //const [replyUpdated, setReplyUpdated] = useState("");
+
+  console.log(props.comment_info.count);
 
   let commenterID = String(props.comment_info.commenter);
   let userID = localStorage.getItem("userID");
 
-  if (props.comment_info.reply_id) {
-    set_has_replies(true);
-  }
-
   const deleteComment = (commentID) => {
     axios({
       method: "POST",
-      url: "http://localhost:5000//post_delete_comment",
+      url: "http://localhost:5000/post_delete_comment",
       params: { comment_id: commentID },
     }).then((response) => {
       if (response.data.result) {
@@ -57,22 +58,38 @@ export default function Comment(props) {
   const handleReplySubmitted = (e) => {
     e.preventDefault();
     post_reply_comments(reply_input);
+    // setReplyUpdated(props.comment_info.comment.concat("updated"));
   };
 
   const post_reply_comments = (reply_input) => {
     axios({
       method: "POST",
-      url: "http://localhost:5000//post_comment_to_comment",
+      url: "http://localhost:5000/post_comment_to_comment",
       params: {
         comment_id: props.comment_info.comment_id,
         comment: reply_input,
         image_id: props.comment_info.image_id,
       },
     }).then((response) => {
-      if (response.data.result) {
-        console.log(response);
-      }
+      console.log(response);
+      console.log("reply submitted");
     });
+  };
+
+  const handleViewRepliesClicked = () => {
+    console.log(showViewReplies);
+
+    if (showViewReplies) {
+      setShowViewReplies(false);
+    } else {
+      setShowViewReplies(true);
+      console.log("here");
+    }
+    console.log(showViewReplies);
+  };
+
+  const handleHideRepliesClicked = () => {
+    setShowViewReplies(false);
   };
 
   return (
@@ -83,7 +100,7 @@ export default function Comment(props) {
             <img src="https://images.unsplash.com/photo-1490894641324-cfac2f5cd077?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=70"></img>
           </div>
           <span className="displayName title">
-            {props.comment_info.commenter}
+            @{props.comment_info.commenter}
           </span>{" "}
           <span className="displayName caption">
             {props.comment_info.created_at}
@@ -93,7 +110,7 @@ export default function Comment(props) {
           </IconButton>
           {deleteButton}
         </div>
-        <div className="wrapper comment">
+        <div className="comment">
           <p>{props.comment_info.comment}</p>
         </div>
 
@@ -112,10 +129,23 @@ export default function Comment(props) {
           </div>
         ) : null}
 
-        {has_replies ? (
+        {props.comment_info.count > 0 && showViewReplies == false ? (
           <div className="reply_form">
-            <p>See replies</p>
+            <button onClick={handleViewRepliesClicked}>
+              View {props.comment_info.count} replies...
+            </button>
           </div>
+        ) : null}
+
+        {showViewReplies ? (
+          <ReplyComments
+            // reply_updated={replyUpdated}
+            comment_id={props.comment_info.comment_id}
+          />
+        ) : null}
+
+        {showViewReplies ? (
+          <button onClick={handleHideRepliesClicked}>Hide replies</button>
         ) : null}
       </div>
     </div>

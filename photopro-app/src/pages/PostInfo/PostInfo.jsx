@@ -8,6 +8,7 @@ import axios from "axios";
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
   const [commentUpdated, updateComments] = useState("");
+  //const [replyUpdated, setReplyUpdated] = useState("");
 
   useEffect(() => {
     fetchComments(props.location.state.id);
@@ -77,6 +78,7 @@ const PostInfo = (props) => {
               image_id={props.location.state.id}
               comments_list={comments}
               updateComments={updateComments}
+              //updateReplies={setReplyUpdated}
             />
           </div>
         </div>
