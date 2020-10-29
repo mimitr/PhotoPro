@@ -36,7 +36,7 @@
 }
 
 .username {
-  display: inline-flex;
+  display: inline;
   margin-left: 15px;
 }
 

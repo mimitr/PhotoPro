@@ -1,8 +1,42 @@
 import React from "react";
 import "./ReplyComment.css";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import axios from "axios";
 
 export default function ReplyComment(props) {
   //   console.log("each com");
+
+  let commenterID = String(props.replies_info.commenter);
+  let userID = localStorage.getItem("userID");
+
+  const handleDeleteClicked = () => {
+    deleteComment(props.replies_info.comment_id);
+    //props.updateComments(props.comment_info.comment.concat("updated"));
+  };
+
+  let deleteButton =
+    commenterID === userID ? (
+      <IconButton onClick={handleDeleteClicked}>
+        <DeleteOutlineIcon />
+      </IconButton>
+    ) : (
+      <Button></Button>
+    );
+
+  const deleteComment = (commentID) => {
+    axios({
+      method: "POST",
+      url: "http://localhost:5000/post_delete_comment",
+      params: { comment_id: commentID },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response);
+      }
+    });
+  };
+
   return (
     <React.Fragment>
       <div className="reply_comment">
@@ -13,6 +47,7 @@ export default function ReplyComment(props) {
         <div className="date">
           <p>{props.replies_info.created_at}</p>
         </div>
+        {deleteButton}
         <div className="reply_content">
           <p>{props.replies_info.comment}</p>
         </div>
