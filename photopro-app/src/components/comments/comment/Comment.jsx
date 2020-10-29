@@ -5,6 +5,7 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
+import replyComment from "./replyComment/replyComment";
 
 export default function Comment(props) {
   const [reply_input, set_reply_input] = useState("");
