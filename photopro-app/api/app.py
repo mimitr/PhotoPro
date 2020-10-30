@@ -21,7 +21,7 @@ from utils.database.general_user import (
     add_tags,
     get_tags,
     remove_tag,
-    delete_image_post
+    delete_image_post,
 )
 from utils.database.connect import conn, cur
 from flask import Flask, request, jsonify
@@ -116,7 +116,7 @@ def api_post_image():
         price = str(request.form["price"])
         title = request.form["title"]
         tags = str(request.form["tags"])
-        tags = tags.split(',')
+        tags = tags.split(",")
 
         print(price, title)
 
@@ -137,8 +137,10 @@ def api_discovery():
     query = request.args.get("query")
     print("START QUERY")
     if query is not None:
+        print("query is not none")
         result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
     else:
+        print("query is none")
         result = discovery(user_id, batch_size, conn, cur)
     print("END QUERY")
     if result:
@@ -147,6 +149,7 @@ def api_discovery():
 
         for tup in result:
             id, caption, uploader, img, title, price, num_likes, created_at = tup
+            print(created_at)
             if not num_likes:
                 num_likes = 0
             file = "image.jpeg"
@@ -359,7 +362,9 @@ def api_post_comment_to_comment():
     if image_id is None or comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
-        result = post_comment_to_comment(image_id, commenter, comment, comment_id, conn, cur)
+        result = post_comment_to_comment(
+            image_id, commenter, comment, comment_id, conn, cur
+        )
         return jsonify({"result": result})
     return jsonify({"result": result})
 
@@ -390,7 +395,15 @@ def api_get_comments_to_image():
         else:
             processed_result = []
             for tup in result:
-                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                (
+                    comment_id,
+                    image_id,
+                    commenter,
+                    comment,
+                    reply_id,
+                    created_at,
+                    count,
+                ) = tup
                 if count is None:
                     count = 0
                 processed_result.append(
@@ -401,7 +414,7 @@ def api_get_comments_to_image():
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
-                        'count': count
+                        "count": count,
                     }
                 )
             return jsonify({"result": processed_result})
@@ -420,7 +433,15 @@ def api_get_comments_to_comment():
         else:
             processed_result = []
             for tup in result:
-                comment_id, image_id, commenter, comment, reply_id, created_at, count = tup
+                (
+                    comment_id,
+                    image_id,
+                    commenter,
+                    comment,
+                    reply_id,
+                    created_at,
+                    count,
+                ) = tup
                 if count is None:
                     count = 0
                 processed_result.append(
@@ -431,7 +452,7 @@ def api_get_comments_to_comment():
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
-                        'count': count
+                        "count": count,
                     }
                 )
             return jsonify({"result": processed_result})
@@ -445,11 +466,12 @@ def api_get_tags():
     result = get_tags(image_id, conn, cur)
     return jsonify({"result": result})
 
+
 @app.route("/add_tags")
 def api_add_tags():
     image_id = request.args.get("image_id")
     tags = request.args.get("tags")
-    tags = tags.split(',')
+    tags = tags.split(",")
     if image_id is None or tags is None:
         return jsonify({"result": False})
 
