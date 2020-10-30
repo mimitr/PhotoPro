@@ -238,7 +238,7 @@ def api_edit_post():
     return jsonify({"result": result})
 
 
-@app.route("/post_like_to_image")
+@app.route("/post_like_to_image", methods=["GET", "POST"])
 def api_post_like_to_image():
     image_id = request.args.get("image_id")
     user_id = app.user_id

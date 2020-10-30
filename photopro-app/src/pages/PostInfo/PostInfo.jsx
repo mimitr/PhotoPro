@@ -10,6 +10,8 @@ const PostInfo = (props) => {
   const [commentUpdated, updateComments] = useState("");
   //const [replyUpdated, setReplyUpdated] = useState("");
 
+  console.log(props);
+
   useEffect(() => {
     fetchComments(props.location.state.id);
     console.log("update comment called");
