@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import axios from "axios";
-import "./ImageCard.css";
-import { Redirect, Link } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import { withStyles } from "@material-ui/core";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import BookmarkIcon from "@material-ui/icons/Bookmark";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import React, { Component } from 'react';
+import axios from 'axios';
+import './ImageCard.css';
+import { Redirect, Link } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/core';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const deletePostRequest = async function (imageID) {
-  const response = await axios.get("http://localhost:5000/delete_image_post", {
+  const response = await axios.get('http://localhost:5000/delete_image_post', {
     params: { image_id: String(imageID) }, //user_id: 1
   });
 
@@ -22,39 +22,39 @@ const deletePostRequest = async function (imageID) {
 // matrial-ui component style override
 const styles = {
   root: {
-    top: "60%",
-    left: "50%",
-    width: "52px",
-    backgroundColor: "rgba(226, 227, 233, 0.82)",
-    "&:hover": {
-      backgroundColor: "rgba(140, 140, 140, 0.82)",
+    top: '60%',
+    left: '50%',
+    width: '52px',
+    backgroundColor: 'rgba(226, 227, 233, 0.82)',
+    '&:hover': {
+      backgroundColor: 'rgba(140, 140, 140, 0.82)',
     },
   },
   like: {
-    left: "50%",
+    left: '50%',
   },
   bookmark: {
-    left: "20%",
+    left: '20%',
   },
   buy: {
-    left: "80%",
+    left: '80%',
   },
   delete: {
-    left: "8%",
-    top: "10%",
-    width: "13%",
-    height: "13%",
-    "&:hover": {
-      backgroundColor: "rgba(180, 65, 65, 0.82)",
+    left: '8%',
+    top: '10%',
+    width: '13%',
+    height: '13%',
+    '&:hover': {
+      backgroundColor: 'rgba(180, 65, 65, 0.82)',
     },
   },
   edit: {
-    left: "92%",
-    top: "10%",
-    width: "14%",
-    height: "18%",
-    "&:hover": {
-      backgroundColor: "rgba(219, 193, 20, 0.71)",
+    left: '92%',
+    top: '10%',
+    width: '14%',
+    height: '18%',
+    '&:hover': {
+      backgroundColor: 'rgba(219, 193, 20, 0.71)',
     },
   },
 };
@@ -70,7 +70,7 @@ class ImageCard extends Component {
   }
 
   componentDidMount() {
-    this.imageRef.current.addEventListener("load", this.setSpans);
+    this.imageRef.current.addEventListener('load', this.setSpans);
   }
 
   setSpans = () => {
@@ -80,26 +80,27 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
+    console.log(this.props.image);
     this.setState({ redirect: `/post-${this.props.image.id}` });
   };
 
   handleLikeClicked = (e) => {
-    console.log("like button clicked");
+    console.log('like button clicked');
     e.stopPropagation();
   };
 
   handleBookmarkClicked = (e) => {
-    console.log("bookmark button clicked");
+    console.log('bookmark button clicked');
     e.stopPropagation();
   };
 
   handleBuyClicked = (e) => {
-    console.log("buy button clicked");
+    console.log('buy button clicked');
     e.stopPropagation();
   };
 
   handleDeleteClicked = (e) => {
-    console.log("delete button clicked");
+    console.log('delete button clicked');
     let response = deletePostRequest(this.props.image.id);
     console.log(response);
     e.stopPropagation();
@@ -107,7 +108,7 @@ class ImageCard extends Component {
   };
 
   handleEditClicked = (e) => {
-    console.log("edit button clicked");
+    console.log('edit button clicked');
     this.setState({ redirect: `/editpost/${this.props.image.id}` });
     e.stopPropagation();
   };
@@ -135,7 +136,7 @@ class ImageCard extends Component {
       );
     } else {
       let uploaderID = String(this.props.image.uploader);
-      let userID = localStorage.getItem("userID");
+      let userID = localStorage.getItem('userID');
       let deleteButton =
         uploaderID === userID ? (
           <IconButton

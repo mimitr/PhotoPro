@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import './Likes.css';
-import axios from 'axios';
+import React, { useState } from "react";
+import "./Likes.css";
+import axios from "axios";
 
 function Likes(props) {
   const [num_likes, set_num_likes] = useState(props.num_likes);
@@ -8,27 +8,38 @@ function Likes(props) {
 
   const handleLikeClicked = () => {
     if (updated == false) {
-      set_num_likes((prevState) => parseInt(prevState) + 1);
-      set_updated(true);
+      if (post_likes(props.image_id)) {
+        set_num_likes((prevState) => parseInt(prevState) + 1);
+        set_updated(true);
+      }
     } else {
-      set_num_likes((prevState) => parseInt(prevState) - 1);
-      set_updated(false);
+      if (delete_likes(props.image_id)) {
+        set_num_likes((prevState) => parseInt(prevState) - 1);
+        set_updated(false);
+      }
     }
-
-    post_likes(props.image_id);
   };
 
-  const post_likes = async function (img_id) {
-    const response = await axios.get(
-      'http://localhost:5000/post_like_to_image',
-      {
-        params: { image_id: img_id },
-      }
-    );
+  const post_likes = (img_id) => {
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/post_like_to_image",
+      params: { image_id: img_id },
+    }).then((response) => {
+      console.log(response.data.result);
+      return response.data.result;
+    });
+  };
 
-    console.log(response);
-
-    return response;
+  const delete_likes = (img_id) => {
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/delete_like_from_image",
+      params: { image_id: img_id },
+    }).then((response) => {
+      console.log(response.data.result);
+      return response.data.result;
+    });
   };
 
   return (
