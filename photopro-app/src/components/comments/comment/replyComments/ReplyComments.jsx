@@ -6,11 +6,12 @@ import ReplyComment from "./replyComment/ReplyComment";
 export default function ReplyComments(props) {
   const [replies, set_replies] = useState([]);
 
-  //const [replyUpdated, setReplyUpdated] = useState("");
+  const [replyUpdated, setReplyUpdated] = useState("");
 
   useEffect(() => {
     getReplies();
-  }, []);
+    console.log("getting replies");
+  }, [replyUpdated]);
 
   const getReplies = () => {
     axios({
@@ -30,7 +31,9 @@ export default function ReplyComments(props) {
 
   const replies_components = replies.map((reply) => {
     console.log("heree");
-    return <ReplyComment replies_info={reply} />;
+    return (
+      <ReplyComment updateReplies={setReplyUpdated} replies_info={reply} />
+    );
   });
 
   return (

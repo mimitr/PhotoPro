@@ -5,17 +5,25 @@ import axios from "axios";
 function Likes(props) {
   const [num_likes, set_num_likes] = useState(props.num_likes);
   const [updated, set_updated] = useState(false);
+  let userID = localStorage.getItem("userID");
+  console.log(userID);
 
   const handleLikeClicked = () => {
-    if (updated == false) {
+    // user is not logged in => no change
+    // else:
+    if (userID != null) {
+      // has not been liked yet => post_likes returns true
       if (post_likes(props.image_id)) {
-        set_num_likes((prevState) => parseInt(prevState) + 1);
-        set_updated(true);
-      }
-    } else {
-      if (delete_likes(props.image_id)) {
-        set_num_likes((prevState) => parseInt(prevState) - 1);
-        set_updated(false);
+        if (updated == false) {
+          set_num_likes((prevState) => parseInt(prevState) + 1);
+          set_updated(true);
+        }
+        // post is already liked
+      } else {
+        if (delete_likes(props.image_id)) {
+          set_num_likes((prevState) => parseInt(prevState) - 1);
+          set_updated(false);
+        }
       }
     }
   };
@@ -33,11 +41,11 @@ function Likes(props) {
 
   const delete_likes = (img_id) => {
     axios({
-      method: "GET",
+      method: "POST",
       url: "http://localhost:5000/delete_like_from_image",
       params: { image_id: img_id },
     }).then((response) => {
-      console.log(response.data.result);
+      console.log(response);
       return response.data.result;
     });
   };

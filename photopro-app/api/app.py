@@ -251,7 +251,7 @@ def api_post_like_to_image():
     return jsonify({"result": False})
 
 
-@app.route("/delete_like_from_image")
+@app.route("/delete_like_from_image", methods=["GET", "POST"])
 def api_delete_like_from_image():
     image_id = request.args.get("image_id")
     user_id = app.user_id

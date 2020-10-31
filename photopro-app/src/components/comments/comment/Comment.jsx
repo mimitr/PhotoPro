@@ -13,7 +13,7 @@ export default function Comment(props) {
 
   const [showViewReplies, setShowViewReplies] = useState(false);
 
-  //const [replyUpdated, setReplyUpdated] = useState("");
+  const [reply_to_comment_updated, set_reply_to_comment_updated] = useState("");
 
   console.log(props.comment_info.count);
 
