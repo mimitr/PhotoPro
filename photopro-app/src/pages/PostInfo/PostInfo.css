@@ -68,8 +68,8 @@
 .recImage {
   border: #333 1px solid;
   padding: 1em;
-  width: 100px;
-  height: 150px;
+  width: 150px;
+  height: 200px;
 }
 
 .recImages-nested > h1 {
