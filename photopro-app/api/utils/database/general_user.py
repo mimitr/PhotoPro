@@ -215,13 +215,15 @@ def search_by_tag(user_id, batch_size, query, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT image_id, caption, uploader, file title, price, created_at FROM images" \
-              "WHERE uploader != {} AND '%{}%' = ANY(tags) LIMIT {}".format(user_id, query, batch_size)
+        cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader != {} AND '{}' = ANY(tags) LIMIT {}".format(
+            user_id, query, batch_size
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
         data = cur.fetchmany(batch_size)
         length = len(data)
+        # print("length of data is ", data)
         if length == 0:
             return False
         else:
