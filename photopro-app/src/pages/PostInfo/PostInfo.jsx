@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import './PostInfo.css';
-import Toolbar from '../../components/toolbar/toolbar';
-import Likes from '../../components/likes/Likes';
-import Comments from '../../components/comments/Comments';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import "./PostInfo.css";
+import Toolbar from "../../components/toolbar/toolbar";
+import Likes from "../../components/likes/Likes";
+import Comments from "../../components/comments/Comments";
+import axios from "axios";
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
-  const [commentUpdated, updateComments] = useState('');
+  const [commentUpdated, updateComments] = useState("");
   //const [replyUpdated, setReplyUpdated] = useState("");
   console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
 
   useEffect(() => {
     fetchComments(props.location.state.id);
-    console.log('update comment called');
+    console.log("update comment called");
   }, [commentUpdated]);
 
   const fetchComments = (id) => {
     axios({
-      method: 'GET',
-      url: 'http://localhost:5000/get_comments_to_image',
+      method: "GET",
+      url: "http://localhost:5000/get_comments_to_image",
       params: { image_id: id, batch_size: 20 },
     }).then((res) => {
       if (res.data.result != false) {
@@ -58,7 +58,7 @@ const PostInfo = (props) => {
             alt={props.location.state.caption}
           />
           <div className="recImages-nested">
-            <h1> Related Photos:</h1>
+            <h1 className="roboto"> Related Photos:</h1>
             <div className="recImage"></div>
             <div className="recImage"></div>
             <div className="recImage"></div>
@@ -66,15 +66,15 @@ const PostInfo = (props) => {
         </div>
         <div className="postFeed-nested">
           <div className="postTags">
-            <h2>{props.location.state.caption}</h2>
+            <h2 className="roboto">{props.location.state.caption}</h2>
             <h3>Tags:</h3>
           </div>
           <div className="postPrice">
-            <h2>Price: ${props.location.state.price}</h2>
+            <h2 className="roboto">Price: ${props.location.state.price}</h2>
             <button>Add to Cart</button>
           </div>
           <div className="postComments">
-            <h2>Comments:</h2>
+            <h2 className="roboto">Comments:</h2>
             {/* <Comments className="comments" /> */}
             <Comments
               image_id={props.location.state.id}
