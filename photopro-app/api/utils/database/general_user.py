@@ -211,6 +211,26 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         print(error)
         return False
 
+def search_by_tag(user_id, batch_size, query, conn, cur):
+    try:
+        user_id = int(user_id)
+        batch_size = int(batch_size)
+        cmd = "SELECT image_id, caption, uploader, file title, price, created_at FROM images" \
+              "WHERE uploader != {} AND '%{}%' = ANY(tags) LIMIT {}".format(user_id, query, batch_size)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        data = cur.fetchmany(batch_size)
+        length = len(data)
+        if length == 0:
+            return False
+        else:
+            return data
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
 
 def profiles_photos(user_id, batch_size, conn, cur):
     try:
@@ -245,7 +265,7 @@ def profiles_photos(user_id, batch_size, conn, cur):
 def edit_post(user_id, image, title, price, caption, tags, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """UPDATE images SET title = '%s', price = %d, caption = '%s', tags = '{%s}'
+        cmd = """UPDATE images SET title = '%s', price = %s, caption = '%s', tags = '{%s}'
                  WHERE uploader = %d and image_id = %d""" % (title, price, caption, tags, user_id, image)
 
         #cmd = "UPDATE images SET title = '{}', price = '{}', caption = '{}', tags = '{{%s}}' " \
