@@ -1,32 +1,34 @@
-import React, { useState, useEffect } from "react";
-import "./Comment.css";
-import ReplyIcon from "@material-ui/icons/Reply";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import IconButton from "@material-ui/core/IconButton";
-import Button from "@material-ui/core/Button";
-import axios from "axios";
-import ReplyComments from "./replyComments/ReplyComments";
+import React, { useState, useEffect } from 'react';
+import './Comment.css';
+import ReplyIcon from '@material-ui/icons/Reply';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import axios from 'axios';
+import ReplyComments from './replyComments/ReplyComments';
 
 export default function Comment(props) {
-  const [reply_input, set_reply_input] = useState("");
+  const [reply_input, set_reply_input] = useState('');
   const [show_reply_form, set_show_reply_form] = useState(false);
-
   const [showViewReplies, setShowViewReplies] = useState(false);
-
-  //const [replyUpdated, setReplyUpdated] = useState("");
-
-  console.log(props.comment_info.count);
+  const [allRepliesDeleted, setAllRepliesDeleted] = useState(false);
 
   let commenterID = String(props.comment_info.commenter);
-  let userID = localStorage.getItem("userID");
+  let userID = localStorage.getItem('userID');
+
+  // console.log(
+  //   `${props.comment_info.comment} has reply count = ${props.comment_info.count} with showViewReplies=${showViewReplies} and allRepliesDeleted=${allRepliesDeleted}`
+  // );
 
   const deleteComment = (commentID) => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/post_delete_comment",
+      method: 'POST',
+      url: 'http://localhost:5000/post_delete_comment',
       params: { comment_id: commentID },
     }).then((response) => {
       if (response.data.result) {
+        console.log(`delete request ${response}`);
+        props.updateComments(props.comment_info.comment);
         console.log(response);
       }
     });
@@ -34,7 +36,6 @@ export default function Comment(props) {
 
   const handleDeleteClicked = () => {
     deleteComment(props.comment_info.comment_id);
-    props.updateComments(props.comment_info.comment.concat("updated"));
   };
 
   let deleteButton =
@@ -63,29 +64,26 @@ export default function Comment(props) {
 
   const post_reply_comments = (reply_input) => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/post_comment_to_comment",
+      method: 'POST',
+      url: 'http://localhost:5000/post_comment_to_comment',
       params: {
         comment_id: props.comment_info.comment_id,
         comment: reply_input,
         image_id: props.comment_info.image_id,
       },
     }).then((response) => {
-      console.log(response);
-      console.log("reply submitted");
+      props.updateComments(reply_input);
+
+      console.log('reply submitted');
     });
   };
 
   const handleViewRepliesClicked = () => {
-    console.log(showViewReplies);
-
     if (showViewReplies) {
       setShowViewReplies(false);
     } else {
       setShowViewReplies(true);
-      console.log("here");
     }
-    console.log(showViewReplies);
   };
 
   const handleHideRepliesClicked = () => {
@@ -101,7 +99,7 @@ export default function Comment(props) {
           </div>
           <span className="displayName title">
             @{props.comment_info.commenter}
-          </span>{" "}
+          </span>{' '}
           <span className="displayName caption">
             {props.comment_info.created_at}
           </span>
@@ -129,7 +127,7 @@ export default function Comment(props) {
           </div>
         ) : null}
 
-        {props.comment_info.count > 0 && showViewReplies == false ? (
+        {props.comment_info.count > 0 && showViewReplies === false ? (
           <div className="reply_form">
             <button onClick={handleViewRepliesClicked}>
               View {props.comment_info.count} replies...
@@ -139,8 +137,9 @@ export default function Comment(props) {
 
         {showViewReplies ? (
           <ReplyComments
-            // reply_updated={replyUpdated}
             comment_id={props.comment_info.comment_id}
+            updateComments={props.updateComments}
+            setShowViewReplies={setShowViewReplies}
           />
         ) : null}
 
