@@ -520,7 +520,6 @@ def api_add_photo_to_collection():
     result = add_photo_to_collection(int(collection_id), int(user_id), int(image_id), conn, cur)
     return jsonify({"result": result})
 
-
 @app.route("/get_users_collection")
 def api_get_users_collection():
     limit = request.args.get("batch_size")
@@ -538,13 +537,17 @@ def api_get_users_collection():
         processed_result = []
 
         for tup in result:
-            collection_id, collection_name, creator_id, private = tup
+            collection_id, collection_name, creator_id, private, num_photos = tup
+            if num_photos is None:
+                num_photos = 0
+            num_photos = int(num_photos)
             processed_result.append(
                 {
                     "collection_id": collection_id,
                     "collection_name": collection_name,
                     "creator_id": creator_id,
                     "private": private,
+                    "num_photos": num_photos
                 }
             )
         retval = jsonify({"result": processed_result})
