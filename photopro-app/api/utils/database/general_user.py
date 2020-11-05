@@ -4,13 +4,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import psycopg2
 from google.cloud import vision
-from google.cloud.vision import types
 import os
 import base64
 import binascii
 import io
 
-vision_api_credentials_file_name = str(os.getcwd()) + '/utils/database/PhotoPro-fe2b1d6e8742.json'
+vision_api_credentials_file_name = 'utils/database/PhotoPro-fe2b1d6e8742.json'
 image_classify_threshold_percent=50.0
 
 def create_user(first, last, email, password, conn, cur):
@@ -158,6 +157,7 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
 
             #classification code goes here
         print("1")
+        print(os.getcwd())
         vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
         print("2", os.getcwd())
         vision_client = vision.ImageAnnotatorClient.from_service_account_file(vision_key_filepath)
@@ -167,7 +167,7 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         print("4")
         print(content)
         print("5")
-        vision_image = types.Image(content=content)
+        vision_image = vision.Image(content=content)
         print("6")
         vision_response = vision_client.label_detection(image=vision_image)
         #print(vision_response)
