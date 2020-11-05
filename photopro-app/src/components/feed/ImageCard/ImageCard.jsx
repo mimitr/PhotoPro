@@ -22,19 +22,21 @@ const deletePostRequest = async function (imageID) {
 // matrial-ui component style override
 const styles = {
   root: {
-    top: '60%',
+    bottom: '0%',
     left: '50%',
-    width: '52px',
-    backgroundColor: 'rgba(226, 227, 233, 0.82)',
-    '&:hover': {
-      backgroundColor: 'rgba(140, 140, 140, 0.82)',
-    },
+    color: 'rgba(255, 255, 255,1)',
+    height: '20%',
+    width: '20%',
+  },
+  iconSize: {
+    width: '60%',
+    height: '60%',
   },
   like: {
-    left: '50%',
+    left: '5%',
   },
   bookmark: {
-    left: '20%',
+    left: '60%',
   },
   buy: {
     left: '80%',
@@ -170,6 +172,7 @@ class ImageCard extends Component {
       component = (
         <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
           <div onClick={this.handleImageClicked} className="photo-container">
+            <div className="icon-bar"></div>
             <img
               ref={this.imageRef}
               src={`data:image/jpg;base64,${this.props.image.img}`}
@@ -182,7 +185,8 @@ class ImageCard extends Component {
               }}
               onClick={this.handleLikeClicked}
             >
-              <FavoriteIcon />
+              <FavoriteIcon classes={{ root: this.props.classes.iconSize }} />
+              <div className="num-likes">{this.props.image.num_likes}</div>
             </IconButton>
 
             <IconButton

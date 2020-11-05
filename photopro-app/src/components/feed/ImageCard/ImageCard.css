@@ -1,7 +1,7 @@
 .photo-container {
   position: relative;
   width: 100%;
-  height: 95%;
+  height: 100%;
 }
 
 .photo-container:before {
@@ -13,16 +13,25 @@
 }
 
 .photo-container:hover::before {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .photo-container button {
   position: absolute;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
+  /* transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%); */
   opacity: 0;
 }
+
+.photo-container .icon-bar {
+  opacity: 0;
+}
+
 .photo-container:hover button {
+  opacity: 1;
+}
+
+.photo-container:hover .icon-bar {
   opacity: 1;
 }
 
@@ -39,4 +48,17 @@
 .buy-btn {
   top: 60%;
   left: 80%;
+}
+
+.icon-bar {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.7);
+  bottom: 3%;
+  height: 15%;
+  width: 100%;
+}
+
+.num-likes {
+  margin: 5px;
+  font-size: 0.6em;
 }

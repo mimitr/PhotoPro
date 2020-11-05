@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './searchbar.css';
 import axios from 'axios';
 import Feed from '../feed/feed';
@@ -23,9 +23,6 @@ function SearchBar(props) {
       params: { query: term, batch_size: 30 }, //user_id: 1
     });
 
-    console.log(response.data.result);
-    // getLikes(response);
-
     console.log(response);
 
     return response;
@@ -45,15 +42,6 @@ function SearchBar(props) {
 
   return (
     <React.Fragment>
-      {/* <form onSubmit={handleSubmit} className="flexContainer">
-        <input
-          className="inputStyle"
-          type="text"
-          value={searchVal}
-          onChange={(event) => setSearchVal(event.target.value)}
-        />
-      </form> */}
-
       <div className="searchBar">
         <form
           onSubmit={handleSubmit}

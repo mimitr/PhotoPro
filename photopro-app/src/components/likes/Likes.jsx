@@ -51,7 +51,7 @@ function Likes(props) {
       params: { image_id: props.image_id, batch_size: 50 },
     }).then((response) => {
       console.log(response);
-      if (response.data.result) {
+      if (response.data.result.length > 0) {
         for (let i = 0; i < response.data.result.length; i++) {
           if (parseInt(userID) === response.data.result[i].user_id) {
             setPostLiked(true);
