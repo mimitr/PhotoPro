@@ -6,6 +6,8 @@ import IconButton from "@material-ui/core/IconButton";
 
 import axios from "axios";
 
+import CollectionFolder from "./collectionFolder/CollectionFolder";
+
 export default function BookmarkModal({
   openModal,
   children,
@@ -16,6 +18,8 @@ export default function BookmarkModal({
   const [newCollectionEntered, setNewCollectionEntered] = useState("");
   const [privateCollection, setPrivateCollection] = useState(false);
 
+  const [usersCollections, setUsersCollections] = useState(null);
+
   const getUsersCollections = () => {
     axios({
       method: "GET",
@@ -25,6 +29,10 @@ export default function BookmarkModal({
       },
     }).then((response) => {
       console.log(response);
+      if (response.data.result !== false) {
+        console.log("not false");
+        setUsersCollections(response.data.result);
+      }
     });
   };
 
@@ -37,10 +45,27 @@ export default function BookmarkModal({
     return null;
   }
 
+  let collectionFolders = null;
+  if (usersCollections != null) {
+    collectionFolders = usersCollections.map((collection) => {
+      return (
+        <CollectionFolder
+          key={collection.collection_id}
+          collectionInfo={collection}
+        />
+      );
+    });
+  }
+
+  //console.log(collectionFolders);
+
   const handleEnteredCollection = (e) => {
     e.preventDefault();
+    getUsersCollections();
+    console.log(usersCollections);
+
     //createCollections();
-    //setNewCollectionEntered(enteredCollection);
+    setNewCollectionEntered(enteredCollection);
     //addPhotoToCollections();
   };
 
@@ -70,6 +95,8 @@ export default function BookmarkModal({
     });
   };
 
+  //console.log(usersCollections);
+
   return ReactDom.createPortal(
     <React.Fragment>
       <div className="overlayStyles" />
@@ -91,6 +118,7 @@ export default function BookmarkModal({
             </div>
           </form>
         </div>
+        <div className="collectionFolders">{collectionFolders}</div>
       </div>
     </React.Fragment>,
     document.getElementById("portal")
