@@ -4,6 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import psycopg2
 from google.cloud import vision
+# from google.cloud.vision import types
 import os
 import base64
 import binascii
@@ -167,7 +168,8 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         print("4")
         print(content)
         print("5")
-        vision_image = vision.Image(content=content)
+        #vision_image = vision.Image(content=content)
+        vision_image = types.Image(content=content)
         print("6")
         vision_response = vision_client.label_detection(image=vision_image)
         #print(vision_response)
@@ -177,7 +179,9 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         for label in vision_labels:
             if(label.score > (image_classify_threshold_percent/100)):
                 #print(label.description)
-                tags.append(label.description)
+                label_to_add=label.description.lstrip('\"')
+                label_to_add=label_to_add.rstrip('\"')
+                tags.append(label_to_add)
 
 
 
