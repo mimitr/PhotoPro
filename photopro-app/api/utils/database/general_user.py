@@ -10,7 +10,7 @@ import base64
 import binascii
 import io
 
-vision_api_credentials_file_name = 'PhotoPro-fe2b1d6e8742.json'
+vision_api_credentials_file_name = 'utils/database/PhotoPro-fe2b1d6e8742.json'
 image_classify_threshold_percent=50.0
 
 def create_user(first, last, email, password, conn, cur):
@@ -158,6 +158,7 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
 
             #classification code goes here
         print("1")
+        print(os.getcwd())
         vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
         print("2")
         vision_client = vision.ImageAnnotatorClient.from_service_account_file(vision_key_filepath)
