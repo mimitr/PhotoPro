@@ -487,7 +487,8 @@ def api_create_collection():
     result = create_collection(int(user_id), str(collection_name), bool(private), conn, cur)
     return jsonify({"result": result})
 
-@app.route("/create_collection")
+
+@app.route("/add_photo_to_collection")
 def api_add_photo_to_collection():
     collection_id = request.args.get("collection_id")
     image_id = request.args.get("image_id")
@@ -495,5 +496,5 @@ def api_add_photo_to_collection():
 
     if user_id is None or collection_id is None or image_id is None:
         return jsonify({"result": False})
-    result = create_collection(int(user_id), int(collection_id), int(image_id), conn, cur)
+    result = add_photo_to_collection(int(user_id), int(collection_id), int(image_id), conn, cur)
     return jsonify({"result": result})
