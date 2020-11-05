@@ -1,15 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import './Likes.css';
 import axios from 'axios';
+import IconButton from '@material-ui/core/IconButton';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  root: {
+    width: '2rem',
+    height: '2rem',
+  },
+  liked: {
+    color: 'rgba(255, 255, 255, 1)',
+    backgroundColor: 'rgba(213, 48, 48, 1)',
+  },
+
+  unliked: {},
+});
 
 function Likes(props) {
   const [num_likes, set_num_likes] = useState(props.num_likes);
-  const [updated, set_updated] = useState(false);
   const [postLiked, setPostLiked] = useState(false);
+  const classes = useStyles();
 
   useEffect(() => {
     console.log('check if liked called');
-    checkIfLiked();
+    setTimeout(() => {
+      checkIfLiked();
+    }, 150);
   }, []);
 
   let userID = localStorage.getItem('userID');
@@ -35,7 +53,7 @@ function Likes(props) {
       console.log(response);
       if (response.data.result) {
         for (let i = 0; i < response.data.result.length; i++) {
-          if (userID === response.data.result.user_id) {
+          if (parseInt(userID) === response.data.result[i].user_id) {
             setPostLiked(true);
             console.log('This image has been liked before :o');
           }
@@ -55,9 +73,9 @@ function Likes(props) {
       console.log(`post_like api response is ${response.data.result}`);
       console.log(response);
 
-      if (updated === false) {
+      if (response.data.result) {
         set_num_likes((prevState) => parseInt(prevState) + 1);
-        set_updated(true);
+        setPostLiked(true);
       }
 
       return response.data.result;
@@ -72,26 +90,33 @@ function Likes(props) {
     }).then((response) => {
       console.log(`delete_likes api response is ${response.data.result}`);
 
-      if (updated === true) {
+      if (response.data.result) {
         set_num_likes((prevState) => parseInt(prevState) - 1);
-        set_updated(false);
+        setPostLiked(false);
       }
       return response.data.result;
     });
   };
 
+  let buttonClass;
+  if (postLiked) {
+    buttonClass = classes.liked;
+  } else {
+    buttonClass = classes.unliked;
+  }
+
   return (
     <React.Fragment>
       <div className="like">
-        <button
-          className="btn like-btn"
-          onClick={handleLikeClicked}
-          type="button"
-        >
-          <svg width="25" height="25">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
-          </svg>
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <IconButton
+            classes={{ root: `${classes.root} ${buttonClass}` }}
+            onClick={handleLikeClicked}
+          >
+            <FavoriteIcon />
+          </IconButton>
+        </div>
+
         <p>{num_likes}</p>
       </div>
     </React.Fragment>
