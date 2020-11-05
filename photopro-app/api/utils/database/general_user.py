@@ -252,7 +252,7 @@ def profiles_photos(user_id, batch_size, conn, cur):
         user_id = int(user_id)
         batch_size = int(batch_size)
         if batch_size > 0:
-            cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+            cmd = "select images.image_id, caption, uploader, file, title, price, num_likes, created_at FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
                      WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
                 user_id, batch_size

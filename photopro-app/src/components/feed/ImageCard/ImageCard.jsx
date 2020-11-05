@@ -42,19 +42,19 @@ const styles = {
     left: '80%',
   },
   delete: {
-    left: '8%',
+    left: '4%',
     top: '10%',
-    width: '13%',
-    height: '13%',
+    width: '16%',
+    height: '20%',
     '&:hover': {
       backgroundColor: 'rgba(180, 65, 65, 0.82)',
     },
   },
   edit: {
-    left: '92%',
+    left: '82%',
     top: '10%',
-    width: '14%',
-    height: '18%',
+    width: '16%',
+    height: '20%',
     '&:hover': {
       backgroundColor: 'rgba(219, 193, 20, 0.71)',
     },
