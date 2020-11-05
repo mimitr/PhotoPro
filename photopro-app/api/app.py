@@ -16,6 +16,7 @@ from utils.database.general_user import (
     post_image,
     discovery,
     discovery_with_search_term,
+    search_by_tag,
     edit_post,
     profiles_photos,
     add_tags,
@@ -137,11 +138,17 @@ def api_discovery():
     query = request.args.get("query")
     print("START QUERY")
     if query is not None:
-        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+        result = search_by_tag(user_id, batch_size, query, conn, cur)
+#        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
     print("END QUERY")
     if result:
+        if len(result) < int(batch_size):
+            new_bsize = int(batch_size) - len(result)
+            fill_result = discovery_with_search_term(user_id, new_bsize, query, conn, cur)
+            #print(fill_result)
+            result.extend(fill_result)
 
         processed_result = []
 

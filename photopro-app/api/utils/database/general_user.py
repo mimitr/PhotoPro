@@ -27,18 +27,15 @@ def create_user(first, last, email, password, conn, cur):
     except psycopg2.errors.UniqueViolation as e:
         print(e)
         # return "Unable to create new account. Account with that email already exists."
-        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
 def login_user(email, password, conn, cur):
     try:
-        cur.execute("SAVEPOINT save_point")
         cmd = "SELECT * FROM users WHERE email='{}' AND password='{}'".format(
             email, password
         )
@@ -61,7 +58,6 @@ def login_user(email, password, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False, None
 
 
@@ -215,10 +211,10 @@ def delete_image_post(image_id, uploader, conn, cur):
 
         cmd = """
             DELETE FROM images
-            WHERE image_id = %s AND uploader = %s;
+            WHERE image_id = %s;
             """
         print(cmd)
-        cur.execute(cmd, (image_id, uploader))
+        cur.execute(cmd, (image_id,))
         conn.commit()
         return True
     except Exception as e:
@@ -284,6 +280,28 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         error = e.pgcode
         print(error)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+def search_by_tag(user_id, batch_size, query, conn, cur):
+    try:
+        user_id = int(user_id)
+        batch_size = int(batch_size)
+        cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader != {} AND '{}' = ANY(tags) LIMIT {}".format(
+            user_id, query, batch_size
+        )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        data = cur.fetchmany(batch_size)
+        length = len(data)
+        # print("length of data is ", data)
+        if length == 0:
+            return False
+        else:
+            return data
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
         return False
 
 
