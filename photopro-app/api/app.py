@@ -496,5 +496,32 @@ def api_add_photo_to_collection():
 
     if user_id is None or collection_id is None or image_id is None:
         return jsonify({"result": False})
-    result = add_photo_to_collection(int(user_id), int(collection_id), int(image_id), conn, cur)
+    result = add_photo_to_collection(int(collection_id), int(user_id), int(image_id), conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/get_users_collection")
+def api_get_users_collection():
+    limit = request.args.get("batch_size")
+    user_id = app.user_id
+    if limit is None:
+        limit = 32
+
+    if user_id is None and limit is not None:
+        return jsonify({"result": False})
+    result = get_users_collection(user_id, limit, conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/get_collection_data")
+def api_get_collection_data():
+    collection_id = request.args.get("collection_id")
+    limit = request.args.get("batch_size")
+    user_id = app.user_id
+    if limit is None:
+        limit = 32
+
+    if user_id is None and limit is not None and collection_id is not None:
+        return jsonify({"result": False})
+    result = get_collection_data(collection_id, limit, conn, cur)
     return jsonify({"result": result})
