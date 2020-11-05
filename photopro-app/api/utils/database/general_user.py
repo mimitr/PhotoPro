@@ -168,6 +168,7 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         print("4")
         print(content)
         print("5")
+        #vision_image = vision.Image(content=content)
         vision_image = types.Image(content=content)
         print("6")
         vision_response = vision_client.label_detection(image=vision_image)
@@ -178,7 +179,9 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         for label in vision_labels:
             if(label.score > (image_classify_threshold_percent/100)):
                 #print(label.description)
-                tags.append(label.description)
+                label_to_add=label.description.lstrip('\"')
+                label_to_add=label_to_add.rstrip('\"')
+                tags.append(label_to_add)
 
 
 
