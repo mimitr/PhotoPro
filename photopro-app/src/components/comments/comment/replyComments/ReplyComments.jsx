@@ -5,12 +5,14 @@ import ReplyComment from "./replyComment/ReplyComment";
 
 export default function ReplyComments(props) {
   const [replies, set_replies] = useState([]);
+  const [replyUpdated, updateReplies] = useState("");
 
-  const [replyUpdated, setReplyUpdated] = useState("");
+  // useEffect(() => {
+  //   getReplies();
+  // }, []);
 
   useEffect(() => {
     getReplies();
-    console.log("getting replies");
   }, [replyUpdated]);
 
   const getReplies = () => {
@@ -22,17 +24,24 @@ export default function ReplyComments(props) {
         batch_size: 10,
       },
     }).then((response) => {
+      console.log(`im here in getReplies ${response.data.result}`);
       if (response.data.result) {
-        console.log(response.data.result);
         set_replies(response.data.result);
+      } else {
+        set_replies([]);
+        props.setShowViewReplies(false);
+        props.updateComments(props.comment_id);
       }
     });
   };
 
   const replies_components = replies.map((reply) => {
-    console.log("heree");
     return (
-      <ReplyComment updateReplies={setReplyUpdated} replies_info={reply} />
+      <ReplyComment
+        key={reply.comment_id}
+        replies_info={reply}
+        updateReplies={updateReplies}
+      />
     );
   });
 

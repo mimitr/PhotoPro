@@ -13,18 +13,27 @@ function Likes(props) {
     // else:
     if (userID != null) {
       // has not been liked yet => post_likes returns true
+      console.log("user is logged in");
       if (post_likes(props.image_id)) {
+        console.log("post_likes returns true");
         if (updated == false) {
+          console.log("number of likes has not been updated yet");
           set_num_likes((prevState) => parseInt(prevState) + 1);
           set_updated(true);
         }
         // post is already liked
       } else {
+        console.log("post likes returns false, then we should delete like");
         if (delete_likes(props.image_id)) {
+          console.log("delete like returns true");
           set_num_likes((prevState) => parseInt(prevState) - 1);
           set_updated(false);
+        } else {
+          console.log("delete like returns false");
         }
       }
+    } else {
+      console.log("user is not logged in yet");
     }
   };
 
@@ -34,7 +43,7 @@ function Likes(props) {
       url: "http://localhost:5000/post_like_to_image",
       params: { image_id: img_id },
     }).then((response) => {
-      console.log(response.data.result);
+      console.log(`post like ${response.data.result}`);
       return response.data.result;
     });
   };

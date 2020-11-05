@@ -10,15 +10,15 @@ import ReplyComments from "./replyComments/ReplyComments";
 export default function Comment(props) {
   const [reply_input, set_reply_input] = useState("");
   const [show_reply_form, set_show_reply_form] = useState(false);
-
   const [showViewReplies, setShowViewReplies] = useState(false);
-
-  const [reply_to_comment_updated, set_reply_to_comment_updated] = useState("");
-
-  console.log(props.comment_info.count);
+  const [allRepliesDeleted, setAllRepliesDeleted] = useState(false);
 
   let commenterID = String(props.comment_info.commenter);
   let userID = localStorage.getItem("userID");
+
+  // console.log(
+  //   `${props.comment_info.comment} has reply count = ${props.comment_info.count} with showViewReplies=${showViewReplies} and allRepliesDeleted=${allRepliesDeleted}`
+  // );
 
   const deleteComment = (commentID) => {
     axios({
@@ -27,6 +27,8 @@ export default function Comment(props) {
       params: { comment_id: commentID },
     }).then((response) => {
       if (response.data.result) {
+        console.log(`delete request ${response}`);
+        props.updateComments(props.comment_info.comment);
         console.log(response);
       }
     });
@@ -34,7 +36,6 @@ export default function Comment(props) {
 
   const handleDeleteClicked = () => {
     deleteComment(props.comment_info.comment_id);
-    props.updateComments(props.comment_info.comment.concat("updated"));
   };
 
   let deleteButton =
@@ -71,21 +72,18 @@ export default function Comment(props) {
         image_id: props.comment_info.image_id,
       },
     }).then((response) => {
-      console.log(response);
+      props.updateComments(reply_input);
+
       console.log("reply submitted");
     });
   };
 
   const handleViewRepliesClicked = () => {
-    console.log(showViewReplies);
-
     if (showViewReplies) {
       setShowViewReplies(false);
     } else {
       setShowViewReplies(true);
-      console.log("here");
     }
-    console.log(showViewReplies);
   };
 
   const handleHideRepliesClicked = () => {
@@ -129,7 +127,7 @@ export default function Comment(props) {
           </div>
         ) : null}
 
-        {props.comment_info.count > 0 && showViewReplies == false ? (
+        {props.comment_info.count > 0 && showViewReplies === false ? (
           <div className="reply_form">
             <button onClick={handleViewRepliesClicked}>
               View {props.comment_info.count} replies...
@@ -139,8 +137,9 @@ export default function Comment(props) {
 
         {showViewReplies ? (
           <ReplyComments
-            // reply_updated={replyUpdated}
             comment_id={props.comment_info.comment_id}
+            updateComments={props.updateComments}
+            setShowViewReplies={setShowViewReplies}
           />
         ) : null}
 
