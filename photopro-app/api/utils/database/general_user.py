@@ -4,13 +4,14 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import psycopg2
 from google.cloud import vision
+
 # from google.cloud.vision import types
 import os
 import base64
 import binascii
 import io
 
-vision_api_credentials_file_name = 'utils/database/PhotoPro-fe2b1d6e8742.json'
+vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
 
 
@@ -158,7 +159,9 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         print(os.getcwd())
         vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
         print("2", os.getcwd())
-        vision_client = vision.ImageAnnotatorClient.from_service_account_file(vision_key_filepath)
+        vision_client = vision.ImageAnnotatorClient.from_service_account_file(
+            vision_key_filepath
+        )
         print("3")
 
         content = image
@@ -174,10 +177,10 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         vision_labels = vision_response.label_annotations
 
         for label in vision_labels:
-            if (label.score > (image_classify_threshold_percent / 100)):
+            if label.score > (image_classify_threshold_percent / 100):
                 # print(label.description)
-                label_to_add = label.description.lstrip('\"')
-                label_to_add = label_to_add.rstrip('\"')
+                label_to_add = label.description.lstrip('"')
+                label_to_add = label_to_add.rstrip('"')
                 tags.append(label_to_add)
 
         cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -258,7 +261,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+        cmd = "select images.image_id, caption, uploader, file, title, price, num_likes, created_at FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
                     WHERE uploader!={} AND caption ILIKE '%{}%' ORDER BY created_at DESC LIMIT {}".format(
             user_id, query, batch_size
@@ -313,15 +316,15 @@ def profiles_photos(user_id, batch_size, conn, cur):
         user_id = int(user_id)
         batch_size = int(batch_size)
         if batch_size > 0:
-            cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+            cmd = "select images.image_id, caption, uploader, file, title, price, num_likes, created_at FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
                      WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
                 user_id, batch_size
             )
         else:
-            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} " \
-                  "ORDER BY created_at DESC ".format(
-                user_id
+            cmd = (
+                "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} "
+                "ORDER BY created_at DESC ".format(user_id)
             )
         print(cmd)
         cur.execute(cmd)
@@ -380,13 +383,15 @@ def add_tags(user_id, image_id, tags, conn, cur):
         # If you want to test, change 'images' to 'test_images' in cmd query
         array = "ARRAY["
         for i in set(tags):
-            array = array + "\'" + i + "\',"
-        array = array[:len(array) - 1] + "]"
+            array = array + "'" + i + "',"
+        array = array[: len(array) - 1] + "]"
 
         cmd = "UPDATE images SET tags = \
                 (SELECT array_agg(distinct e) FROM \
                 UNNEST(tags || {}) e) WHERE uploader={} \
-                AND image_id={} AND NOT tags @> {}".format(array, user_id, image_id, array)
+                AND image_id={} AND NOT tags @> {}".format(
+            array, user_id, image_id, array
+        )
 
         # cmd = (
         #     """UPDATE images SET tags = array_cat(tags, {}) \
@@ -411,10 +416,12 @@ def add_tags(user_id, image_id, tags, conn, cur):
 def remove_tag(user_id, image_id, tag, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = (
-                """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' =
-            ANY(tags)) """
-                % (tag, user_id, image_id, tag)
+        cmd = """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' = 
+            ANY(tags)) """ % (
+            tag,
+            user_id,
+            image_id,
+            tag,
         )
         print(cmd)
         cur.execute(cmd)
