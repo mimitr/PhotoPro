@@ -97,6 +97,7 @@ class ImageCard extends Component {
     e.stopPropagation();
     //this.setState({ modalIsOpen: true });
     this.props.setOpenBookmarkModal(true);
+    this.props.setPhotoId(parseInt(this.props.image.id));
   };
 
   handleBuyClicked = (e) => {
@@ -199,13 +200,6 @@ class ImageCard extends Component {
             >
               <BookmarkIcon />
             </IconButton>
-
-            {/* <BookmarkModal
-              openModal={this.modalIsOpen}
-              onCloseModal={() => this.setState({ modalIsOpen: false })}
-            >
-              Fancy Modal
-            </BookmarkModal> */}
 
             <IconButton
               variant="contained"

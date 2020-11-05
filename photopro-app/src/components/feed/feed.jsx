@@ -5,6 +5,7 @@ import BookmarkModal from "../modal/BookmarkModal";
 
 const Feed = (props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
 
   const imgs = props.foundImages.map((img) => {
     return (
@@ -13,6 +14,7 @@ const Feed = (props) => {
         image={img}
         openBookmarkModal={modalIsOpen}
         setOpenBookmarkModal={setModalIsOpen}
+        setPhotoId={setPhotoIdBookmarked}
       />
     );
   });
@@ -24,6 +26,7 @@ const Feed = (props) => {
       <BookmarkModal
         openModal={modalIsOpen}
         onCloseModal={() => setModalIsOpen(false)}
+        photoId={photoIdBookmarked}
       ></BookmarkModal>
     </React.Fragment>
   );

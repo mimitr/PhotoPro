@@ -497,7 +497,7 @@ def api_remove_tag():
     return jsonify({"result": result})
 
 
-@app.route("/create_collection")
+@app.route("/create_collection", methods=["GET", "POST"])
 def api_create_collection():
     collection_name = request.args.get("collection_name")
     private = request.args.get("private")
@@ -509,7 +509,7 @@ def api_create_collection():
     return jsonify({"result": result})
 
 
-@app.route("/add_photo_to_collection")
+@app.route("/add_photo_to_collection", methods=["GET", "POST"])
 def api_add_photo_to_collection():
     collection_id = request.args.get("collection_id")
     image_id = request.args.get("image_id")
@@ -517,5 +517,53 @@ def api_add_photo_to_collection():
 
     if user_id is None or collection_id is None or image_id is None:
         return jsonify({"result": False})
-    result = add_photo_to_collection(int(user_id), int(collection_id), int(image_id), conn, cur)
+    result = add_photo_to_collection(int(collection_id), int(user_id), int(image_id), conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/get_users_collection")
+def api_get_users_collection():
+    limit = request.args.get("batch_size")
+    user_id = app.user_id
+    if limit is None:
+        limit = 32
+
+    if user_id is None and limit is not None:
+        return jsonify({"result": False})
+    
+    result = get_users_collection(user_id, limit, conn, cur)
+
+    if result:
+        
+        processed_result = []
+
+        for tup in result:
+            collection_id, collection_name, creator_id, private = tup
+            processed_result.append(
+                {
+                    "collection_id": collection_id,
+                    "collection_name": collection_name,
+                    "creator_id": creator_id,
+                    "private": private,
+                }
+            )
+        retval = jsonify({"result": processed_result})
+        print(retval)
+        return retval
+
+    else:
+        return jsonify({"result": False})
+
+
+@app.route("/get_collection_data")
+def api_get_collection_data():
+    collection_id = request.args.get("collection_id")
+    limit = request.args.get("batch_size")
+    user_id = app.user_id
+    if limit is None:
+        limit = 32
+
+    if user_id is None and limit is not None and collection_id is not None:
+        return jsonify({"result": False})
+    result = get_collection_data(collection_id, limit, conn, cur)
     return jsonify({"result": result})
