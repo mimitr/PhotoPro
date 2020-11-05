@@ -48,6 +48,13 @@ from utils.database.comments import (
     get_comments_to_comment,
 )
 
+from utils.database.collections import (
+    create_collection,
+    add_photo_to_collection,
+    get_users_collection,
+    get_collection_data
+)
+
 print(conn, cur)
 
 app = Flask(__name__)
@@ -445,6 +452,7 @@ def api_get_tags():
     result = get_tags(image_id, conn, cur)
     return jsonify({"result": result})
 
+
 @app.route("/add_tags")
 def api_add_tags():
     image_id = request.args.get("image_id")
@@ -465,4 +473,16 @@ def api_remove_tag():
         return jsonify({"result": False})
 
     result = remove_tag(app.user_id, image_id, tag, conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/create_collection")
+def api_get_tags():
+    collection_name = request.args.get("collection_name")
+    private = request.args.get("private")
+    user_id = app.user_id
+
+    if user_id is None or collection_name is None or private is None:
+        return jsonify({"result": False})
+    result = create_collection(int(user_id), str(collection_name), bool(private), conn, cur)
     return jsonify({"result": result})
