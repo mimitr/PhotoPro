@@ -143,12 +143,48 @@ def api_discovery():
     else:
         result = discovery(user_id, batch_size, conn, cur)
     print("END QUERY")
-    if result:
-        if len(result) < int(batch_size):
-            new_bsize = int(batch_size) - len(result)
-            fill_result = discovery_with_search_term(user_id, new_bsize, query, conn, cur)
-            #print(fill_result)
-            result.extend(fill_result)
+
+    if not result:
+        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+
+#        if len(result) < int(batch_size):
+#            new_bsize = int(batch_size) - len(result)
+#            fill_result = discovery_with_search_term(user_id, new_bsize, query, conn, cur)
+#            print(fill_result)
+#            result.extend(fill_result)
+        processed_result = []
+
+        for tup in result:
+            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            if not num_likes:
+                num_likes = 0
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            # print(img)
+            processed_result.append(
+                {
+                    "id": id,
+                    "caption": caption,
+                    "uploader": uploader,
+                    "img": img,
+                    "title": title,
+                    "price": str(price),
+                    "created_at": created_at,
+                    "num_likes": num_likes,
+                }
+            )
+
+        # print(imgarr[0])
+
+        retval = jsonify({"result": processed_result})
+        print(retval)
+        return retval
+
+    elif result:
 
         processed_result = []
 
