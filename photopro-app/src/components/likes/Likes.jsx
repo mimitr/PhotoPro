@@ -1,60 +1,81 @@
-import React, { useState } from "react";
-import "./Likes.css";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import './Likes.css';
+import axios from 'axios';
 
 function Likes(props) {
   const [num_likes, set_num_likes] = useState(props.num_likes);
   const [updated, set_updated] = useState(false);
-  let userID = localStorage.getItem("userID");
-  console.log(userID);
+  const [postLiked, setPostLiked] = useState(false);
+
+  useEffect(() => {
+    console.log('check if liked called');
+    checkIfLiked();
+  }, []);
+
+  let userID = localStorage.getItem('userID');
 
   const handleLikeClicked = () => {
-    // user is not logged in => no change
-    // else:
     if (userID != null) {
-      // has not been liked yet => post_likes returns true
-      console.log("user is logged in");
-      if (post_likes(props.image_id)) {
-        console.log("post_likes returns true");
-        if (updated == false) {
-          console.log("number of likes has not been updated yet");
-          set_num_likes((prevState) => parseInt(prevState) + 1);
-          set_updated(true);
-        }
-        // post is already liked
+      if (!postLiked) {
+        post_likes(props.image_id);
       } else {
-        console.log("post likes returns false, then we should delete like");
-        if (delete_likes(props.image_id)) {
-          console.log("delete like returns true");
-          set_num_likes((prevState) => parseInt(prevState) - 1);
-          set_updated(false);
-        } else {
-          console.log("delete like returns false");
-        }
+        delete_likes(props.image_id);
       }
     } else {
-      console.log("user is not logged in yet");
+      console.log('user is not logged in yet');
     }
+  };
+
+  const checkIfLiked = () => {
+    axios({
+      method: 'GET',
+      url: 'http://localhost:5000/get_likers_of_image',
+      params: { image_id: props.image_id, batch_size: 50 },
+    }).then((response) => {
+      console.log(response);
+      if (response.data.result) {
+        for (let i = 0; i < response.data.result.length; i++) {
+          if (userID === response.data.result.user_id) {
+            setPostLiked(true);
+            console.log('This image has been liked before :o');
+          }
+        }
+      } else {
+        console.log('no likers found');
+      }
+    });
   };
 
   const post_likes = (img_id) => {
     axios({
-      method: "GET",
-      url: "http://localhost:5000/post_like_to_image",
+      method: 'GET',
+      url: 'http://localhost:5000/post_like_to_image',
       params: { image_id: img_id },
     }).then((response) => {
-      console.log(`post like ${response.data.result}`);
+      console.log(`post_like api response is ${response.data.result}`);
+      console.log(response);
+
+      if (updated === false) {
+        set_num_likes((prevState) => parseInt(prevState) + 1);
+        set_updated(true);
+      }
+
       return response.data.result;
     });
   };
 
   const delete_likes = (img_id) => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/delete_like_from_image",
+      method: 'POST',
+      url: 'http://localhost:5000/delete_like_from_image',
       params: { image_id: img_id },
     }).then((response) => {
-      console.log(response);
+      console.log(`delete_likes api response is ${response.data.result}`);
+
+      if (updated === true) {
+        set_num_likes((prevState) => parseInt(prevState) - 1);
+        set_updated(false);
+      }
       return response.data.result;
     });
   };
