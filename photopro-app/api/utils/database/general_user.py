@@ -274,7 +274,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         if length == 0:
             return False
         else:
-            # print(data)
+            print(data)
             return data
     except psycopg2.Error as e:
         error = e.pgcode

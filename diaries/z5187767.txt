@@ -62,3 +62,9 @@ modification to the react code so that the tags are taken in a text input in the
 needs to be improved upon for a good user experience.
 I have also been working on auto captioning of photos that are uploaded, from which we can extract nouns from the autocaptoining which
 we will then use as tags for the recommender system.
+
+=======================    WEEK 8    =======================
+I complete the database tables and views and api calls for the collections functionality although
+there is some updating for optimal performance to be done. I also have tried debugging alot
+with the frontend and also backend to fix some of our issues with the database calls or image
+recognition, etc. 
