@@ -569,4 +569,34 @@ def api_get_collection_data():
     if user_id is None and limit is not None and collection_id is not None:
         return jsonify({"result": False})
     result = get_collection_data(collection_id, limit, conn, cur)
+
+    if result:
+
+        processed_result = []
+
+        for tup in result:
+            collection_id, collection_name, creator_id, private, image_id, uploader, img, created_at, tags = tup
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            processed_result.append(
+                {
+                    "collection_id": collection_id,
+                    "collection_name": collection_name,
+                    "creator_id": creator_id,
+                    "private": private,
+                    "image_id": image_id,
+                    "uploader": uploader,
+                    "created_at": created_at,
+                    "tags": tags,
+                    "img": img
+                }
+            )
+        retval = jsonify({"result": processed_result})
+        print(retval)
+        return retval
+
     return jsonify({"result": result})
