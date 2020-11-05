@@ -63,7 +63,7 @@ def get_collection_data(collection_id, limit, conn, cur):
     try:
         # cur.execute('SAVEPOINT save_point')
         cmd = "select collection_id, collection_name, creator_id, private, images.image_id,\
-                uploader,created_at, tags  FROM collection_content \
+                uploader, file, created_at, tags  FROM collection_content \
                 INNER JOIN images ON collection_id={} AND images.image_id=collection_content.image_id LIMIT {}".format(
             int(collection_id), int(limit))
         cur.execute(cmd)

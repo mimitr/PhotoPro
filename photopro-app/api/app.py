@@ -575,7 +575,13 @@ def api_get_collection_data():
         processed_result = []
 
         for tup in result:
-            collection_id, collection_name, creator_id, private, image_id, uploader, created_at, tags = tup
+            collection_id, collection_name, creator_id, private, image_id, uploader, img, created_at, tags = tup
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
             processed_result.append(
                 {
                     "collection_id": collection_id,
@@ -585,7 +591,8 @@ def api_get_collection_data():
                     "image_id": image_id,
                     "uploader": uploader,
                     "created_at": created_at,
-                    "tags": tags
+                    "tags": tags,
+                    "img": img
                 }
             )
         retval = jsonify({"result": processed_result})
