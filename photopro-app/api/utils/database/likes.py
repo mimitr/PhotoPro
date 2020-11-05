@@ -79,13 +79,18 @@ def get_likers(image_id, limit, conn, cur):
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
-        print(result)
         return result
     except psycopg2.Error as e:
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print(e)
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
         # cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except Exception as e:
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print(e)
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
         # cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
