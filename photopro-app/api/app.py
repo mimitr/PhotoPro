@@ -48,6 +48,13 @@ from utils.database.comments import (
     get_comments_to_comment,
 )
 
+from utils.database.collections import (
+    create_collection,
+    add_photo_to_collection,
+    get_users_collection,
+    get_collection_data
+)
+
 print(conn, cur)
 
 app = Flask(__name__)
@@ -241,7 +248,7 @@ def api_edit_post():
     return jsonify({"result": result})
 
 
-@app.route("/post_like_to_image")
+@app.route("/post_like_to_image", methods=["GET", "POST"])
 def api_post_like_to_image():
     image_id = request.args.get("image_id")
     user_id = app.user_id
@@ -487,4 +494,28 @@ def api_remove_tag():
         return jsonify({"result": False})
 
     result = remove_tag(app.user_id, image_id, tag, conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/create_collection")
+def api_create_collection():
+    collection_name = request.args.get("collection_name")
+    private = request.args.get("private")
+    user_id = app.user_id
+
+    if user_id is None or collection_name is None or private is None:
+        return jsonify({"result": False})
+    result = create_collection(int(user_id), str(collection_name), bool(private), conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/add_photo_to_collection")
+def api_add_photo_to_collection():
+    collection_id = request.args.get("collection_id")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or collection_id is None or image_id is None:
+        return jsonify({"result": False})
+    result = add_photo_to_collection(int(user_id), int(collection_id), int(image_id), conn, cur)
     return jsonify({"result": result})

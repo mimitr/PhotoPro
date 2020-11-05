@@ -11,6 +11,8 @@ const PostInfo = (props) => {
   //const [replyUpdated, setReplyUpdated] = useState("");
   console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
 
+  console.log(props);
+
   useEffect(() => {
     fetchComments(props.location.state.id);
     console.log("update comment called");
