@@ -1,29 +1,25 @@
-import React, { useState, useEffect } from "react";
-import "./Comment.css";
-import ReplyIcon from "@material-ui/icons/Reply";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import IconButton from "@material-ui/core/IconButton";
-import Button from "@material-ui/core/Button";
-import axios from "axios";
-import ReplyComments from "./replyComments/ReplyComments";
+import React, { useState, useRef } from 'react';
+import './Comment.css';
+import ReplyIcon from '@material-ui/icons/Reply';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import axios from 'axios';
+import ReplyComments from './replyComments/ReplyComments';
 
 export default function Comment(props) {
-  const [reply_input, set_reply_input] = useState("");
+  const [reply_input, set_reply_input] = useState('');
   const [show_reply_form, set_show_reply_form] = useState(false);
   const [showViewReplies, setShowViewReplies] = useState(false);
-  const [allRepliesDeleted, setAllRepliesDeleted] = useState(false);
+  const [newReply, setNewReply] = useState('');
 
   let commenterID = String(props.comment_info.commenter);
-  let userID = localStorage.getItem("userID");
-
-  // console.log(
-  //   `${props.comment_info.comment} has reply count = ${props.comment_info.count} with showViewReplies=${showViewReplies} and allRepliesDeleted=${allRepliesDeleted}`
-  // );
+  let userID = localStorage.getItem('userID');
 
   const deleteComment = (commentID) => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/post_delete_comment",
+      method: 'POST',
+      url: 'http://localhost:5000/post_delete_comment',
       params: { comment_id: commentID },
     }).then((response) => {
       if (response.data.result) {
@@ -59,22 +55,28 @@ export default function Comment(props) {
   const handleReplySubmitted = (e) => {
     e.preventDefault();
     post_reply_comments(reply_input);
-    // setReplyUpdated(props.comment_info.comment.concat("updated"));
   };
 
   const post_reply_comments = (reply_input) => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/post_comment_to_comment",
+      method: 'POST',
+      url: 'http://localhost:5000/post_comment_to_comment',
       params: {
         comment_id: props.comment_info.comment_id,
         comment: reply_input,
         image_id: props.comment_info.image_id,
       },
     }).then((response) => {
-      props.updateComments(reply_input);
-
-      console.log("reply submitted");
+      if (response.data.result) {
+        props.updateComments(reply_input);
+        set_reply_input('');
+        if (showViewReplies === true) {
+          setTimeout(() => {
+            setNewReply(reply_input);
+          }, 200);
+        }
+        console.log('reply submitted');
+      }
     });
   };
 
@@ -99,7 +101,7 @@ export default function Comment(props) {
           </div>
           <span className="displayName title">
             @{props.comment_info.commenter}
-          </span>{" "}
+          </span>{' '}
           <span className="displayName caption">
             {props.comment_info.created_at}
           </span>
@@ -121,6 +123,7 @@ export default function Comment(props) {
                   id="reply_input"
                   value={reply_input}
                   onChange={(e) => set_reply_input(e.target.value)}
+                  autoComplete="off"
                 />
               </div>
             </form>
@@ -140,6 +143,7 @@ export default function Comment(props) {
             comment_id={props.comment_info.comment_id}
             updateComments={props.updateComments}
             setShowViewReplies={setShowViewReplies}
+            newReply={newReply}
           />
         ) : null}
 

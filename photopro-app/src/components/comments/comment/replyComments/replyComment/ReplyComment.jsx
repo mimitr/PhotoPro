@@ -11,7 +11,7 @@ export default function ReplyComment(props) {
 
   const handleDeleteClicked = () => {
     deleteComment(props.replies_info.comment_id);
-    props.updateReplies(props.replies_info.comment.concat("updated"));
+    // props.updateReplies(props.replies_info.comment.concat("updated"));
   };
 
   let deleteButton =
