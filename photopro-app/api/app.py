@@ -477,7 +477,7 @@ def api_remove_tag():
 
 
 @app.route("/create_collection")
-def api_get_tags():
+def api_create_collection():
     collection_name = request.args.get("collection_name")
     private = request.args.get("private")
     user_id = app.user_id
@@ -485,4 +485,15 @@ def api_get_tags():
     if user_id is None or collection_name is None or private is None:
         return jsonify({"result": False})
     result = create_collection(int(user_id), str(collection_name), bool(private), conn, cur)
+    return jsonify({"result": result})
+
+@app.route("/create_collection")
+def api_add_photo_to_collection():
+    collection_id = request.args.get("collection_id")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or collection_id is None or image_id is None:
+        return jsonify({"result": False})
+    result = create_collection(int(user_id), int(collection_id), int(image_id), conn, cur)
     return jsonify({"result": result})
