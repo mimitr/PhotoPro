@@ -278,11 +278,13 @@ def api_get_likers_of_image():
     image_id = request.args.get("image_id")
     limit = request.args.get("batch_size")
     if image_id is not None and app.user_id is not None and limit is not None:
-        result = get_likers(int(image_id), limit, conn, cur)
-
+        print("=======================================")
+        result = get_likers(int(image_id), int(limit), conn, cur)
+        print("=======================================")
         if result != False:
             processed_result = []
             for tup in result:
+                print(tup)
                 id, first, last = tup
                 processed_result.append(
                     {"user_id": id, "first_name": first, "last_name": last}

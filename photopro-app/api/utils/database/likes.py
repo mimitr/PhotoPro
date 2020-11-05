@@ -70,14 +70,16 @@ def get_num_likes(image_id, conn, cur):
 
 def get_likers(image_id, limit, conn, cur):
     try:
-        cur.execute("SAVEPOINT save_point")
+        # cur.execute("SAVEPOINT save_point")
         cmd = "SELECT liker,first,last FROM users_likes WHERE image_id={} \
                   LIMIT {}".format(
             image_id, limit
         )
+        print(cmd)
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
+        print(result)
         return result
     except psycopg2.Error as e:
         print(e)
