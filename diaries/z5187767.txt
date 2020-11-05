@@ -67,4 +67,4 @@ we will then use as tags for the recommender system.
 I complete the database tables and views and api calls for the collections functionality although
 there is some updating for optimal performance to be done. I also have tried debugging alot
 with the frontend and also backend to fix some of our issues with the database calls or image
-recognition, etc. 
+recognition, etc.

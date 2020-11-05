@@ -11,7 +11,8 @@ import binascii
 import io
 
 vision_api_credentials_file_name = 'utils/database/PhotoPro-fe2b1d6e8742.json'
-image_classify_threshold_percent=50.0
+image_classify_threshold_percent = 50.0
+
 
 def create_user(first, last, email, password, conn, cur):
     try:
@@ -152,7 +153,7 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         #     array = array + "\'" + i + "\',"
         # array = array[:len(array) - 1] + "]"
 
-            #classification code goes here
+        # classification code goes here
         print("1")
         print(os.getcwd())
         vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
@@ -160,7 +161,7 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         vision_client = vision.ImageAnnotatorClient.from_service_account_file(vision_key_filepath)
         print("3")
 
-        content=image
+        content = image
         print("4")
         print(content)
         print("5")
@@ -168,18 +169,16 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         # vision_image = types.Image(content=content)
         print("6")
         vision_response = vision_client.label_detection(image=vision_image)
-        #print(vision_response)
+        # print(vision_response)
         print("7")
         vision_labels = vision_response.label_annotations
 
         for label in vision_labels:
-            if(label.score > (image_classify_threshold_percent/100)):
-                #print(label.description)
-                label_to_add=label.description.lstrip('\"')
-                label_to_add=label_to_add.rstrip('\"')
+            if (label.score > (image_classify_threshold_percent / 100)):
+                # print(label.description)
+                label_to_add = label.description.lstrip('\"')
+                label_to_add = label_to_add.rstrip('\"')
                 tags.append(label_to_add)
-
-
 
         cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s)"
         # print(cmd, uploader, caption, title, price, tags)
@@ -282,11 +281,14 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
+
 def search_by_tag(user_id, batch_size, query, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader != {} AND '{}' = ANY(tags) LIMIT {}".format(
+        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                     WHERE uploader != {} AND '{}' ILIKE ANY(tags) ORDER BY created_at DESC LIMIT {}".format(
             user_id, query, batch_size
         )
         print(cmd)
@@ -406,13 +408,13 @@ def add_tags(user_id, image_id, tags, conn, cur):
 
 
 # simply removes a tag from an image given an image_id
-def remove_tag(user_id,image_id, tag, conn, cur):
+def remove_tag(user_id, image_id, tag, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
         cmd = (
-            """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' =
+                """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' =
             ANY(tags)) """
-            % (tag, user_id, image_id, tag)
+                % (tag, user_id, image_id, tag)
         )
         print(cmd)
         cur.execute(cmd)

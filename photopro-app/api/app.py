@@ -158,9 +158,10 @@ def api_discovery():
 
         for tup in result:
             print(tup)
-            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            id, caption, uploader, img, title, price, created_at, num_likes = tup
             if not num_likes:
                 num_likes = 0
+            print(num_likes)
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -192,9 +193,11 @@ def api_discovery():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, created_at = tup
-            # if not num_likes:
-            #     num_likes = 0
+            print(tup)
+            id, caption, uploader, img, title, price, created_at, num_likes = tup
+            if not num_likes:
+                num_likes = 0
+            print(num_likes)
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -211,7 +214,7 @@ def api_discovery():
                     "title": title,
                     "price": str(price),
                     "created_at": created_at,
-                    # "num_likes": num_likes,
+                    "num_likes": num_likes,
                 }
             )
 
