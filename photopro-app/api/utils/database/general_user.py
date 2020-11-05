@@ -3,7 +3,15 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import psycopg2
+from google.cloud import vision
+from google.cloud.vision import types
+import os
+import base64
+import binascii
+import io
 
+vision_api_credentials_file_name = 'PhotoPro-fe2b1d6e8742.json'
+image_classify_threshold_percent=50.0
 
 def create_user(first, last, email, password, conn, cur):
     try:
@@ -138,7 +146,9 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
 
 
 def post_image(uploader, caption, image, title, price, tags, conn, cur):
+    print("================ START POST===================")
     try:
+        print("================ START POST===================")
         cur.execute("SAVEPOINT save_point")
 
         # array = "ARRAY["
@@ -146,10 +156,37 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         #     array = array + "\'" + i + "\',"
         # array = array[:len(array) - 1] + "]"
 
+            #classification code goes here
+        print("1")
+        vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
+        print("2")
+        vision_client = vision.ImageAnnotatorClient.from_service_account_file(vision_key_filepath)
+        print("3")
+
+        content=image
+        print("4")
+        print(content)
+        print("5")
+        vision_image = types.Image(content=content)
+        print("6")
+        vision_response = vision_client.label_detection(image=vision_image)
+        #print(vision_response)
+        print("7")
+        vision_labels = vision_response.label_annotations
+
+        for label in vision_labels:
+            if(label.score > (image_classify_threshold_percent/100)):
+                #print(label.description)
+                tags.append(label.description)
+
+
+
         cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s)"
         # print(cmd, uploader, caption, title, price, tags)
+        print(tags)
         cur.execute(cmd, (caption, uploader, image, title, price, tags))
         conn.commit()
+
         return True
     except Exception as e:
         print(e)
@@ -351,7 +388,7 @@ def remove_tag(user_id,image_id, tag, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
         cmd = (
-            """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' = 
+            """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' =
             ANY(tags)) """
             % (tag, user_id, image_id, tag)
         )
