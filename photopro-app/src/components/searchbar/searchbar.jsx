@@ -24,7 +24,6 @@ function SearchBar(props) {
     });
 
     console.log(response.data.result);
-    // getLikes(response);
 
     console.log(response);
 
@@ -45,15 +44,6 @@ function SearchBar(props) {
 
   return (
     <React.Fragment>
-      {/* <form onSubmit={handleSubmit} className="flexContainer">
-        <input
-          className="inputStyle"
-          type="text"
-          value={searchVal}
-          onChange={(event) => setSearchVal(event.target.value)}
-        />
-      </form> */}
-
       <div className="searchBar">
         <form
           onSubmit={handleSubmit}
