@@ -69,6 +69,9 @@ class ImageCard extends Component {
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
     this.state = { redirect: null, spans: 0 };
+
+    // for Bookmarks
+    //this.state = { modalIsOpen: false };
   }
 
   componentDidMount() {
@@ -94,6 +97,9 @@ class ImageCard extends Component {
   handleBookmarkClicked = (e) => {
     console.log('bookmark button clicked');
     e.stopPropagation();
+    //this.setState({ modalIsOpen: true });
+    this.props.setOpenBookmarkModal(true);
+    this.props.setPhotoId(parseInt(this.props.image.id));
   };
 
   handleBuyClicked = (e) => {
