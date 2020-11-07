@@ -7,23 +7,22 @@ import UserPhotos from '../components/userPhotos/UserPhotos';
 
 function ProfilePage() {
   const [profileImgs, setImgs] = useState([]);
+  useEffect(() => {
+    requestProfileImages();
+  }, []);
 
   const requestProfileImages = async function () {
-    const response = await axios.get('http://localhost:5000/profile_photos', {
-      params: { batch_size: 30 },
-    });
-
-    return response;
+    const response = await axios
+      .get('http://localhost:5000/profile_photos', {
+        params: { batch_size: 30 },
+      })
+      .then((response) => {
+        if (response.data.result !== false) {
+          console.log(response);
+          setImgs(response.data.result);
+        }
+      });
   };
-
-  useEffect(() => {
-    const imgs = requestProfileImages();
-    imgs.then((response) => {
-      if (response.data.result !== false) {
-        setImgs(response.data.result);
-      }
-    });
-  }, []);
 
   return (
     <React.Fragment>

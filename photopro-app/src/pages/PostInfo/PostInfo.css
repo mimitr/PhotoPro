@@ -1,3 +1,15 @@
+@font-face {
+  font-family: "Roboto";
+  /* font-style: normal; */
+  /* font-weight: 400; */
+  src: local("Lato"), url(../../fonts/Roboto/Roboto-Thin.ttf) format("truetype");
+}
+
+.roboto {
+  font-family: "Roboto";
+  color: rgba(73, 69, 69, 1);
+}
+
 .postWrapper {
   display: grid;
   grid-template-columns: 1fr 2.5fr 3fr;
@@ -68,8 +80,8 @@
 .recImage {
   border: #333 1px solid;
   padding: 1em;
-  width: 100px;
-  height: 150px;
+  width: 150px;
+  height: 200px;
 }
 
 .recImages-nested > h1 {
