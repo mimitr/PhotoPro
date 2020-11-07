@@ -77,3 +77,7 @@ sql query it used, which works. Have yet to implement an api call for it.
 UPDATE
 I modified the discovery api call to now execute a search by tag first, then search by term if the first search doesn't return enough
 results.
+
+7/11/2020
+After the demo this week, I modified the api call a bit more, since some errors with the code occurred prior to the demo. Some of this
+code is messy and redundant however, and I need to refactor some of it.
