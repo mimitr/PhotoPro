@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import './Likes.css';
-import axios from 'axios';
+import React, { useState } from "react";
+import "./Likes.css";
+import axios from "axios";
 
 function Likes(props) {
   const [num_likes, set_num_likes] = useState(props.num_likes);
@@ -18,17 +18,16 @@ function Likes(props) {
     post_likes(props.image_id);
   };
 
-  const post_likes = async function (img_id) {
-    const response = await axios.get(
-      'http://localhost:5000/post_like_to_image',
-      {
-        params: { image_id: img_id },
-      }
-    );
-
-    console.log(response);
-
-    return response;
+  const post_likes = (img_id) => {
+    axios({
+      method: "POST",
+      url: "http://localhost:5000/post_like_to_image",
+      params: {
+        image_id: img_id,
+      },
+    }).then((response) => {
+      console.log(response);
+    });
   };
 
   return (
