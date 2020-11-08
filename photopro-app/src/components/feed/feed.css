@@ -9,7 +9,3 @@
   grid-auto-rows: 10px;
   place-items: center;
 }
-
-.infinite-scroll-component {
-  overflow: hidden;
-}
