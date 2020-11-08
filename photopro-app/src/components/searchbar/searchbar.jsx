@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './searchbar.css';
-import axios from 'axios';
 import Feed from '../feed/feed';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -12,37 +11,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SearchBar(props) {
-  const [imgs, setImgs] = useState([]);
+function SearchBar() {
+  const [query, setQuery] = useState('');
   const [searchVal, setSearchVal] = useState('');
   const classes = useStyles();
 
-  const fetchImages = (term) => {
-    let cancel;
-    axios({
-      method: 'GET',
-      url: 'http://localhost:5000/discovery',
-      params: { query: term, batch_size: 20 }, //user_id: 1
-      cancelToken: new axios.CancelToken((c) => (cancel = c)),
-    })
-      .then((res) => {
-        if (res.data.result != null) {
-          setImgs(imgs.concat(res.data.result));
-        }
-
-        console.log(res);
-        console.log(imgs);
-        console.log(term);
-      })
-      .catch((e) => {
-        if (axios.isCancel(e)) return;
-      });
-    return () => cancel();
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetchImages(searchVal);
+    setQuery(searchVal);
   };
 
   return (
@@ -67,7 +43,7 @@ function SearchBar(props) {
         </form>
       </div>
 
-      <Feed foundImages={imgs} fetchImages={fetchImages} query={searchVal} />
+      <Feed query={query} />
     </React.Fragment>
   );
 }
