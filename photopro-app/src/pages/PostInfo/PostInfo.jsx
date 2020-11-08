@@ -1,27 +1,36 @@
-import React, { useState, useEffect } from "react";
-import "./PostInfo.css";
-import Toolbar from "../../components/toolbar/toolbar";
-import Likes from "../../components/likes/Likes";
-import Comments from "../../components/comments/Comments";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import './PostInfo.css';
+import Toolbar from '../../components/toolbar/toolbar';
+import Likes from '../../components/likes/Likes';
+import Comments from '../../components/comments/Comments';
+import axios from 'axios';
+
+const fetchTags = (id) => {
+  axios({
+    method: 'GET',
+    url: 'http://localhost:5000/get_tags',
+    params: { image_id: id },
+  }).then((response) => {
+    console.log(response);
+    return response.data.result;
+  });
+};
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
-  const [commentUpdated, updateComments] = useState("");
-  //const [replyUpdated, setReplyUpdated] = useState("");
-  console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
+  const [commentUpdated, updateComments] = useState('');
 
-  console.log(props);
+  fetchTags(props.location.state.id);
 
   useEffect(() => {
     fetchComments(props.location.state.id);
-    console.log("update comment called");
+    console.log('update comment called');
   }, [commentUpdated]);
 
   const fetchComments = (id) => {
     axios({
-      method: "GET",
-      url: "http://localhost:5000/get_comments_to_image",
+      method: 'GET',
+      url: 'http://localhost:5000/get_comments_to_image',
       params: { image_id: id, batch_size: 20 },
     }).then((res) => {
       // console.log(res);
@@ -85,7 +94,6 @@ const PostInfo = (props) => {
               image_id={props.location.state.id}
               comments_list={comments}
               updateComments={updateComments}
-              //updateReplies={setReplyUpdated}
             />
           </div>
         </div>
