@@ -14,17 +14,22 @@ Me and Cristian are responsible for front-end, so we are planning to get the mai
 
 Week 4
 
-Solved the issue with React 'props' that I have faced with last week. Successfully managed to display the photos on the main page, and make them align without weird gaps.
+Solved the issue with React 'props' that I have faced with last week. Successfully managed to display the photos on the main page, and make them align nicely without weird gaps. Created a feature where as you hover on each image, the shadow gets add on and 3 buttons "Like", "Bookmark" and "Buy" are shown.
 
 Week 5
 
 Started implementing the like, comment and bookmark buttons, so that as you hover on each photo card on the discover page, those 3 buttons appear and allow the user to use those functionalities. Started learning how to use grids in CSS in order to build the pages to portray the photo along with it's price, likes, comments, author and other related photos.
 
+Started working on the each post. Learned how to use grid from scratch and spent time designing and aligning the post page. Each post shows the author, number or likes, price and comments. Had some issues with the backend APIs, but through communication figured out the issues. Started working on show likes, making sure that when the user presses the like butron for the second time it would get un-liked. 
 
 Week 6
 Struggled with arranging the grids in CSS, by the middle of the week successfully learnt how to use it, and built the basic look of the photos information page. Started learning how to implement infinite scrolling for the main display page.
 
+Started implementing infinite scroll but faced the issue of infinite fetching of the content. Still trying to solve it. Started working on the comments, designing the look and how to stack them on top of each other.
+
 Week 7
+
+Continuing working on comments. Had issues with backend APIs, but solved them by adding extra headers and fixing the variable types. Successfully showed each comment as well as the user who posted it and the date. Made sure when the comment is added, it is automatically added to the comment section without the need to refresh the page. Managed to design and show the replies to each comment along with showing how many comments are in total for each comment. Managed to delete comments only if you are the one who posted it.
 
 Week 8
 

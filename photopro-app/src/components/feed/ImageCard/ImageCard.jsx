@@ -22,28 +22,30 @@ const deletePostRequest = async function (imageID) {
 // matrial-ui component style override
 const styles = {
   root: {
-    top: '60%',
+    bottom: '0%',
     left: '50%',
-    width: '52px',
-    backgroundColor: 'rgba(226, 227, 233, 0.82)',
-    '&:hover': {
-      backgroundColor: 'rgba(140, 140, 140, 0.82)',
-    },
+    color: 'rgba(255, 255, 255,1)',
+    height: '20%',
+    width: '20%',
+  },
+  iconSize: {
+    width: '60%',
+    height: '60%',
   },
   like: {
-    left: '50%',
+    left: '5%',
   },
   bookmark: {
-    left: '20%',
+    left: '60%',
   },
   buy: {
     left: '80%',
   },
   delete: {
-    left: '8%',
+    left: '4%',
     top: '10%',
-    width: '13%',
-    height: '13%',
+    width: '16%',
+    height: '20%',
     '&:hover': {
       backgroundColor: 'rgba(180, 65, 65, 0.82)',
     },
@@ -53,13 +55,11 @@ const styles = {
     top: '10%',
     width: '14%',
     height: '18%',
-    '&:hover': {
-      backgroundColor: 'rgba(219, 193, 20, 0.71)',
+    left: '82%',
     },
   },
 };
 
-class ImageCard extends Component {
   constructor(props) {
     super(props);
 
@@ -67,6 +67,9 @@ class ImageCard extends Component {
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
     this.state = { redirect: null, spans: 0 };
+
+    // for Bookmarks
+    //this.state = { modalIsOpen: false };
   }
 
   componentDidMount() {
@@ -80,6 +83,7 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
+    console.log(this.props.image);
     this.setState({ redirect: `/post-${this.props.image.id}` });
   };
 
@@ -91,6 +95,9 @@ class ImageCard extends Component {
   handleBookmarkClicked = (e) => {
     console.log('bookmark button clicked');
     e.stopPropagation();
+    //this.setState({ modalIsOpen: true });
+    this.props.setOpenBookmarkModal(true);
+    this.props.setPhotoId(parseInt(this.props.image.id));
   };
 
   handleBuyClicked = (e) => {
@@ -169,6 +176,7 @@ class ImageCard extends Component {
       component = (
         <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
           <div onClick={this.handleImageClicked} className="photo-container">
+            <div className="icon-bar"></div>
             <img
               ref={this.imageRef}
               src={`data:image/jpg;base64,${this.props.image.img}`}
@@ -181,7 +189,8 @@ class ImageCard extends Component {
               }}
               onClick={this.handleLikeClicked}
             >
-              <FavoriteIcon />
+              <FavoriteIcon classes={{ root: this.props.classes.iconSize }} />
+              <div className="num-likes">{this.props.image.num_likes}</div>
             </IconButton>
 
             <IconButton

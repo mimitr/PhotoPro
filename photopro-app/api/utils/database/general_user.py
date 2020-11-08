@@ -3,6 +3,16 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import psycopg2
+from google.cloud import vision
+
+# from google.cloud.vision import types
+import os
+import base64
+import binascii
+import io
+
+vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
+image_classify_threshold_percent = 50.0
 
 
 def create_user(first, last, email, password, conn, cur):
@@ -19,18 +29,15 @@ def create_user(first, last, email, password, conn, cur):
     except psycopg2.errors.UniqueViolation as e:
         print(e)
         # return "Unable to create new account. Account with that email already exists."
-        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
 def login_user(email, password, conn, cur):
     try:
-        cur.execute("SAVEPOINT save_point")
         cmd = "SELECT * FROM users WHERE email='{}' AND password='{}'".format(
             email, password
         )
@@ -53,7 +60,6 @@ def login_user(email, password, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False, None
 
 
@@ -137,16 +143,52 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
         return False
 
 
-def post_image(uploader, caption, image, title, price, conn, cur):
+def post_image(uploader, caption, image, title, price, tags, conn, cur):
+    print("================ START POST===================")
     try:
+        print("================ START POST===================")
         cur.execute("SAVEPOINT save_point")
-        cmd = """
-            INSERT INTO images (caption, uploader, file, title, price)
-            VALUES (%s, %s, %s, %s, %s)
-            """
-        print(cmd, uploader, caption, title, price)
-        cur.execute(cmd, (caption, uploader, image, title, price))
+
+        # array = "ARRAY["
+        # for i in set(tags):
+        #     array = array + "\'" + i + "\',"
+        # array = array[:len(array) - 1] + "]"
+
+        # classification code goes here
+        print("1")
+        print(os.getcwd())
+        vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
+        print("2", os.getcwd())
+        vision_client = vision.ImageAnnotatorClient.from_service_account_file(
+            vision_key_filepath
+        )
+        print("3")
+
+        content = image
+        print("4")
+        print(content)
+        print("5")
+        vision_image = vision.Image(content=content)
+        # vision_image = types.Image(content=content)
+        print("6")
+        vision_response = vision_client.label_detection(image=vision_image)
+        # print(vision_response)
+        print("7")
+        vision_labels = vision_response.label_annotations
+
+        for label in vision_labels:
+            if label.score > (image_classify_threshold_percent / 100):
+                # print(label.description)
+                label_to_add = label.description.lstrip('"')
+                label_to_add = label_to_add.rstrip('"')
+                tags.append(label_to_add)
+
+        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s)"
+        # print(cmd, uploader, caption, title, price, tags)
+        print(tags)
+        cur.execute(cmd, (caption, uploader, image, title, price, tags))
         conn.commit()
+
         return True
     except Exception as e:
         print(e)
@@ -171,10 +213,10 @@ def delete_image_post(image_id, uploader, conn, cur):
 
         cmd = """
             DELETE FROM images
-            WHERE image_id = %s AND uploader = %s;
+            WHERE image_id = %s;
             """
         print(cmd)
-        cur.execute(cmd, (image_id, uploader))
+        cur.execute(cmd, (image_id,))
         conn.commit()
         return True
     except Exception as e:
@@ -195,7 +237,7 @@ def discovery(user_id, batch_size, conn, cur):
         batch_size = int(batch_size)
         cmd = (
             "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} "
-            "LIMIT {}".format(user_id, batch_size)
+            "ORDER BY created_at DESC LIMIT {}".format(user_id, batch_size)
         )
         print(cmd)
         cur.execute(cmd)
@@ -221,7 +263,7 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         batch_size = int(batch_size)
         cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE uploader!={} AND caption ILIKE '%{}%' LIMIT {}".format(
+                    WHERE uploader!={} AND caption ILIKE '%{}%' ORDER BY created_at DESC LIMIT {}".format(
             user_id, query, batch_size
         )
         print(cmd)
@@ -234,12 +276,37 @@ def discovery_with_search_term(user_id, batch_size, query, conn, cur):
         if length == 0:
             return False
         else:
-            # print(data)
+            print(data)
             return data
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+
+def search_by_tag(user_id, batch_size, query, conn, cur):
+    try:
+        user_id = int(user_id)
+        batch_size = int(batch_size)
+        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                     WHERE uploader != {} AND '{}' ILIKE ANY(tags) ORDER BY created_at DESC LIMIT {}".format(
+            user_id, query, batch_size
+        )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        data = cur.fetchmany(batch_size)
+        length = len(data)
+        # print("length of data is ", data)
+        if length == 0:
+            return False
+        else:
+            return data
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
         return False
 
 
@@ -249,13 +316,15 @@ def profiles_photos(user_id, batch_size, conn, cur):
         user_id = int(user_id)
         batch_size = int(batch_size)
         if batch_size > 0:
-            cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
-                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id WHERE uploader={} LIMIT {}".format(
+            cmd = "select images.image_id, caption, uploader, file, title, price, num_likes, created_at FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                     WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
                 user_id, batch_size
             )
         else:
-            cmd = "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={}".format(
-                user_id
+            cmd = (
+                "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} "
+                "ORDER BY created_at DESC ".format(user_id)
             )
         print(cmd)
         cur.execute(cmd)
@@ -309,13 +378,27 @@ def edit_post(user_id, image, title, price, caption, tags, conn, cur):
 
 
 # adds a tag to an image given image_id and does not add duplicates
-def add_tag(image_id, tag, conn, cur):
+def add_tags(user_id, image_id, tags, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = (
-            """UPDATE images SET tags = array_cat(tags, '{%s}') WHERE image_id = %d AND NOT ('%s' = ANY(tags)) """
-            % (tag, image_id, tag)
+        array = "ARRAY["
+        for i in set(tags):
+            array = array + "'" + i + "',"
+        array = array[: len(array) - 1] + "]"
+
+        cmd = "UPDATE images SET tags = \
+                (SELECT array_agg(distinct e) FROM \
+                UNNEST(tags || {}) e) WHERE uploader={} \
+                AND image_id={} AND NOT tags @> {}".format(
+            array, user_id, image_id, array
         )
+
+        # cmd = (
+        #     """UPDATE images SET tags = array_cat(tags, {}) \
+        #     WHERE uploader = %s AND image_id = %d AND NOT (
+        #     '%s' = ANY(tags)) """
+        #     % (tag, user_id, image_id)
+        # )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -330,12 +413,15 @@ def add_tag(image_id, tag, conn, cur):
 
 
 # simply removes a tag from an image given an image_id
-def remove_tag(image_id, tag, conn, cur):
+def remove_tag(user_id, image_id, tag, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = (
-            """UPDATE images SET tags = array_remove(tags, '%s') WHERE image_id = %d AND ('%s' = ANY(tags)) """
-            % (tag, image_id, tag)
+        cmd = """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' = 
+            ANY(tags)) """ % (
+            tag,
+            user_id,
+            image_id,
+            tag,
         )
         print(cmd)
         cur.execute(cmd)
