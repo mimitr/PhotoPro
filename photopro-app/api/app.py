@@ -53,7 +53,7 @@ from utils.database.collections import (
     create_collection,
     add_photo_to_collection,
     get_users_collection,
-    get_collection_data
+    get_collection_data,
 )
 
 print(conn, cur)
@@ -145,12 +145,8 @@ def api_discovery():
     query = request.args.get("query")
     print("START QUERY")
     if query is not None:
-<<<<<<< HEAD
-        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
-=======
         result = search_by_tag(user_id, batch_size, query, conn, cur)
-#        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
->>>>>>> master
+    #        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
     print("END QUERY")
@@ -158,11 +154,11 @@ def api_discovery():
     if not result:
         result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
 
-#        if len(result) < int(batch_size):
-#            new_bsize = int(batch_size) - len(result)
-#            fill_result = discovery_with_search_term(user_id, new_bsize, query, conn, cur)
-#            print(fill_result)
-#            result.extend(fill_result)
+        #        if len(result) < int(batch_size):
+        #            new_bsize = int(batch_size) - len(result)
+        #            fill_result = discovery_with_search_term(user_id, new_bsize, query, conn, cur)
+        #            print(fill_result)
+        #            result.extend(fill_result)
         if not result:
             return jsonify({"result": False})
         processed_result = []
@@ -418,13 +414,9 @@ def api_post_comment_to_comment():
     if image_id is None or comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
-<<<<<<< HEAD
-        result = post_comment_to_comment(comment_id, commenter, comment, conn, cur)
-=======
         result = post_comment_to_comment(
             image_id, commenter, comment, comment_id, conn, cur
         )
->>>>>>> master
         return jsonify({"result": result})
     return jsonify({"result": result})
 
@@ -556,7 +548,9 @@ def api_create_collection():
 
     if user_id is None or collection_name is None or private is None:
         return jsonify({"result": False})
-    result = create_collection(int(user_id), str(collection_name), bool(private), conn, cur)
+    result = create_collection(
+        int(user_id), str(collection_name), bool(private), conn, cur
+    )
     return jsonify({"result": result})
 
 
@@ -568,8 +562,11 @@ def api_add_photo_to_collection():
 
     if user_id is None or collection_id is None or image_id is None:
         return jsonify({"result": False})
-    result = add_photo_to_collection(int(collection_id), int(user_id), int(image_id), conn, cur)
+    result = add_photo_to_collection(
+        int(collection_id), int(user_id), int(image_id), conn, cur
+    )
     return jsonify({"result": result})
+
 
 @app.route("/get_users_collection")
 def api_get_users_collection():
@@ -580,11 +577,11 @@ def api_get_users_collection():
 
     if user_id is None and limit is not None:
         return jsonify({"result": False})
-    
+
     result = get_users_collection(user_id, limit, conn, cur)
 
     if result:
-        
+
         processed_result = []
 
         for tup in result:
@@ -598,7 +595,7 @@ def api_get_users_collection():
                     "collection_name": collection_name,
                     "creator_id": creator_id,
                     "private": private,
-                    "num_photos": num_photos
+                    "num_photos": num_photos,
                 }
             )
         retval = jsonify({"result": processed_result})
@@ -626,7 +623,17 @@ def api_get_collection_data():
         processed_result = []
 
         for tup in result:
-            collection_id, collection_name, creator_id, private, image_id, uploader, img, created_at, tags = tup
+            (
+                collection_id,
+                collection_name,
+                creator_id,
+                private,
+                image_id,
+                uploader,
+                img,
+                created_at,
+                tags,
+            ) = tup
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -643,7 +650,7 @@ def api_get_collection_data():
                     "uploader": uploader,
                     "created_at": created_at,
                     "tags": tags,
-                    "img": img
+                    "img": img,
                 }
             )
         retval = jsonify({"result": processed_result})

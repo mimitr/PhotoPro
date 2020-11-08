@@ -56,10 +56,10 @@ const styles = {
     width: '14%',
     height: '18%',
     left: '82%',
-    },
   },
 };
 
+class ImageCard extends Component {
   constructor(props) {
     super(props);
 
