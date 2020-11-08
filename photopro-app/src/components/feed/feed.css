@@ -9,3 +9,9 @@
   grid-auto-rows: 10px;
   place-items: center;
 }
+
+.bug-fix {
+  position: relative;
+  top: 80px;
+  border: 3px solid red;
+}
