@@ -29,7 +29,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import sys
 import base64
-
+import random
+import os
+import PIL
 for i in sys.path:
     print(i)
 
@@ -60,6 +62,8 @@ print(conn, cur)
 
 app = Flask(__name__)
 app.user_id = None
+app.last_query = ""
+app.start_point = 0
 CORS(app)
 
 
@@ -143,90 +147,103 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
-    print("START QUERY")
+    if query is None:
+        query = ""
+    start_point = 0
+
+    if app.last_query == query:
+        start_point = app.start_point
+    else:
+        app.start_point = 0
+    app.last_query = query
     if query is not None:
-        result = search_by_tag(user_id, batch_size, query, conn, cur)
-    #        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+        result = search_by_tag(user_id, batch_size, query, start_point, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
-    print("END QUERY")
 
     if not result:
-        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+        result = discovery_with_search_term(user_id, batch_size, query, start_point, conn, cur)
 
-        #        if len(result) < int(batch_size):
-        #            new_bsize = int(batch_size) - len(result)
-        #            fill_result = discovery_with_search_term(user_id, new_bsize, query, conn, cur)
-        #            print(fill_result)
-        #            result.extend(fill_result)
         if not result:
             return jsonify({"result": False})
         processed_result = []
-
-        for tup in result:
-            print(tup)
-            id, caption, uploader, img, title, price, created_at, num_likes = tup
-            if not num_likes:
-                num_likes = 0
-            print(num_likes)
-            file = "image.jpeg"
-            photo = open(file, "wb")
-            photo.write(img)
-            photo.close()
-            img = apply_watermark(file).getvalue()
-            img = base64.encodebytes(img).decode("utf-8")
-            # print(img)
-            processed_result.append(
-                {
-                    "id": id,
-                    "caption": caption,
-                    "uploader": uploader,
-                    "img": img,
-                    "title": title,
-                    "price": str(price),
-                    "created_at": created_at,
-                    "num_likes": num_likes,
-                }
-            )
-
+        try:
+            for tup in result:
+                print(tup)
+                id, caption, uploader, img, title, price, created_at, num_likes = tup
+                if not num_likes:
+                    num_likes = 0
+                print(num_likes)
+                file = "image.jpeg"
+                photo = open(file, "wb")
+                photo.write(img)
+                photo.close()
+                img = apply_watermark(file).getvalue()
+                img = base64.encodebytes(img).decode("utf-8")
+                if id > app.start_point:
+                    app.start_point = id
+                    processed_result.append(
+                        {
+                            "id": id,
+                            "caption": caption,
+                            "uploader": uploader,
+                            "img": img,
+                            "title": title,
+                            "price": str(price),
+                            "created_at": created_at,
+                            "num_likes": num_likes,
+                        }
+                    )
+        except PIL.UnidentifiedImageError as e:
+            print(e)
         # print(imgarr[0])
 
-        retval = jsonify({"result": processed_result})
-        print(retval)
-        return retval
+        if len(processed_result) > 0:
+            retval = jsonify({"result": processed_result})
+            print(retval)
+            return retval
+        else:
+            return jsonify({"result": False})
 
     elif result:
 
         processed_result = []
 
-        for tup in result:
-            print(tup)
-            id, caption, uploader, img, title, price, created_at, num_likes = tup
-            if not num_likes:
-                num_likes = 0
-            print(num_likes)
-            file = "image.jpeg"
-            photo = open(file, "wb")
-            photo.write(img)
-            photo.close()
-            img = apply_watermark(file).getvalue()
-            img = base64.encodebytes(img).decode("utf-8")
-            processed_result.append(
-                {
-                    "id": id,
-                    "caption": caption,
-                    "uploader": uploader,
-                    "img": img,
-                    "title": title,
-                    "price": str(price),
-                    "created_at": created_at,
-                    "num_likes": num_likes,
-                }
-            )
-
-        retval = jsonify({"result": processed_result})
-        print(retval)
-        return retval
+        try:
+            for tup in result:
+                print(tup)
+                id, caption, uploader, img, title, price, created_at, num_likes = tup
+                if not num_likes:
+                    num_likes = 0
+                print(num_likes)
+                file = "image.jpeg"
+                photo = open(file, "wb")
+                photo.write(img)
+                photo.close()
+                img = apply_watermark(file).getvalue()
+                img = base64.encodebytes(img).decode("utf-8")
+                if id > app.start_point:
+                    app.start_point = id
+                    processed_result.append(
+                        {
+                            "id": id,
+                            "caption": caption,
+                            "uploader": uploader,
+                            "img": img,
+                            "title": title,
+                            "price": str(price),
+                            "created_at": created_at,
+                            "num_likes": num_likes,
+                        }
+                    )
+        except PIL.UnidentifiedImageError as e:
+            print(e)
+        if len(processed_result) > 0:
+            retval = jsonify({"result": processed_result})
+            print(retval)
+            return retval
+        else:
+            return jsonify({"result": False})
     else:
         return jsonify({"result": False})
 
