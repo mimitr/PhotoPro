@@ -74,7 +74,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
     //getUsersCollections();
     console.log(enteredCollection);
 
-    createCollections();
+    const newCollectionId = createCollections();
 
     //setNewCollectionEntered(enteredCollection);
     //addPhotoToCollections();
@@ -90,15 +90,19 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
       },
     }).then((response) => {
       console.log(response);
+      console.log(`colection created should return collection_id ${response}`);
+      if (response.data.result) {
+        addPhotoToCollections(response.data.result);
+      }
     });
   };
 
-  const addPhotoToCollections = (col_id, img_id) => {
+  const addPhotoToCollections = (col_id) => {
     axios({
       method: "POST",
       url: "http://localhost:5000/add_photo_to_collection",
       params: {
-        collection_id: 15,
+        collection_id: col_id,
         image_id: photoId,
       },
     }).then((response) => {
