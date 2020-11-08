@@ -3,22 +3,25 @@ import ReactDom from "react-dom";
 import "./BookmarkModal.css";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import axios from "axios";
 
 import CollectionFolder from "./collectionFolder/CollectionFolder";
 
-export default function BookmarkModal({
-  openModal,
-  children,
-  onCloseModal,
-  photoId,
-}) {
+export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
   const [enteredCollection, setEnteredCollection] = useState("");
   const [newCollectionEntered, setNewCollectionEntered] = useState("");
-  const [privateCollection, setPrivateCollection] = useState(false);
 
   const [usersCollections, setUsersCollections] = useState(null);
+
+  const [showCreateCollectionButton, setShowCreateCollectionButton] = useState(
+    true
+  );
+
+  const [privateCollection, setPrivateCollection] = useState(false);
 
   const getUsersCollections = () => {
     axios({
@@ -39,7 +42,13 @@ export default function BookmarkModal({
   useEffect(() => {
     console.log("getting users collections");
     getUsersCollections();
-  }, [newCollectionEntered]);
+  }, []);
+
+  useEffect(() => {
+    console.log(
+      `collection button state changed to ${showCreateCollectionButton}`
+    );
+  }, [showCreateCollectionButton]);
 
   if (!openModal) {
     return null;
@@ -52,6 +61,7 @@ export default function BookmarkModal({
         <CollectionFolder
           key={collection.collection_id}
           collectionInfo={collection}
+          photoId={photoId}
         />
       );
     });
@@ -61,11 +71,12 @@ export default function BookmarkModal({
 
   const handleEnteredCollection = (e) => {
     e.preventDefault();
-    getUsersCollections();
-    console.log(usersCollections);
+    //getUsersCollections();
+    console.log(enteredCollection);
 
-    //createCollections();
-    setNewCollectionEntered(enteredCollection);
+    createCollections();
+
+    //setNewCollectionEntered(enteredCollection);
     //addPhotoToCollections();
   };
 
@@ -95,30 +106,84 @@ export default function BookmarkModal({
     });
   };
 
-  //console.log(usersCollections);
+  console.log(`collectionButton = ${showCreateCollectionButton}`);
 
   return ReactDom.createPortal(
     <React.Fragment>
       <div className="overlayStyles" />
       <div className="bookmarkModal">
         <div className="closeButton">
-          <IconButton variant="contained" onClick={onCloseModal}>
+          <IconButton
+            variant="contained"
+            onClick={() => {
+              setShowCreateCollectionButton(true);
+              setOpenModal(false);
+            }}
+          >
             <HighlightOffIcon />
           </IconButton>
         </div>
         <h2>Add to Collection</h2>
-        <div className="enteredCollection">
-          <form onSubmit={handleEnteredCollection}>
-            <div>
-              <input
-                type="reply"
-                value={enteredCollection}
-                onChange={(e) => setEnteredCollection(e.target.value)}
-              />
-            </div>
-          </form>
-        </div>
-        <div className="collectionFolders">{collectionFolders}</div>
+
+        {showCreateCollectionButton ? (
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              setShowCreateCollectionButton(false);
+              console.log("create collection button clicked");
+            }}
+          >
+            Create a new collection
+          </Button>
+        ) : null}
+
+        {showCreateCollectionButton ? (
+          <div className="collectionFolders">{collectionFolders}</div>
+        ) : null}
+
+        {!showCreateCollectionButton ? (
+          <div className="enteredCollection">
+            <form onSubmit={handleEnteredCollection}>
+              <div>
+                <input
+                  type="reply"
+                  onChange={(e) => setEnteredCollection(e.target.value)}
+                />
+              </div>
+              <Button variant="contained" color="primary" type="submit">
+                Create collection
+              </Button>
+            </form>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={privateCollection}
+                  onChange={() => {
+                    if (privateCollection == true) {
+                      setPrivateCollection(false);
+                    } else {
+                      setPrivateCollection(true);
+                    }
+                  }}
+                  name="privateCheckbox"
+                  color="primary"
+                />
+              }
+              label="Private"
+            />
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setShowCreateCollectionButton(true);
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        ) : null}
       </div>
     </React.Fragment>,
     document.getElementById("portal")
