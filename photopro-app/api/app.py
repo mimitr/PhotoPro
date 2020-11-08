@@ -165,7 +165,7 @@ def api_discovery():
 
         for tup in result:
             print(tup)
-            id, caption, uploader, img, title, price, created_at, num_likes = tup
+            id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
             if not num_likes:
                 num_likes = 0
             print(num_likes)
@@ -186,6 +186,7 @@ def api_discovery():
                     "price": str(price),
                     "created_at": created_at,
                     "num_likes": num_likes,
+                    "tags": tags
                 }
             )
 
@@ -201,7 +202,7 @@ def api_discovery():
 
         for tup in result:
             print(tup)
-            id, caption, uploader, img, title, price, created_at, num_likes = tup
+            id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
             if not num_likes:
                 num_likes = 0
             print(num_likes)
@@ -221,6 +222,7 @@ def api_discovery():
                     "price": str(price),
                     "created_at": created_at,
                     "num_likes": num_likes,
+                    "tags": tags
                 }
             )
 
@@ -236,9 +238,9 @@ def api_profile_photos():
     user_id = app.user_id
     if user_id is None:
         return jsonify({"result": False})
-    batch_size = request.args.get("batch_size")
-    if batch_size is None:
-        batch_size = -1
+    batch_size = int(request.args.get("batch_size"))
+    if batch_size is None or batch_size <= 0:
+        batch_size = 32
 
     result = profiles_photos(user_id, batch_size, conn, cur)
 
@@ -247,7 +249,7 @@ def api_profile_photos():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
             if not num_likes:
                 num_likes = 0
             file = "image.jpeg"
@@ -266,6 +268,7 @@ def api_profile_photos():
                     "price": str(price),
                     "created_at": created_at,
                     "num_likes": num_likes,
+                    "tags": tags
                 }
             )
 
