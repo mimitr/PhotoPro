@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./CollectionDataPage.css";
 import CollectionImage from "./collectionImage/CollectionImage";
+import LockIcon from "@material-ui/icons/Lock";
 
 export default function CollectionDataPage(props) {
   const [collectionImages, setCollectionImages] = useState([]);
@@ -34,7 +35,15 @@ export default function CollectionDataPage(props) {
 
   return (
     <div className="collectionDataWrapper">
-      <div className="title"> className="title"</div>
+      <div className="collection-info">
+        {props.location.state ? (
+          <LockIcon>Create a new collection</LockIcon>
+        ) : null}
+        <h1>{props.location.state.collection_name}</h1>{" "}
+        <p>by @{props.location.state.creator_id}</p>
+        <p>Total photos: {props.location.state.num_photos}</p>
+        <p></p>
+      </div>
       {collectionImagesComponents}
     </div>
   );

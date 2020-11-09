@@ -74,7 +74,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
     //getUsersCollections();
     console.log(enteredCollection);
 
-    const newCollectionId = createCollections();
+    createCollections();
 
     //setNewCollectionEntered(enteredCollection);
     //addPhotoToCollections();

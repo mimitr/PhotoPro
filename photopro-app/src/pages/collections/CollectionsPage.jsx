@@ -14,6 +14,12 @@ export default function CollectionsPage() {
   const [collectionPrivateClicked, setCollectionPrivateClicked] = useState(
     null
   );
+  const [collectionNumPhotosClicked, setCollectionNumPhotosClicked] = useState(
+    null
+  );
+  const [collectionCreatorClicked, setCollectionCreatorClicked] = useState(
+    null
+  );
 
   useEffect(() => {
     console.log("getting users collections");
@@ -48,6 +54,8 @@ export default function CollectionsPage() {
         setCollectionIdClicked={setCollectionIdClicked}
         setCollectionNameClicked={setCollectionNameClicked}
         setCollectionPrivateClicked={setCollectionPrivateClicked}
+        setCollectionNumPhotosClicked={setCollectionNumPhotosClicked}
+        setCollectionCreatorClicked={setCollectionCreatorClicked}
       />
     );
   });
@@ -59,6 +67,10 @@ export default function CollectionsPage() {
         pathname: `/collection-${collectionIdClicked}`,
         state: {
           collection_id: `${collectionIdClicked}`,
+          collection_name: `${collectionNameClicked}`,
+          private: `${collectionPrivateClicked}`,
+          num_photos: `${collectionNumPhotosClicked}`,
+          creator_id: `${collectionCreatorClicked}`,
         },
       }}
     />
