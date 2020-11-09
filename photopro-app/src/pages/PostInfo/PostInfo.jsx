@@ -24,11 +24,14 @@ const PostInfo = (props) => {
       url: "http://localhost:5000/get_comments_to_image",
       params: { image_id: id, batch_size: 20 },
     }).then((res) => {
+      // console.log(res);
+      // console.log(`in fetch comments with result = ${res.data.result}`);
       if (res.data.result != false) {
+        // console.log('result was not false');
         setComments(res.data.result);
-        console.log(res.data.result);
+      } else {
+        setComments([]);
       }
-      console.log(res);
     });
   };
 
