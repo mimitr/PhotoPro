@@ -25,7 +25,7 @@ const Feed = (props) => {
       <div className="image-list">{imgs}</div>
       <BookmarkModal
         openModal={modalIsOpen}
-        onCloseModal={() => setModalIsOpen(false)}
+        setOpenModal={setModalIsOpen}
         photoId={photoIdBookmarked}
       ></BookmarkModal>
     </React.Fragment>
