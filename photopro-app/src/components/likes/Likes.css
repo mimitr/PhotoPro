@@ -1,4 +1,6 @@
 .like > p {
+  display: flex;
   text-align: center;
-  margin: 0px;
+  justify-content: center;
+  margin: 1px;
 }
