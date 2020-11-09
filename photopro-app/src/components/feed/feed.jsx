@@ -3,8 +3,6 @@ import './feed.css';
 import axios from 'axios';
 import ImageCard from './ImageCard/ImageCard';
 import BookmarkModal from '../modal/BookmarkModal';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { ImageSearch } from '@material-ui/icons';
 
 const Feed = (props) => {
   const [imgs, setImgs] = useState([]);

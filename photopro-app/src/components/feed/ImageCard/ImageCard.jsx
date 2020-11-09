@@ -61,6 +61,9 @@ const styles = {
     width: '14%',
     height: '18%',
     left: '82%',
+    '&:hover': {
+      backgroundColor: 'rgba(6, 149, 193, 0.7)',
+    },
   },
 };
 
