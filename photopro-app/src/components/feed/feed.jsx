@@ -40,7 +40,7 @@ const Feed = (props) => {
     axios({
       method: 'GET',
       url: 'http://localhost:5000/discovery',
-      params: { query: term, batch_size: 5 }, //user_id: 1
+      params: { query: term, batch_size: 10 }, //user_id: 1
     }).then((res) => {
       console.log(res);
       if (res.data.result != false) {
@@ -62,8 +62,9 @@ const Feed = (props) => {
     });
   };
 
-  // console.log(`LENGTH = ${imgs.length}`);
-  // console.log(`HASMORE = ${hasMore}`);
+  console.log(`LENGTH = ${imgs.length}`);
+  console.log(`HASMORE = ${hasMore}`);
+  console.log(`LOADING = ${loading}`);
 
   return (
     <React.Fragment>
@@ -77,7 +78,7 @@ const Feed = (props) => {
 
           if (imgs.length === index + 1) {
             return (
-              <div key={index} ref={lastImageRef} className="bug-fix">
+              <React.Fragment key={index}>
                 <ImageCard
                   key={image.id}
                   image={image}
@@ -85,7 +86,17 @@ const Feed = (props) => {
                   setOpenBookmarkModal={setModalIsOpen}
                   setPhotoId={setPhotoIdBookmarked}
                 />
-              </div>
+                <div
+                  key={index}
+                  ref={lastImageRef}
+                  style={{
+                    position: 'relative',
+                    bottom: '200px',
+                    // border: '3px solid red',
+                    height: '0%',
+                  }}
+                ></div>
+              </React.Fragment>
             );
           } else {
             return (
@@ -101,6 +112,9 @@ const Feed = (props) => {
         })}
       </div>
       <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
+      <h2 style={{ textAlign: 'center' }}>
+        {!hasMore && 'No more images to display'}
+      </h2>
 
       <BookmarkModal
         openModal={modalIsOpen}
