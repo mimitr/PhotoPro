@@ -22,15 +22,20 @@ const deletePostRequest = async function (imageID) {
 // matrial-ui component style override
 const styles = {
   root: {
+    position: "absolute",
     bottom: "0%",
     left: "50%",
     color: "rgba(255, 255, 255,1)",
-    height: "20%",
-    width: "20%",
+    height: "15%",
+    width: "15%",
   },
   iconSize: {
     width: "60%",
     height: "60%",
+  },
+  likeSize: {
+    width: "80%",
+    height: "80%",
   },
   like: {
     left: "5%",
@@ -51,12 +56,13 @@ const styles = {
     },
   },
   edit: {
-    left: "82%",
+    left: "92%",
     top: "10%",
-    width: "16%",
-    height: "20%",
+    width: "14%",
+    height: "18%",
+    left: "82%",
     "&:hover": {
-      backgroundColor: "rgba(219, 193, 20, 0.71)",
+      backgroundColor: "rgba(6, 149, 193, 0.7)",
     },
   },
 };
@@ -176,49 +182,52 @@ class ImageCard extends Component {
         );
 
       component = (
-        <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
-          <div onClick={this.handleImageClicked} className="photo-container">
-            <div className="icon-bar"></div>
-            <img
-              ref={this.imageRef}
-              src={`data:image/jpg;base64,${this.props.image.img}`}
-              alt={this.props.caption}
-            />
-            <IconButton
-              variant="contained"
-              classes={{
-                root: `${this.props.classes.root} ${this.props.classes.like}`,
-              }}
-              onClick={this.handleLikeClicked}
-            >
-              <FavoriteIcon classes={{ root: this.props.classes.iconSize }} />
-              <div className="num-likes">{this.props.image.num_likes}</div>
-            </IconButton>
+        // <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
+        <div className="image-container" onClick={this.handleImageClicked}>
+          <div className="icon-bar"></div>
 
-            <IconButton
-              variant="contained"
-              classes={{
-                root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
-              }}
-              onClick={this.handleBookmarkClicked}
-            >
-              <BookmarkIcon />
-            </IconButton>
+          <img
+            className="image-size"
+            ref={this.imageRef}
+            src={`data:image/jpg;base64,${this.props.image.img}`}
+            alt={this.props.caption}
+          />
 
-            <IconButton
-              variant="contained"
-              classes={{
-                root: `${this.props.classes.root} ${this.props.classes.buy}`,
-              }}
-              onClick={this.handleBuyClicked}
-            >
-              <ShoppingCartIcon />
-            </IconButton>
+          <IconButton
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.like}`,
+            }}
+            variant="contained"
+            onClick={this.handleLikeClicked}
+          >
+            <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
+            <div className="num-likes">{this.props.image.num_likes}</div>
+          </IconButton>
 
-            {deleteButton}
-            {editButton}
-          </div>
+          <IconButton
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
+            }}
+            variant="contained"
+            onClick={this.handleBookmarkClicked}
+          >
+            <BookmarkIcon />
+          </IconButton>
+
+          <IconButton
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.buy}`,
+            }}
+            variant="contained"
+            onClick={this.handleBuyClicked}
+          >
+            <ShoppingCartIcon />
+          </IconButton>
+
+          {deleteButton}
+          {editButton}
         </div>
+        // </div>
       );
     }
     return <React.Fragment>{component}</React.Fragment>;

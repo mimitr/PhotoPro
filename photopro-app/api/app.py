@@ -29,7 +29,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import sys
 import base64
-
+import random
+import os
+import PIL
 for i in sys.path:
     print(i)
 
@@ -63,6 +65,8 @@ print(conn, cur)
 
 app = Flask(__name__)
 app.user_id = None
+app.last_query = ""
+app.start_point = 0
 CORS(app)
 
 
@@ -146,22 +150,23 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
-    print("START QUERY")
+    if query is None:
+        query = ""
+    start_point = 0
+
+    if app.last_query == query:
+        start_point = app.start_point
+    else:
+        app.start_point = 0
+    app.last_query = query
     if query is not None:
-        result = search_by_tag(user_id, batch_size, query, conn, cur)
-#        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+        result = search_by_tag(user_id, batch_size, query, start_point, conn, cur)
     else:
         result = discovery(user_id, batch_size, conn, cur)
-    print("END QUERY")
 
     if not result:
-        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+        result = discovery_with_search_term(user_id, batch_size, query, start_point, conn, cur)
 
-#        if len(result) < int(batch_size):
-#            new_bsize = int(batch_size) - len(result)
-#            fill_result = discovery_with_search_term(user_id, new_bsize, query, conn, cur)
-#            print(fill_result)
-#            result.extend(fill_result)
         if not result:
             return jsonify({"result": False})
         processed_result = []
@@ -195,9 +200,12 @@ def api_discovery():
 
         # print(imgarr[0])
 
-        retval = jsonify({"result": processed_result})
-        print(retval)
-        return retval
+        if len(processed_result) > 0:
+            retval = jsonify({"result": processed_result})
+            print(retval)
+            return retval
+        else:
+            return jsonify({"result": False})
 
     elif result:
 
@@ -554,7 +562,9 @@ def api_create_collection():
 
     if user_id is None or collection_name is None or private is None:
         return jsonify({"result": False})
-    result = create_collection(int(user_id), str(collection_name), bool(private), conn, cur)
+    result = create_collection(
+        int(user_id), str(collection_name), bool(private), conn, cur
+    )
     return jsonify({"result": result})
 
 
@@ -577,7 +587,9 @@ def api_add_photo_to_collection():
 
     if user_id is None or collection_id is None or image_id is None:
         return jsonify({"result": False})
-    result = add_photo_to_collection(int(collection_id), int(user_id), int(image_id), conn, cur)
+    result = add_photo_to_collection(
+        int(collection_id), int(user_id), int(image_id), conn, cur
+    )
     return jsonify({"result": result})
 
 
@@ -632,7 +644,7 @@ def api_get_users_collection():
                     "collection_name": collection_name,
                     "creator_id": creator_id,
                     "private": private,
-                    "num_photos": num_photos
+                    "num_photos": num_photos,
                 }
             )
         retval = jsonify({"result": processed_result})
@@ -660,7 +672,17 @@ def api_get_collection_data():
         processed_result = []
 
         for tup in result:
-            collection_id, collection_name, creator_id, private, image_id, uploader, img, created_at, tags = tup
+            (
+                collection_id,
+                collection_name,
+                creator_id,
+                private,
+                image_id,
+                uploader,
+                img,
+                created_at,
+                tags,
+            ) = tup
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -677,7 +699,7 @@ def api_get_collection_data():
                     "uploader": uploader,
                     "created_at": created_at,
                     "tags": tags,
-                    "img": img
+                    "img": img,
                 }
             )
         retval = jsonify({"result": processed_result})
