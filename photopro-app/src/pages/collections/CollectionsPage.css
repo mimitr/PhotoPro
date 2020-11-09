@@ -1,0 +1,16 @@
+.collectionsWrapper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-column-gap: 1em;
+  grid-template-rows: 50px;
+  grid-template-columns: 100px;
+}
+
+.collectionsWrapper > div {
+  background: #eee;
+  padding: 1em;
+}
+
+.collectionsWrapper > div:nth-child(odd) {
+  background: #ddd;
+}

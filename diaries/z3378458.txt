@@ -2,17 +2,141 @@
 
 10/10/2020
 
-I created a function, 'delete_image_post' in general_user.py to implement the databse backend 
-side of deleting user posts. Some strange behaviour by my dev enviroment led to the images
-table in the database being deleted. The function which takes image_id as an argument 
-does not seem to recieve the image_id correctly from the function argument and when you
-manually insert the integer post id to delete, it works. The test file i wrote is
-simply opening a connection and calling the function with a predefine value, but for some
-reason the argument is not being passed properly and is the value 10 regardless of what,
-value the function is called with. I will instal windows and the linux subsystem on my computer
-rather than continuning to use Macosx as this strange behabiour may be solved. I do belive though
-that the function is correct, and hence was pushed to my branch db-functions.
+I created a function, 'delete_image_post' in general_user.py to implement the
+database backend side of deleting user posts. Some strange behaviour by my dev
+enviroment led to the images table in the database being deleted. The function
+which takes image_id as an argument does not seem to recieve the image_id
+correctly from the function argument and when you
+manually insert the integer post id to delete, it works. The test file i wrote
+is simply opening a connection and calling the function with a predefine value,
+but for some reason the argument is not being passed properly and is the value
+10 regardless of what, value the function is called with. I will instal windows
+and the linux subsystem on my computer rather than continuning to use Macosx as
+this strange behabiour may be solved. I do belive though that the function is
+correct, and hence was pushed to my branch db-functions.
 UPDATE:
-It seems that differences in carriage return on mac caused the second line of the sql query specifing the entry
-to be deleted was not parsed properly causing all entries in the images table to be deleted. When run on ubuntu
+It seems that differences in carriage return on mac caused the second line of
+the sql query specifing the entry to be deleted was not parsed properly causing
+all entries in the images table to be deleted. When run on ubuntu
 this problem is not encountered
+
+
+
+
+===== Week 5 =====
+
+
+16/10/2020
+Today we had out first demo, progressive demo A.
+Everything functioned as expected and went smoothly. This week I responded to
+other team memebrs queires and tried to assist where possible, and also
+performed further testing on the delete_post function I finished last week.
+I haven't been able to do as much work on the project this week as I have had a
+combined 35% of assement in my other subjects this past week. I'm keen to get
+back to work on it next week. I have the tag functions in mind which are a story
+in the next sprint
+{talk about making sure no errors in delete_post function but manioly doing work
+for other subjeccts}
+
+===== Week 6 =====
+21/10/2020
+Today Matt and I assisted ethan with the backend design of the notificaitons
+system. The main to issues to solve were how to store the notifications, and how
+to generate them. Ethan originally had thought to have a system where the
+backend polled the database for changes and presented them to the user when
+the polling detected them. I thought this was complex and conmsumed too much CPU
+and that it was better to have an event driven system where when changes were
+made to state on the system such as posts, pruchases and likes that the users
+concerned be notified by generating a notification to be stored in a
+notification table, effectively following an observer design pattern. Matt
+thought of a simpler approach which was to just record the last time active of
+each user and then on a new page refresh or login, query all the tables to
+gather all activity since the last active recorded time that would form the
+notifications for that user. For example if user was last active at 7:43pm and
+then someone liked on of their photos, that like would be recoreded with a time
+stamp in the likes table. On refresh at 7:45pm the like table would be querired
+and found that the like had taken place since last active so would be prpesented
+as a notification for that user. As i rightly pointed out this fast become
+ineffecient for a growing number of users as multiple tables such as likes,
+purhases uploads and more are queried each refresh for every user, instead of
+just generated notifcaions at time of mofication to store in a notifications
+table, however Matts solution was easier to implement and we do not anticipate
+millions of users, so the easier to implement architecture is fine for our
+purposes.
+
+
+23/10/2020
+This week I've work on the tags system for the photopro website, by taking the
+"As a contributor, I want to be able to add tags to my uploaded photos so that
+users can more easily find them based on their interests." User story from the
+availible stories for the sprint in order to implement it. I first decided to
+implement the get tags function. The way it is set up in the database is that
+the tags are stored in array which is stored in a column of the image entry for
+a given image in the images table. Matt told me how the array was to be
+accessed which was using syntax I hadn't encountered before. The syntax to for
+example do a tag insertion/update was
+"UPDATE images
+SET    tags = tags || tag_to_insert
+WHERE  image_id = 555
+AND    NOT (tags @> ARRAY[tag_to_insert]);""
+. I tried implementing this however it did not work. After searching google I
+Eventually found an alternative way to add and delete from this array in the
+column by doing the following:
+cmd = (
+        """UPDATE images SET tags = array_remove(tags, '%s')
+        WHERE image_id = %d AND ('%s' = ANY(tags)) """
+        % (tag, image_id, tag)
+    )
+and seemed to work without issue.
+I used this to create a get_tags function, add_tag, and remove_tag functions.
+I tested them using a testfile name "image_delete_test.py" where I took a list
+of tags added them into the array for a given image, fetched the tags and then
+deleted the tags from the same image and fetched the tags again to make sure,
+the functions were working. I then commited these changes and merged to master.
+
+24/10/2020
+I saw today that ethan had effectively duplicated in functionality in his
+edit_post function he was discussing on discord. I think we need better
+communication. Ideally he would have used my add_tag, and remove_tag functions
+to create an edit_post function following the O in S.O.L.I.D objected oriented
+programing principles where O is closed for modification and open for extension.
+He would have extended the add and remove functions to create and edit_post
+function.
+
+25/10/2020
+
+Today I added routing to all three of my functions: get_tags, add_tag and
+remove_tag. As I was adding the routing functions I realised that add_tag and
+remove_tag should only be able to be done if the owner of those images was the
+one making the request. As such I changed the functions from
+def remove_tag(image_id, tag, conn, cur)
+to
+def remove_tag(user_id,image_id, tag, conn, cur)
+
+and
+def add_tag(image_id, tag, conn, cur)
+to
+def add_tag(user_id, image_id, tag, conn, cur)
+.
+I was fit to leave get_tags to note requiring a user_id as anyone should be
+able to view the tags on a post regardless of whether they are logged in or the
+owner of the image etc.
+in the routes, for user_id i passed in app.user_id which represents the user
+logged into the web app
+
+===== Week 7 =====
+
+28/10/2020
+
+Had a short discussion with Matt about my add_tag function. When I wrote the
+function I wan't really sure how the front end was going to add tags, and if
+they were going to itterate a list on the front end or add tags individually,
+So I wrote my function to be able to add tags one by one. Matt asked whether 
+my function added tags one, by one and I realised that the front end
+implementation lended itself more to passing in a list of tags with one 
+function call reather than one tag at a time.
+
+29/10/2020
+
+Today I worked on the restospective A report with christian. I also discussed
+the conclusion of the current sprint, as well as planning of the next sprint.

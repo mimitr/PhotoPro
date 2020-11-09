@@ -40,3 +40,40 @@ async function for testing purposes
 14/10/2020
 I revised my edit post function, enabling it to now also edit the title and price of a specified photograph. This was in light
 of the tables now including the aforementioned attributes as new columns.
+
+18/10/2020
+I modified my edit post functions to now also update the columns 'price' and 'title' within the tables, although these added
+functionalities have yet to be tested
+
+===== Week 6 =====
+
+19/10/2020
+I started the notifications user story of the web app, which is supposed to return notifications for a logged user such
+as comments or likes on any of their posted photos. However, I am having a hard time trying to figure out how to implement this.
+For know, I've created a separate file related to this user story.
+
+21/10/2020
+I modified the comments and likes tables to include a timestamp which should record the time that a like/comment was posted on
+any image. I also included a timestamp in the users table which records the time of the last activity that a logged on user has
+performed. These changes were essential for the notifications functionality.
+
+22/10/2020
+I added some additional views to the database that should help with the notifications functionality, pulling from the likes and
+comments tables. Also revised my functions which have not been tested yet.
+UPDATE
+I tested and revised my functions, so that they now returned the proper array of tuples
+UPDATE
+I added api call functions to the notifications functions, but have yet to test if these work
+
+23/10/2020
+I tested the api call, and tweaked the function so that it now sorts notifications from most recent to least recent after
+the determined timestamp.
+
+===== Week 7 =====
+
+1/11/2020
+I began implementing a tag search function, which searches the database for images based on a single tag. I first tested the
+sql query it used, which works. Have yet to implement an api call for it.
+UPDATE
+I modified the discovery api call to now execute a search by tag first, then search by term if the first search doesn't return enough
+results.
