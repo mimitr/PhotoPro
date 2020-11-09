@@ -53,7 +53,10 @@ from utils.database.collections import (
     create_collection,
     add_photo_to_collection,
     get_users_collection,
-    get_collection_data
+    get_collection_data,
+    delete_collection,
+    delete_photo_from_collection,
+    update_collections_private
 )
 
 print(conn, cur)
@@ -555,6 +558,17 @@ def api_create_collection():
     return jsonify({"result": result})
 
 
+@app.route("/delete_collection", methods=["GET", "POST"])
+def api_delete_collection():
+    collection_id = request.args.get("collection_name")
+    user_id = app.user_id
+
+    if user_id is None or collection_id is None:
+        return jsonify({"result": False})
+    result = delete_collection(int(collection_id), int(user_id), conn, cur)
+    return jsonify({"result": result})
+
+
 @app.route("/add_photo_to_collection", methods=["GET", "POST"])
 def api_add_photo_to_collection():
     collection_id = request.args.get("collection_id")
@@ -566,6 +580,31 @@ def api_add_photo_to_collection():
     result = add_photo_to_collection(int(collection_id), int(user_id), int(image_id), conn, cur)
     return jsonify({"result": result})
 
+
+@app.route("/delete_photo_from_collection", methods=["GET", "POST"])
+def api_delete_photo_from_collection():
+    collection_id = request.args.get("collection_id")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or collection_id is None or image_id is None:
+        return jsonify({"result": False})
+    result = delete_photo_from_collection(int(collection_id), int(image_id), int(user_id), conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/update_collections_private", methods=["GET", "POST"])
+def api_update_collections_private():
+    collection_id = request.args.get("collection_id")
+    private = request.args.get("private")
+    user_id = app.user_id
+
+    if user_id is None or collection_id is None or private is None:
+        return jsonify({"result": False})
+    result = update_collections_private(int(collection_id), bool(private), int(user_id), conn, cur)
+    return jsonify({"result": result})
+
+
 @app.route("/get_users_collection")
 def api_get_users_collection():
     limit = request.args.get("batch_size")
@@ -575,11 +614,11 @@ def api_get_users_collection():
 
     if user_id is None and limit is not None:
         return jsonify({"result": False})
-    
+
     result = get_users_collection(user_id, limit, conn, cur)
 
     if result:
-        
+
         processed_result = []
 
         for tup in result:
