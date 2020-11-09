@@ -69,7 +69,7 @@ const Feed = (props) => {
     <React.Fragment>
       <h2>Found Images: {imgs.length}</h2>
 
-      <div className="image-list">
+      <div className="image-grid">
         {imgs.map((image, index) => {
           if (image === null) {
             return null;

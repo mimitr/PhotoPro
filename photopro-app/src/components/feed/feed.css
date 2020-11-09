@@ -1,17 +1,16 @@
-.image-list img {
-  width: 250px;
-}
-
-.image-list {
+.image-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  grid-gap: 0 0px;
-  grid-auto-rows: 10px;
-  place-items: center;
+  grid-template-columns: repeat(4, minmax(100px, 20%));
+  grid-auto-rows: minmax(100px, auto);
+  column-gap: 1ch;
+  row-gap: 2ch;
+
+  justify-content: center;
+
+  border: 3px solid green;
 }
 
 .bug-fix {
   position: relative;
   top: 80px;
-  border: 3px solid red;
 }
