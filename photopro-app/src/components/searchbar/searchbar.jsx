@@ -12,14 +12,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SearchBar() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(null);
   const [searchVal, setSearchVal] = useState('');
   const classes = useStyles();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setQuery(searchVal);
+    setTimeout(() => {
+      if ((searchVal.match(/[/[\s]/g) || []).length === searchVal.length) {
+        console.log('fucketh');
+        setQuery(null);
+      } else {
+        setQuery(searchVal);
+      }
+    }, 100);
   };
+
+  console.log(`current query is ${query}`);
 
   return (
     <React.Fragment>

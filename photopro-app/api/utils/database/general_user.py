@@ -230,14 +230,17 @@ def delete_image_post(image_id, uploader, conn, cur):
         return False
 
 
-def discovery(user_id, batch_size, conn, cur):
+def discovery(user_id, batch_size, start_point, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = (
-            "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} "
-            "ORDER BY created_at DESC LIMIT {}".format(user_id, batch_size)
+
+        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                    WHERE images.image_id> {} AND uploader!={} \
+                     ORDER BY created_at DESC LIMIT {}".format(
+            start_point, user_id, batch_size
         )
         print(cmd)
         cur.execute(cmd)

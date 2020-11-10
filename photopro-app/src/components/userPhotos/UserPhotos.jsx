@@ -54,11 +54,13 @@ const UserPhotos = () => {
       </div>
       <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
 
-      <BookmarkModal
-        openModal={modalIsOpen}
-        onCloseModal={() => setModalIsOpen(false)}
-        photoId={photoIdBookmarked}
-      ></BookmarkModal>
+      {modalIsOpen ? (
+        <BookmarkModal
+          openModal={modalIsOpen}
+          setOpenModal={setModalIsOpen}
+          photoId={photoIdBookmarked}
+        ></BookmarkModal>
+      ) : null}
     </React.Fragment>
   );
 };
