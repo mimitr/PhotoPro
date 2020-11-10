@@ -481,10 +481,11 @@ def download_image(image_id, conn, cur):
         query_result = cur.fetchall()
         for row in query_result:
             id, file = row
-            filename = "{}.jpg".format(id)
-            photo = open(file, "wb")
+            filename = "{}.jpeg".format(id)
+            photo = open(filename, "wb")
             photo.write(file)
             photo.close()
+        return True
     except Exception as e:
         return False
     except psycopg2.Error as e:

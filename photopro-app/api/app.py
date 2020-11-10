@@ -23,6 +23,7 @@ from utils.database.general_user import (
     get_tags,
     remove_tag,
     delete_image_post,
+    download_image,
 )
 from utils.database.connect import conn, cur
 from flask import Flask, request, jsonify
@@ -752,4 +753,13 @@ def api_get_collection_data():
         print(retval)
         return retval
 
+    return jsonify({"result": result})
+
+
+@app.route("/download")
+def api_download():
+    image_id = request.args.get("image_id")
+    if not image_id:
+        return jsonify({"result": False})
+    result = download_image(image_id, conn, cur)
     return jsonify({"result": result})
