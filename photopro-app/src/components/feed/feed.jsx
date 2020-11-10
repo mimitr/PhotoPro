@@ -60,9 +60,9 @@ const Feed = (props) => {
     });
   };
 
-  console.log(`LENGTH = ${imgs.length}`);
-  console.log(`HASMORE = ${hasMore}`);
-  console.log(`LOADING = ${loading}`);
+  // console.log(`LENGTH = ${imgs.length}`);
+  // console.log(`HASMORE = ${hasMore}`);
+  // console.log(`LOADING = ${loading}`);
 
   return (
     <React.Fragment>
