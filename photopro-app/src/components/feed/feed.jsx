@@ -11,6 +11,7 @@ const Feed = (props) => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  const userLoggedIn = localStorage.getItem('userLoggedIn');
   const fetchIsCancelled = useRef(false);
   const cancelAxiosRequest = useRef();
   const observer = useRef();
@@ -39,7 +40,7 @@ const Feed = (props) => {
     }, 150);
 
     return () => {
-      console.log('clean up is being run');
+      console.log('CLEAN UP - Feed');
       cancelAxiosRequest.current();
       fetchIsCancelled.current = true;
       setImgs([]);
@@ -100,6 +101,7 @@ const Feed = (props) => {
                   image={image}
                   setOpenBookmarkModal={setModalIsOpen}
                   setPhotoId={setPhotoIdBookmarked}
+                  userLoggedIn={userLoggedIn}
                 />
                 <div
                   key={index}
@@ -120,6 +122,7 @@ const Feed = (props) => {
                 image={image}
                 setOpenBookmarkModal={setModalIsOpen}
                 setPhotoId={setPhotoIdBookmarked}
+                userLoggedIn={userLoggedIn}
               />
             );
           }

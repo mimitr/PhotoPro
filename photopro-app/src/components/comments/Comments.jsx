@@ -52,7 +52,7 @@ export default function Comments(props) {
 
   return (
     <React.Fragment>
-      <div className="comment-input">
+      {localStorage.getItem('userLoggedIn') ? (
         <form onSubmit={handlePostClick}>
           <div className={classes.margin}>
             <TextField
@@ -74,7 +74,7 @@ export default function Comments(props) {
             />
           </div>
         </form>
-      </div>
+      ) : null}
       <div className="comments-container">{comments}</div>
     </React.Fragment>
   );

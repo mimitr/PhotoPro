@@ -273,7 +273,7 @@ def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cu
         print(cmd)
         cur.execute(cmd)
         conn.commit()
-        data = cur.fetchmany(batch_size)
+        data = cur.fetchall()
 
         length = len(data)
         # print(length)
@@ -295,6 +295,11 @@ def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cu
         print(
             " ==============================================================================="
         )
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+    except psycopg2.ProgrammingError as e:
+        print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 

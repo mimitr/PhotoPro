@@ -73,9 +73,10 @@ class ImageCard extends Component {
     // CreateRef is used to access the DOM
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
-    this.state = { redirect: null, spans: 0 };
-
-    // for Bookmarks
+    this.state = {
+      redirect: null,
+      spans: 0,
+    };
   }
 
   componentDidMount() {
@@ -195,28 +196,32 @@ class ImageCard extends Component {
             <div className="num-likes">{this.props.image.num_likes}</div>
           </IconButton>
 
-          <IconButton
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
-            }}
-            variant="contained"
-            onClick={this.handleBookmarkClicked}
-          >
-            <BookmarkIcon />
-          </IconButton>
+          {this.props.userLoggedIn ? (
+            <React.Fragment>
+              <IconButton
+                classes={{
+                  root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
+                }}
+                variant="contained"
+                onClick={this.handleBookmarkClicked}
+              >
+                <BookmarkIcon />
+              </IconButton>
 
-          <IconButton
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.buy}`,
-            }}
-            variant="contained"
-            onClick={this.handleBuyClicked}
-          >
-            <ShoppingCartIcon />
-          </IconButton>
+              <IconButton
+                classes={{
+                  root: `${this.props.classes.root} ${this.props.classes.buy}`,
+                }}
+                variant="contained"
+                onClick={this.handleBuyClicked}
+              >
+                <ShoppingCartIcon />
+              </IconButton>
 
-          {deleteButton}
-          {editButton}
+              {deleteButton}
+              {editButton}
+            </React.Fragment>
+          ) : null}
         </div>
         // </div>
       );
