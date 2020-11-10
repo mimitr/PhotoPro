@@ -114,11 +114,13 @@ const Feed = (props) => {
         {!hasMore && 'No more images to display'}
       </h2>
 
-      <BookmarkModal
-        openModal={modalIsOpen}
-        onCloseModal={() => setModalIsOpen(false)}
-        photoId={photoIdBookmarked}
-      ></BookmarkModal>
+      {modalIsOpen ? (
+        <BookmarkModal
+          openModal={modalIsOpen}
+          setOpenModal={setModalIsOpen}
+          photoId={photoIdBookmarked}
+        ></BookmarkModal>
+      ) : null}
     </React.Fragment>
   );
 };

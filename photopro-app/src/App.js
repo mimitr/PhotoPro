@@ -10,8 +10,10 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import EditPostPage from "./pages/EditPostPage";
 import CollectionsPage from "./pages/collections/CollectionsPage";
+import CollectionDataPage from "./pages/collections/collection/collectionDataPage/CollectionDataPage"
 
 import { Switch, Route } from "react-router-dom";
+
 
 function App() {
   return (
@@ -33,6 +35,7 @@ function App() {
         <Route path="/post-:id" component={PostInfo} />
         <Route path="/editpost/:id" component={EditPostPage} />
         <Route path="/collections" component={CollectionsPage} />
+        <Route path="/collection-:id" component={CollectionDataPage} />
       </Switch>
     </React.Fragment>
   );

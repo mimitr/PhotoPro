@@ -261,7 +261,7 @@ def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cu
         cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
                     WHERE images.image_id> {} AND uploader!={} AND caption ILIKE '%{}%'\
                      ORDER BY created_at DESC LIMIT {}".format(
@@ -290,7 +290,7 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
                      WHERE images.image_id> {} AND uploader != {} AND '{}' ILIKE ANY(tags)\
                       ORDER BY created_at DESC LIMIT {}".format(
@@ -317,17 +317,13 @@ def profiles_photos(user_id, batch_size, conn, cur):
         cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        if batch_size > 0:
-            cmd = "select images.image_id, caption, uploader, file, title, price, num_likes, created_at FROM num_likes_per_image\
-                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                     WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
-                user_id, batch_size
-            )
-        else:
-            cmd = (
-                "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} "
-                "ORDER BY created_at DESC ".format(user_id)
-            )
+
+        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                 WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
+            user_id, batch_size
+        )
+
         print(cmd)
         cur.execute(cmd)
         conn.commit()

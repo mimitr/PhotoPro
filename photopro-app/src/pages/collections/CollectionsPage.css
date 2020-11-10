@@ -1,9 +1,13 @@
 .collectionsWrapper {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-column-gap: 1em;
-  grid-template-rows: 50px;
-  grid-template-columns: 100px;
+  grid-gap: 1em;
+  grid-auto-rows: minmax(50px, auto);
+  align-content: start;
+  justify-content: center;
+  width: 1100px;
+  height: 500px;
+  margin: 0 auto;
 }
 
 .collectionsWrapper > div {
@@ -13,4 +17,9 @@
 
 .collectionsWrapper > div:nth-child(odd) {
   background: #ddd;
+}
+
+.title > h1 {
+  text-align: center;
+  margin: 100px;
 }
