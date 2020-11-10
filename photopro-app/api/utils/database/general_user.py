@@ -470,3 +470,24 @@ def set_user_timestamp(user_id, conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+
+def download_image(image_id, conn, cur):
+    try:
+        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(image_id)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        for row in query_result:
+            id, file = row
+            filename = "{}.jpg".format(id)
+            photo = open(file, "wb")
+            photo.write(file)
+            photo.close()
+    except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
