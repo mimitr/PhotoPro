@@ -24,7 +24,7 @@ const UserPhotos = () => {
       params: { batch_size: 30 }, //user_id: 1
     }).then((res) => {
       console.log(res);
-      if (res.data.result != false) {
+      if (res.data.result !== false) {
         setLoading(false);
         setProfileImgs(res.data.result);
       }

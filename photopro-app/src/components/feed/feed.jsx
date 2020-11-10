@@ -23,7 +23,7 @@ const Feed = (props) => {
 
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore]
+    [loading, hasMore, props.query]
   );
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const Feed = (props) => {
       params: { query: term, batch_size: 10 }, //user_id: 1
     }).then((res) => {
       console.log(res);
-      if (res.data.result != false) {
+      if (res.data.result !== false) {
         setHasMore(true);
         setTimeout(() => {
           setLoading(false);

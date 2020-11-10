@@ -14,26 +14,25 @@ const PostInfo = (props) => {
   console.log(props);
 
   useEffect(() => {
+    const fetchComments = (id) => {
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/get_comments_to_image',
+        params: { image_id: id, batch_size: 20 },
+      }).then((res) => {
+        // console.log(res);
+        // console.log(`in fetch comments with result = ${res.data.result}`);
+        if (res.data.result !== false) {
+          // console.log('result was not false');
+          setComments(res.data.result);
+        } else {
+          setComments([]);
+        }
+      });
+    };
     fetchComments(props.location.state.id);
     console.log('update comment called');
   }, [commentUpdated]);
-
-  const fetchComments = (id) => {
-    axios({
-      method: 'GET',
-      url: 'http://localhost:5000/get_comments_to_image',
-      params: { image_id: id, batch_size: 20 },
-    }).then((res) => {
-      // console.log(res);
-      // console.log(`in fetch comments with result = ${res.data.result}`);
-      if (res.data.result != false) {
-        // console.log('result was not false');
-        setComments(res.data.result);
-      } else {
-        setComments([]);
-      }
-    });
-  };
 
   return (
     <React.Fragment>

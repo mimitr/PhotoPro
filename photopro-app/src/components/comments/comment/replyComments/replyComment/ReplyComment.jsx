@@ -42,7 +42,10 @@ export default function ReplyComment(props) {
     <React.Fragment>
       <div className="reply_comment">
         <div className="reply-avatar ava">
-          <img src="https://images.unsplash.com/photo-1490894641324-cfac2f5cd077?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=70"></img>
+          <img
+            src="https://images.unsplash.com/photo-1490894641324-cfac2f5cd077?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=70"
+            alt="user icon"
+          ></img>
         </div>
         <div className="username">@{props.replies_info.commenter}</div>
         <div className="date">

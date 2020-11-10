@@ -8,30 +8,28 @@ export default function ReplyComments(props) {
   const [replyUpdated, updateReplies] = useState('');
 
   useEffect(() => {
-    console.log('useefectedddd');
+    const getReplies = () => {
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/get_comments_to_comment',
+        params: {
+          comment_id: props.comment_id,
+          batch_size: 10,
+        },
+      }).then((response) => {
+        console.log(response);
+        if (response.data.result) {
+          set_replies(response.data.result);
+        } else {
+          console.log('NO REPLIES FOUND');
+          set_replies([]);
+          props.setShowViewReplies(false);
+          props.updateComments(props.comment_id);
+        }
+      });
+    };
     getReplies();
   }, [replyUpdated, props.newReply]);
-
-  const getReplies = () => {
-    axios({
-      method: 'GET',
-      url: 'http://localhost:5000/get_comments_to_comment',
-      params: {
-        comment_id: props.comment_id,
-        batch_size: 10,
-      },
-    }).then((response) => {
-      console.log(response);
-      if (response.data.result) {
-        set_replies(response.data.result);
-      } else {
-        console.log('NO REPLIES FOUND');
-        set_replies([]);
-        props.setShowViewReplies(false);
-        props.updateComments(props.comment_id);
-      }
-    });
-  };
 
   const replies_components = replies.map((reply) => {
     return (
