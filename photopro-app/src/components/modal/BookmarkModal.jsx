@@ -21,7 +21,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
     true
   );
 
-  const [privateCollection, setPrivateCollection] = useState(false);
+  const [privateCollection, setPrivateCollection] = useState(0);
 
   console.log("TESTT");
 
@@ -167,9 +167,9 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
                   checked={privateCollection}
                   onChange={() => {
                     if (privateCollection == true) {
-                      setPrivateCollection(false);
+                      setPrivateCollection(0);
                     } else {
-                      setPrivateCollection(true);
+                      setPrivateCollection(1);
                     }
                   }}
                   name="privateCheckbox"

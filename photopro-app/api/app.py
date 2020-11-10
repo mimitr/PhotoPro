@@ -573,14 +573,14 @@ def api_create_collection():
     if user_id is None or collection_name is None or private is None:
         return jsonify({"result": False})
     result = create_collection(
-        int(user_id), str(collection_name), bool(private), conn, cur
+        int(user_id), str(collection_name), bool(int(private)), conn, cur
     )
     return jsonify({"result": result})
 
 
 @app.route("/delete_collection", methods=["GET", "POST"])
 def api_delete_collection():
-    collection_id = request.args.get("collection_name")
+    collection_id = request.args.get("collection_id")
     user_id = app.user_id
 
     if user_id is None or collection_id is None:

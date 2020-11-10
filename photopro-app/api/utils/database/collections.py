@@ -5,7 +5,8 @@ def create_collection(user_id, collection_name, private, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
         cmd = "INSERT INTO collections (collection_name, creator_id, private) VALUES ('{}', {}, {})" \
-              " RETURNING collection_id".format(collection_name, int(user_id), bool(private))
+              " RETURNING collection_id".format(
+                  collection_name, int(user_id), bool(private))
         cur.execute(cmd)
         conn.commit()
         return cur.fetchone()[0]
