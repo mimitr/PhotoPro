@@ -623,7 +623,7 @@ def api_update_collections_private():
 
     if user_id is None or collection_id is None or private is None:
         return jsonify({"result": False})
-    result = update_collections_private(int(collection_id), bool(private), int(user_id), conn, cur)
+    result = update_collections_private(int(collection_id), bool(int(private)), int(user_id), conn, cur)
     return jsonify({"result": result})
 
 
