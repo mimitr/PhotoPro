@@ -32,6 +32,7 @@ import base64
 import random
 import os
 import PIL
+
 for i in sys.path:
     print(i)
 
@@ -59,6 +60,13 @@ from utils.database.collections import (
     delete_collection,
     delete_photo_from_collection,
     update_collections_private
+)
+
+from utils.database.user_purchases import (
+    add_purchase,
+    delete_item_from_cart,
+    get_user_purchases,
+    update_user_purchases_details
 )
 
 print(conn, cur)
@@ -184,7 +192,7 @@ def api_discovery():
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
-                if id > app.start_point: 
+                if id > app.start_point:
                     app.start_point = id
                     processed_result.append(
                         {
@@ -199,7 +207,7 @@ def api_discovery():
                             "tags": tags
                         }
                     )
-        except PIL.UnidentifiedImageError as e: 
+        except PIL.UnidentifiedImageError as e:
             print(e)
 
         if len(processed_result) > 0:
@@ -213,7 +221,7 @@ def api_discovery():
 
         processed_result = []
 
-        try: 
+        try:
             for tup in result:
                 print(tup)
                 id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
@@ -226,8 +234,8 @@ def api_discovery():
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
-                if id > app.start_point: 
-                    app.start_point = id 
+                if id > app.start_point:
+                    app.start_point = id
                     processed_result.append(
                         {
                             "id": id,
@@ -242,15 +250,15 @@ def api_discovery():
                         }
                     )
 
-        except PIL.UnidentifiedImageError as e: 
+        except PIL.UnidentifiedImageError as e:
             print(e)
-        if len(processed_result) > 0: 
+        if len(processed_result) > 0:
             retval = jsonify({"result": processed_result})
             print(retval)
             return retval
         else:
             return jsonify({"result": False})
-    else: 
+    else:
         return jsonify({"result": False})
 
 
@@ -716,4 +724,85 @@ def api_get_collection_data():
         print(retval)
         return retval
 
+    return jsonify({"result": result})
+
+
+@app.route("/add_purchase", methods=["GET", "POST"])
+def api_add_purchase():
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or purchased is None or image_id is None or save_for_later is None:
+        return jsonify({"result": False})
+    result = add_purchase(
+        int(user_id), int(image_id), bool(save_for_later), bool(purchased), conn, cur
+    )
+    return jsonify({"result": result})
+
+
+@app.route("/delete_item_from_cart", methods=["GET", "POST"])
+def api_delete_photo_from_collection():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or image_id is None:
+        return jsonify({"result": False})
+    result = delete_photo_from_collection(int(user_id), int(image_id), conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/get_user_purchases", methods=["GET", "POST"])
+def api_get_user_purchases():
+    user_id = app.user_id
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+
+    if user_id is None or save_for_later is None or purchased is None:
+        return jsonify({"result": False})
+    result = get_user_purchases(int(user_id), bool(save_for_later), bool(purchased), conn, cur)
+    if result:
+
+        processed_result = []
+
+        for tup in result:
+            (
+                user_id, image_id, save_for_later, purchased, title, caption, price, img
+            ) = tup
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            processed_result.append(
+                {
+                    "user_id": user_id,
+                    "image_id": image_id,
+                    "save_for_later": save_for_later,
+                    "purchased": purchased,
+                    "title": title,
+                    "caption": caption,
+                    "price": price,
+                    "img": img
+                }
+            )
+        retval = jsonify({"result": processed_result})
+        return retval
+    return jsonify({"result": result})
+
+
+@app.route("/update_user_purchases_details", methods=["GET", "POST"])
+def api_update_user_purchases_details():
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or purchased is None or image_id is None or save_for_later is None:
+        return jsonify({"result": False})
+    result = update_user_purchases_details(
+        int(user_id), int(image_id), bool(save_for_later), bool(purchased), conn, cur
+    )
     return jsonify({"result": result})
