@@ -16,6 +16,7 @@ from utils.database.general_user import (
     post_image,
     discovery,
     discovery_with_search_term,
+    search_by_tag,
     edit_post,
     profiles_photos,
     add_tags,
@@ -28,7 +29,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import sys
 import base64
-
+import random
+import os
+import PIL
 for i in sys.path:
     print(i)
 
@@ -62,6 +65,8 @@ print(conn, cur)
 
 app = Flask(__name__)
 app.user_id = None
+app.last_query = ""
+app.start_point = 0
 CORS(app)
 
 
@@ -145,49 +150,107 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
-    print("START QUERY")
-    if query is not None:
-        print("query is not none")
-        result = discovery_with_search_term(user_id, batch_size, query, conn, cur)
+    if query is None:
+        query = ""
+    start_point = 0
+
+    if app.last_query == query:
+        start_point = app.start_point
     else:
-        print("query is none")
+        app.start_point = 0
+    app.last_query = query
+    if query is not None:
+        result = search_by_tag(user_id, batch_size, query, start_point, conn, cur)
+    else:
         result = discovery(user_id, batch_size, conn, cur)
-    print("END QUERY")
-    if result:
+
+    if not result:
+        result = discovery_with_search_term(user_id, batch_size, query, start_point, conn, cur)
+
+        if not result:
+            return jsonify({"result": False})
+        processed_result = []
+
+        try:
+            for tup in result:
+                print(tup)
+                id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
+                if not num_likes:
+                    num_likes = 0
+                print(num_likes)
+                file = "image.jpeg"
+                photo = open(file, "wb")
+                photo.write(img)
+                photo.close()
+                img = apply_watermark(file).getvalue()
+                img = base64.encodebytes(img).decode("utf-8")
+                if id > app.start_point: 
+                    app.start_point = id
+                    processed_result.append(
+                        {
+                            "id": id,
+                            "caption": caption,
+                            "uploader": uploader,
+                            "img": img,
+                            "title": title,
+                            "price": str(price),
+                            "created_at": created_at,
+                            "num_likes": num_likes,
+                            "tags": tags
+                        }
+                    )
+        except PIL.UnidentifiedImageError as e: 
+            print(e)
+
+        if len(processed_result) > 0:
+            retval = jsonify({"result": processed_result})
+            print(retval)
+            return retval
+        else:
+            return jsonify({"result": False})
+
+    elif result:
 
         processed_result = []
 
-        for tup in result:
-            id, caption, uploader, img, title, price, num_likes, created_at = tup
-            print(created_at)
-            if not num_likes:
-                num_likes = 0
-            file = "image.jpeg"
-            photo = open(file, "wb")
-            photo.write(img)
-            photo.close()
-            img = apply_watermark(file).getvalue()
-            img = base64.encodebytes(img).decode("utf-8")
-            # print(img)
-            processed_result.append(
-                {
-                    "id": id,
-                    "caption": caption,
-                    "uploader": uploader,
-                    "img": img,
-                    "title": title,
-                    "price": str(price),
-                    "created_at": created_at,
-                    "num_likes": num_likes,
-                }
-            )
+        try: 
+            for tup in result:
+                print(tup)
+                id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
+                if not num_likes:
+                    num_likes = 0
+                print(num_likes)
+                file = "image.jpeg"
+                photo = open(file, "wb")
+                photo.write(img)
+                photo.close()
+                img = apply_watermark(file).getvalue()
+                img = base64.encodebytes(img).decode("utf-8")
+                if id > app.start_point: 
+                    app.start_point = id 
+                    processed_result.append(
+                        {
+                            "id": id,
+                            "caption": caption,
+                            "uploader": uploader,
+                            "img": img,
+                            "title": title,
+                            "price": str(price),
+                            "created_at": created_at,
+                            "num_likes": num_likes,
+                            "tags": tags
+                        }
+                    )
 
-        # print(imgarr[0])
-
-        retval = jsonify({"result": processed_result})
-        print(retval)
-        return retval
-    else:
+        except PIL.UnidentifiedImageError as e: 
+            print(e)
+        if len(processed_result) > 0: 
+            retval = jsonify({"result": processed_result})
+            print(retval)
+            return retval
+        else:
+            return jsonify({"result": False})
+    else: 
         return jsonify({"result": False})
 
 
@@ -196,9 +259,9 @@ def api_profile_photos():
     user_id = app.user_id
     if user_id is None:
         return jsonify({"result": False})
-    batch_size = request.args.get("batch_size")
-    if batch_size is None:
-        batch_size = -1
+    batch_size = int(request.args.get("batch_size"))
+    if batch_size is None or batch_size <= 0:
+        batch_size = 32
 
     result = profiles_photos(user_id, batch_size, conn, cur)
 
@@ -207,7 +270,7 @@ def api_profile_photos():
         processed_result = []
 
         for tup in result:
-            id, caption, uploader, img, title, price, num_likes, created_at = tup
+            id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
             if not num_likes:
                 num_likes = 0
             file = "image.jpeg"
@@ -216,7 +279,6 @@ def api_profile_photos():
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
-            # print(img)
             processed_result.append(
                 {
                     "id": id,
@@ -227,6 +289,7 @@ def api_profile_photos():
                     "price": str(price),
                     "created_at": created_at,
                     "num_likes": num_likes,
+                    "tags": tags
                 }
             )
 
@@ -261,7 +324,7 @@ def api_post_like_to_image():
     return jsonify({"result": False})
 
 
-@app.route("/delete_like_from_image")
+@app.route("/delete_like_from_image", methods=["GET", "POST"])
 def api_delete_like_from_image():
     image_id = request.args.get("image_id")
     user_id = app.user_id
@@ -295,16 +358,19 @@ def api_get_likers_of_image():
     image_id = request.args.get("image_id")
     limit = request.args.get("batch_size")
     if image_id is not None and app.user_id is not None and limit is not None:
-        result = get_likers(image_id, limit, conn, cur)
+        print("=======================================")
+        result = get_likers(int(image_id), int(limit), conn, cur)
+        print("=======================================")
+        if result != False:
+            processed_result = []
+            for tup in result:
+                print(tup)
+                id, first, last = tup
+                processed_result.append(
+                    {"user_id": id, "first_name": first, "last_name": last}
+                )
 
-        processed_result = []
-        for tup in result:
-            id, first, last = tup
-            processed_result.append(
-                {"user_id": id, "first_name": first, "last_name": last}
-            )
-
-        return jsonify({"result": processed_result})
+            return jsonify({"result": processed_result})
     return jsonify({"result": False})
 
 
@@ -395,10 +461,8 @@ def api_get_comments_to_image():
     image_id = request.args.get("image_id")
     batch_size = request.args.get("batch_size")
     if image_id is None or batch_size is None:
-        print("no params")
         return jsonify({"result": False})
     else:
-        print("yes params?")
         result = get_comments_to_image(image_id, batch_size, conn, cur)
         if not result:
             return jsonify({"result": result})
@@ -508,7 +572,9 @@ def api_create_collection():
 
     if user_id is None or collection_name is None or private is None:
         return jsonify({"result": False})
-    result = create_collection(int(user_id), str(collection_name), bool(private), conn, cur)
+    result = create_collection(
+        int(user_id), str(collection_name), bool(private), conn, cur
+    )
     return jsonify({"result": result})
 
 
@@ -531,7 +597,9 @@ def api_add_photo_to_collection():
 
     if user_id is None or collection_id is None or image_id is None:
         return jsonify({"result": False})
-    result = add_photo_to_collection(int(collection_id), int(user_id), int(image_id), conn, cur)
+    result = add_photo_to_collection(
+        int(collection_id), int(user_id), int(image_id), conn, cur
+    )
     return jsonify({"result": result})
 
 
@@ -586,7 +654,7 @@ def api_get_users_collection():
                     "collection_name": collection_name,
                     "creator_id": creator_id,
                     "private": private,
-                    "num_photos": num_photos
+                    "num_photos": num_photos,
                 }
             )
         retval = jsonify({"result": processed_result})
@@ -614,7 +682,17 @@ def api_get_collection_data():
         processed_result = []
 
         for tup in result:
-            collection_id, collection_name, creator_id, private, image_id, uploader, img, created_at, tags = tup
+            (
+                collection_id,
+                collection_name,
+                creator_id,
+                private,
+                image_id,
+                uploader,
+                img,
+                created_at,
+                tags,
+            ) = tup
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -631,7 +709,7 @@ def api_get_collection_data():
                     "uploader": uploader,
                     "created_at": created_at,
                     "tags": tags,
-                    "img": img
+                    "img": img,
                 }
             )
         retval = jsonify({"result": processed_result})

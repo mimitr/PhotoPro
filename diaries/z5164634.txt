@@ -68,3 +68,12 @@ I added api call functions to the notifications functions, but have yet to test 
 23/10/2020
 I tested the api call, and tweaked the function so that it now sorts notifications from most recent to least recent after
 the determined timestamp.
+
+===== Week 7 =====
+
+1/11/2020
+I began implementing a tag search function, which searches the database for images based on a single tag. I first tested the
+sql query it used, which works. Have yet to implement an api call for it.
+UPDATE
+I modified the discovery api call to now execute a search by tag first, then search by term if the first search doesn't return enough
+results.

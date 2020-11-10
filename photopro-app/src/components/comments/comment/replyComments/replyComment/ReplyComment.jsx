@@ -1,19 +1,17 @@
-import React from "react";
-import "./ReplyComment.css";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import axios from "axios";
+import React from 'react';
+import './ReplyComment.css';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import axios from 'axios';
 
 export default function ReplyComment(props) {
-  //   console.log("each com");
-
   let commenterID = String(props.replies_info.commenter);
-  let userID = localStorage.getItem("userID");
+  let userID = localStorage.getItem('userID');
 
   const handleDeleteClicked = () => {
     deleteComment(props.replies_info.comment_id);
-    //props.updateComments(props.comment_info.comment.concat("updated"));
+    // props.updateReplies(props.replies_info.comment.concat("updated"));
   };
 
   let deleteButton =
@@ -27,12 +25,15 @@ export default function ReplyComment(props) {
 
   const deleteComment = (commentID) => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/post_delete_comment",
+      method: 'POST',
+      url: 'http://localhost:5000/post_delete_comment',
       params: { comment_id: commentID },
     }).then((response) => {
       if (response.data.result) {
-        console.log(response);
+        console.log(
+          `im here in replyComment deletecomment api call ${response}`
+        );
+        props.updateReplies(props.replies_info.comment);
       }
     });
   };

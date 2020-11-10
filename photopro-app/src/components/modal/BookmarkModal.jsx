@@ -23,6 +23,8 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
 
   const [privateCollection, setPrivateCollection] = useState(false);
 
+  console.log("TESTT");
+
   const getUsersCollections = () => {
     axios({
       method: "GET",
@@ -40,7 +42,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
   };
 
   useEffect(() => {
-    console.log("getting users collections");
+    console.log("GETTING USERS COLLECTION");
     getUsersCollections();
   }, []);
 
