@@ -181,7 +181,16 @@ def api_discovery():
         processed_result = []
 
         try:
+            start_point_before_iteration = app.start_point
             for tup in result:
+                if query != app.last_query:  # bug fix for rapid searching
+                    print(
+                        "=============== THIS REQUEST FOR - %s - HAS BEEN CANCELLED ============="
+                        % query
+                    )
+                    app.start_point = start_point_before_iteration
+                    return jsonify({"result": False})
+
                 print(tup)
                 (
                     id,

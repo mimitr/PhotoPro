@@ -32,11 +32,11 @@ const Feed = (props) => {
 
   useEffect(() => {
     fetchIsCancelled.current = false;
-
     setLoading(true);
+
     setTimeout(() => {
       fetchImages(props.query);
-    }, 1000);
+    }, 150);
 
     return () => {
       console.log('clean up is being run');
