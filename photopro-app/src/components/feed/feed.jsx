@@ -20,6 +20,7 @@ const Feed = (props) => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
+          setLoading(true);
           fetchImages(props.query);
         }
       });
@@ -32,9 +33,10 @@ const Feed = (props) => {
   useEffect(() => {
     fetchIsCancelled.current = false;
 
+    setLoading(true);
     setTimeout(() => {
       fetchImages(props.query);
-    }, 150);
+    }, 1000);
 
     return () => {
       console.log('clean up is being run');
@@ -46,7 +48,6 @@ const Feed = (props) => {
   }, [props.query]);
 
   const fetchImages = (term) => {
-    setLoading(true);
     axios({
       method: 'GET',
       url: 'http://localhost:5000/discovery',
