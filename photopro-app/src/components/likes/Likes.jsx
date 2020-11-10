@@ -112,6 +112,7 @@ function Likes(props) {
           <IconButton
             classes={{ root: `${classes.root} ${buttonClass}` }}
             onClick={handleLikeClicked}
+            disabled={localStorage.getItem('userLoggedIn') ? false : true}
           >
             <FavoriteIcon />
           </IconButton>

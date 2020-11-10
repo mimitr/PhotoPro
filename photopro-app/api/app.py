@@ -24,7 +24,14 @@ from utils.database.general_user import (
     remove_tag,
     delete_image_post,
 )
-from utils.database.connect import conn, cur
+from utils.database.connect import (
+    conn,
+    cur,
+    connImages,
+    curImages,
+    connImages2,
+    curImages2,
+)
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import sys
@@ -166,14 +173,16 @@ def api_discovery():
         app.start_point = 0
     app.last_query = query
     if query is not None:
-        result = search_by_tag(user_id, batch_size, query, start_point, conn, cur)
+        result = search_by_tag(
+            user_id, batch_size, query, start_point, connImages, curImages
+        )
     else:
         print("==================== QUERY IS NONE =======================")
-        result = discovery(user_id, batch_size, start_point, conn, cur)
+        result = discovery(user_id, batch_size, start_point, connImages2, curImages2)
 
     if not result:
         result = discovery_with_search_term(
-            user_id, batch_size, query, start_point, conn, cur
+            user_id, batch_size, query, start_point, connImages, curImages
         )
 
         if not result:
@@ -502,8 +511,12 @@ def api_delete_comment():
 
 @app.route("/get_comments_to_image", methods=["GET", "POST"])
 def api_get_comments_to_image():
+    print(
+        "++++++++++++++++++++++++ API CALL - get_comments_to_image ++++++++++++++++++++++++"
+    )
     image_id = request.args.get("image_id")
     batch_size = request.args.get("batch_size")
+    print("+++++++++++++ image_id - %s +++++++++++" % image_id)
     if image_id is None or batch_size is None:
         return jsonify({"result": False})
     else:

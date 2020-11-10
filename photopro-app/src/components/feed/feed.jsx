@@ -40,7 +40,7 @@ const Feed = (props) => {
     }, 150);
 
     return () => {
-      console.log('clean up is being run');
+      console.log('CLEAN UP - Feed');
       cancelAxiosRequest.current();
       fetchIsCancelled.current = true;
       setImgs([]);

@@ -108,10 +108,14 @@ export default function Comment(props) {
           <span className="displayName caption">
             {props.comment_info.created_at}
           </span>
-          <IconButton onClick={handleReplyClicked}>
-            <ReplyIcon />
-          </IconButton>
-          {deleteButton}
+          {localStorage.getItem('userLoggedIn') ? (
+            <React.Fragment>
+              <IconButton onClick={handleReplyClicked}>
+                <ReplyIcon />
+              </IconButton>
+              {deleteButton}
+            </React.Fragment>
+          ) : null}
         </div>
         <div className="comment">
           <p>{props.comment_info.comment}</p>
