@@ -3,7 +3,18 @@ import axios from "axios";
 import "./CollectionImage.css";
 
 export default function CollectionImage(props) {
-  console.log(props);
+  const deletePhotoFromCollection = () => {
+    axios({
+      method: "POST",
+      url: "http://localhost:5000/delete_photo_from_collection",
+      params: {
+        collection_id: props.image_info.collection_id,
+        image_id: props.image_info.image_id,
+      },
+    }).then((response) => {
+      console.log(response);
+    });
+  };
 
   return (
     <div>
