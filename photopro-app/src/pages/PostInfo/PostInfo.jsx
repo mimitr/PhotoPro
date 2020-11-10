@@ -17,8 +17,6 @@ const PostInfo = (props) => {
 
   console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
 
-  console.log(props);
-
   useEffect(() => {
     let mounted = true;
 
@@ -31,25 +29,19 @@ const PostInfo = (props) => {
           (c) => (cancelAxiosRequest.current = c)
         ),
       }).then((res) => {
-        // console.log(res);
-        // console.log(`in fetch comments with result = ${res.data.result}`);
         if (res.data.result !== false && mounted) {
-          // console.log('result was not false');
           setComments(res.data.result);
         } else if (mounted) {
           setComments([]);
         }
       });
     };
-    setTimeout(() => {
-      fetchComments(imageID);
-    }, 50);
+    fetchComments(imageID);
 
     return () => {
       console.log('CLEAN UP - PostInfo');
       cancelAxiosRequest.current();
       mounted = false;
-      setComments([]);
     };
   }, [commentUpdated, imageID]);
 
