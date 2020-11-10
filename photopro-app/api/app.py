@@ -151,16 +151,16 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
-    if query is None:
-        print(
-            "======================= QUERY IS NONNNNNNEEEEE ========================="
-        )
-        query = ""
-    else:
-        print(
-            "=========================== QUERY IS NOT NONE - %s ================================"
-            % query
-        )
+    # if query is None:
+    #     print(
+    #         "======================= QUERY IS NONNNNNNEEEEE ========================="
+    #     )
+    #     query = ""
+    # else:
+    #     print(
+    #         "=========================== QUERY IS NOT NONE - %s ================================"
+    #         % query
+    #     )
     start_point = 0
 
     if app.last_query == query:
@@ -171,7 +171,8 @@ def api_discovery():
     if query is not None:
         result = search_by_tag(user_id, batch_size, query, start_point, conn, cur)
     else:
-        result = discovery(user_id, batch_size, conn, cur)
+        print("==================== QUERY IS NONE =======================")
+        result = discovery(user_id, batch_size, start_point, conn, cur)
 
     if not result:
         result = discovery_with_search_term(
