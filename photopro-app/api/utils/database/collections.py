@@ -5,7 +5,25 @@ def create_collection(user_id, collection_name, private, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
         cmd = "INSERT INTO collections (collection_name, creator_id, private) VALUES ('{}', {}, {})" \
-            .format(collection_name, int(user_id), bool(private))
+              " RETURNING collection_id".format(collection_name, int(user_id), bool(private))
+        cur.execute(cmd)
+        conn.commit()
+        return cur.fetchone()[0]
+    except psycopg2.Error as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except Exception as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+
+
+def delete_collection(collection_id, user_id, conn, cur):
+    try:
+        cur.execute('SAVEPOINT save_point')
+        cmd = "DELETE FROM collections WHERE collection_id={} AND creator_id={}".format(int(collection_id),
+                                                                                        int(user_id))
         cur.execute(cmd)
         conn.commit()
         return True
@@ -56,6 +74,48 @@ def get_users_collection(user_id, limit, conn, cur):
     except Exception as e:
         print(e)
         # cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+
+
+def delete_photo_from_collection(collection_id, image_id, creator_id, conn, cur):
+    try:
+        cur.execute('SAVEPOINT save_point')
+        cmd = "DELETE FROM collection_photos WHERE collection_id={} AND\
+                image_id={} AND EXISTS(select 1 FROM collections WHERE \
+                collections.collection_id={} AND collections.creator_id={})"\
+            .format(int(collection_id), int(image_id), int(collection_id), int(creator_id))
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except psycopg2.Error as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except Exception as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+
+
+def update_collections_private(collection_id, private, creator_id, conn, cur):
+    try:
+        cur.execute('SAVEPOINT save_point')
+        if private:
+            cmd = "UPDATE collections SET private=TRUE WHERE collection_id={}\
+                    AND creator_id={}".format(int(collection_id), int(creator_id))
+        else:
+            cmd = "UPDATE collections SET private=False WHERE collection_id={}\
+                    AND creator_id={}".format(int(collection_id), int(creator_id))
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except psycopg2.Error as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except Exception as e:
+        print(e)
+        cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
 

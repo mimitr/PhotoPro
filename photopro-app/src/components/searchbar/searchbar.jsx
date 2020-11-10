@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './searchbar.css';
-import axios from 'axios';
 import Feed from '../feed/feed';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -12,35 +11,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SearchBar(props) {
-  const [imgs, setImgs] = useState([]);
+function SearchBar() {
+  const [query, setQuery] = useState(null);
   const [searchVal, setSearchVal] = useState('');
   const classes = useStyles();
 
-  const onSearchSubmit = async function (term) {
-    console.log(`The term is ${term}`);
-    const response = await axios.get('http://localhost:5000/discovery', {
-      params: { query: term, batch_size: 30 }, //user_id: 1
-    });
-
-    console.log(response.data.result);
-
-    console.log(response);
-
-    return response;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const images = onSearchSubmit(searchVal);
-    images.then((imageResults) => {
-      console.log(imageResults);
-      // this means no images were found
-      if (imageResults.data.result !== false) {
-        setImgs(imageResults.data.result);
+    setTimeout(() => {
+      if ((searchVal.match(/[/[\s]/g) || []).length === searchVal.length) {
+        console.log('fucketh');
+        setQuery(null);
+      } else {
+        setQuery(searchVal);
       }
-    });
+    }, 100);
   };
+
+  console.log(`current query is ${query}`);
 
   return (
     <React.Fragment>
@@ -64,7 +52,7 @@ function SearchBar(props) {
         </form>
       </div>
 
-      <Feed foundImages={imgs} />
+      <Feed query={query} />
     </React.Fragment>
   );
 }
