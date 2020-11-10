@@ -10,6 +10,9 @@ const Feed = (props) => {
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  const fetchIsCancelled = useRef(false);
+  const cancelAxiosRequest = useRef();
   const observer = useRef();
   const lastImageRef = useCallback(
     (node) => {
@@ -27,37 +30,51 @@ const Feed = (props) => {
   );
 
   useEffect(() => {
-    setImgs([]);
-    setHasMore(false);
-    fetchImages(props.query);
+    fetchIsCancelled.current = false;
+
+    setTimeout(() => {
+      fetchImages(props.query);
+    }, 150);
+
+    return () => {
+      console.log('clean up is being run');
+      cancelAxiosRequest.current();
+      fetchIsCancelled.current = true;
+      setImgs([]);
+      setHasMore(true);
+    };
   }, [props.query]);
 
   const fetchImages = (term) => {
     setLoading(true);
-
     axios({
       method: 'GET',
       url: 'http://localhost:5000/discovery',
       params: { query: term, batch_size: 10 }, //user_id: 1
-    }).then((res) => {
-      console.log(res);
-      if (res.data.result !== false) {
-        setHasMore(true);
-        setTimeout(() => {
+      cancelToken: new axios.CancelToken(
+        (c) => (cancelAxiosRequest.current = c)
+      ),
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.result !== false && !fetchIsCancelled.current) {
+          setHasMore(true);
           setLoading(false);
           setImgs((prevImgs) => {
             return [...prevImgs, ...res.data.result];
           });
-        }, 500);
-      } else {
-        console.log('no more images to return');
-        setLoading(false);
-        setHasMore(false);
-        // setImgs((prevImgs) => {
-        //   return [...prevImgs];
-        // });
-      }
-    });
+        } else if (!fetchIsCancelled.current) {
+          console.log('no more images to return');
+          setLoading(false);
+          setHasMore(false);
+        }
+      })
+      .catch((e) => {
+        if (axios.isCancel(e)) {
+          console.log(`previous search request cancelled for - ${term}`);
+          return;
+        }
+      });
   };
 
   // console.log(`LENGTH = ${imgs.length}`);
@@ -80,7 +97,6 @@ const Feed = (props) => {
                 <ImageCard
                   key={image.id}
                   image={image}
-                  openBookmarkModal={modalIsOpen}
                   setOpenBookmarkModal={setModalIsOpen}
                   setPhotoId={setPhotoIdBookmarked}
                 />
@@ -101,7 +117,6 @@ const Feed = (props) => {
               <ImageCard
                 key={image.id}
                 image={image}
-                openBookmarkModal={modalIsOpen}
                 setOpenBookmarkModal={setModalIsOpen}
                 setPhotoId={setPhotoIdBookmarked}
               />
@@ -116,7 +131,7 @@ const Feed = (props) => {
 
       {modalIsOpen ? (
         <BookmarkModal
-          openModal={modalIsOpen}
+          openModal={true}
           setOpenModal={setModalIsOpen}
           photoId={photoIdBookmarked}
         ></BookmarkModal>

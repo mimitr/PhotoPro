@@ -7,6 +7,13 @@ import LockIcon from '@material-ui/icons/Lock';
 export default function CollectionDataPage(props) {
   const [collectionImages, setCollectionImages] = useState([]);
 
+  // the below line is to get rid of warning messages in useEffect
+  const {
+    location: {
+      state: { collection_id: collectionID },
+    },
+  } = props;
+
   useEffect(() => {
     console.log('getting collections data');
     const getCollectionsById = () => {
@@ -14,7 +21,7 @@ export default function CollectionDataPage(props) {
         method: 'GET',
         url: 'http://localhost:5000/get_collection_data',
         params: {
-          collection_id: props.location.state.collection_id,
+          collection_id: collectionID,
         },
       }).then((response) => {
         console.log(response);
@@ -24,7 +31,7 @@ export default function CollectionDataPage(props) {
       });
     };
     getCollectionsById();
-  }, []);
+  }, [collectionID]);
 
   console.log(collectionImages);
 

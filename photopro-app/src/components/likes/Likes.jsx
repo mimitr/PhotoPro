@@ -23,13 +23,16 @@ function Likes(props) {
   const [postLiked, setPostLiked] = useState(false);
   const classes = useStyles();
 
+  const { image_id: imageID } = props;
+  let userID = localStorage.getItem('userID');
+
   useEffect(() => {
     console.log('check if liked called');
     const checkIfLiked = () => {
       axios({
         method: 'GET',
         url: 'http://localhost:5000/get_likers_of_image',
-        params: { image_id: props.image_id, batch_size: 50 },
+        params: { image_id: imageID, batch_size: 50 },
       }).then((response) => {
         console.log(response);
         if (response.data.result.length > 0) {
@@ -47,9 +50,7 @@ function Likes(props) {
     setTimeout(() => {
       checkIfLiked();
     }, 150);
-  }, []);
-
-  let userID = localStorage.getItem('userID');
+  }, [userID, imageID]);
 
   const handleLikeClicked = () => {
     if (userID != null) {

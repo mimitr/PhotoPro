@@ -201,8 +201,8 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
 
 
 def delete_image_post(image_id, uploader, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         cmd = "DELETE FROM comments WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
         conn.commit()
@@ -278,13 +278,23 @@ def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cu
         length = len(data)
         # print(length)
         if length == 0:
+            print("--------------------- NO RESULTS FOUND ----------------------")
             return False
         else:
+            print("-------------------- RESULTS FOUND -----------------------")
             print(data)
+            print("----------------------------------------------------------")
             return data
     except psycopg2.Error as e:
         error = e.pgcode
+        print(
+            "===================== ERROR IN DISCOVERY WITH SEARCH TERM ======================="
+        )
         print(error)
+        print(e)
+        print(
+            " ==============================================================================="
+        )
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 

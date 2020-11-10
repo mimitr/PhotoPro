@@ -7,13 +7,15 @@ export default function ReplyComments(props) {
   const [replies, set_replies] = useState([]);
   const [replyUpdated, updateReplies] = useState('');
 
+  const { newReply, comment_id, setShowViewReplies, updateComments } = props;
+
   useEffect(() => {
     const getReplies = () => {
       axios({
         method: 'GET',
         url: 'http://localhost:5000/get_comments_to_comment',
         params: {
-          comment_id: props.comment_id,
+          comment_id: comment_id,
           batch_size: 10,
         },
       }).then((response) => {
@@ -23,13 +25,13 @@ export default function ReplyComments(props) {
         } else {
           console.log('NO REPLIES FOUND');
           set_replies([]);
-          props.setShowViewReplies(false);
-          props.updateComments(props.comment_id);
+          setShowViewReplies(false);
+          updateComments(comment_id);
         }
       });
     };
     getReplies();
-  }, [replyUpdated, props.newReply]);
+  }, [replyUpdated, newReply, comment_id, setShowViewReplies, updateComments]);
 
   const replies_components = replies.map((reply) => {
     return (

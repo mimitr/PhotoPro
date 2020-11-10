@@ -8,7 +8,12 @@ import axios from 'axios';
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
   const [commentUpdated, updateComments] = useState('');
-  //const [replyUpdated, setReplyUpdated] = useState("");
+  const {
+    location: {
+      state: { id: imageID },
+    },
+  } = props;
+
   console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
 
   console.log(props);
@@ -30,9 +35,9 @@ const PostInfo = (props) => {
         }
       });
     };
-    fetchComments(props.location.state.id);
+    fetchComments(imageID);
     console.log('update comment called');
-  }, [commentUpdated]);
+  }, [commentUpdated, imageID]);
 
   return (
     <React.Fragment>
@@ -84,7 +89,6 @@ const PostInfo = (props) => {
               image_id={props.location.state.id}
               comments_list={comments}
               updateComments={updateComments}
-              //updateReplies={setReplyUpdated}
             />
           </div>
         </div>
