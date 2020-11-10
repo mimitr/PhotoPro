@@ -201,8 +201,8 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
 
 
 def delete_image_post(image_id, uploader, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         cmd = "DELETE FROM comments WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
         conn.commit()
@@ -231,8 +231,8 @@ def delete_image_post(image_id, uploader, conn, cur):
 
 
 def discovery(user_id, batch_size, start_point, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
 
@@ -260,8 +260,8 @@ def discovery(user_id, batch_size, start_point, conn, cur):
 
 
 def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
         cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
@@ -278,13 +278,23 @@ def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cu
         length = len(data)
         # print(length)
         if length == 0:
+            print("--------------------- NO RESULTS FOUND ----------------------")
             return False
         else:
+            print("-------------------- RESULTS FOUND -----------------------")
             print(data)
+            print("----------------------------------------------------------")
             return data
     except psycopg2.Error as e:
         error = e.pgcode
+        print(
+            "===================== ERROR IN DISCOVERY WITH SEARCH TERM ======================="
+        )
         print(error)
+        print(e)
+        print(
+            " ==============================================================================="
+        )
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
@@ -347,8 +357,8 @@ def profiles_photos(user_id, batch_size, conn, cur):
 
 
 def edit_post(user_id, image, title, price, caption, tags, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         # If you want to test, change 'images' to 'test_images' in cmd query
         cmd = """UPDATE images SET title = '%s', price = %s, caption = '%s', tags = '{%s}'
                  WHERE uploader = %s and image_id = %s""" % (

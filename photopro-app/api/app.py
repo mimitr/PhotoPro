@@ -151,21 +151,18 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
-    # if query is None:
-    #     print(
-    #         "======================= QUERY IS NONNNNNNEEEEE ========================="
-    #     )
-    #     query = ""
-    # else:
-    #     print(
-    #         "=========================== QUERY IS NOT NONE - %s ================================"
-    #         % query
-    #     )
+
+    print(
+        "++++++++++++++++++++++ DISCOVERY API CALLED - %s ++++++++++++++++++++++++++++++"
+        % query
+    )
     start_point = 0
 
     if app.last_query == query:
+        print("------------------ last query === query ----------------------")
         start_point = app.start_point
     else:
+        print("---------------------- app.start_point reset to 0 ------------------")
         app.start_point = 0
     app.last_query = query
     if query is not None:
@@ -184,7 +181,16 @@ def api_discovery():
         processed_result = []
 
         try:
+            start_point_before_iteration = app.start_point
             for tup in result:
+                if query != app.last_query:  # bug fix for rapid searching
+                    print(
+                        "=============== THIS REQUEST FOR - %s - HAS BEEN CANCELLED ============="
+                        % query
+                    )
+                    app.start_point = start_point_before_iteration
+                    return jsonify({"result": False})
+
                 print(tup)
                 (
                     id,
@@ -206,6 +212,8 @@ def api_discovery():
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
+
+                print("id - %d, start_point - %d" % (id, app.start_point))
                 if id > app.start_point:
                     app.start_point = id
                     processed_result.append(
@@ -221,14 +229,18 @@ def api_discovery():
                             "tags": tags,
                         }
                     )
+                    print("processed result appended to %d" % len(processed_result))
         except PIL.UnidentifiedImageError as e:
+            print("=================== Unidentified image error ===================")
             print(e)
+            print("===========================================================")
 
         if len(processed_result) > 0:
             retval = jsonify({"result": processed_result})
             print(retval)
             return retval
         else:
+            print("---------------- HEREE -------------------")
             return jsonify({"result": False})
 
     elif result:

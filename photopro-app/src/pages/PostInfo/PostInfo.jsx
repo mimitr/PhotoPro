@@ -8,32 +8,36 @@ import axios from 'axios';
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
   const [commentUpdated, updateComments] = useState('');
-  //const [replyUpdated, setReplyUpdated] = useState("");
+  const {
+    location: {
+      state: { id: imageID },
+    },
+  } = props;
+
   console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
 
   console.log(props);
 
   useEffect(() => {
-    fetchComments(props.location.state.id);
+    const fetchComments = (id) => {
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/get_comments_to_image',
+        params: { image_id: id, batch_size: 20 },
+      }).then((res) => {
+        // console.log(res);
+        // console.log(`in fetch comments with result = ${res.data.result}`);
+        if (res.data.result !== false) {
+          // console.log('result was not false');
+          setComments(res.data.result);
+        } else {
+          setComments([]);
+        }
+      });
+    };
+    fetchComments(imageID);
     console.log('update comment called');
-  }, [commentUpdated]);
-
-  const fetchComments = (id) => {
-    axios({
-      method: 'GET',
-      url: 'http://localhost:5000/get_comments_to_image',
-      params: { image_id: id, batch_size: 20 },
-    }).then((res) => {
-      // console.log(res);
-      // console.log(`in fetch comments with result = ${res.data.result}`);
-      if (res.data.result != false) {
-        // console.log('result was not false');
-        setComments(res.data.result);
-      } else {
-        setComments([]);
-      }
-    });
-  };
+  }, [commentUpdated, imageID]);
 
   return (
     <React.Fragment>
@@ -85,7 +89,6 @@ const PostInfo = (props) => {
               image_id={props.location.state.id}
               comments_list={comments}
               updateComments={updateComments}
-              //updateReplies={setReplyUpdated}
             />
           </div>
         </div>

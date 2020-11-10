@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import './Comment.css';
 import ReplyIcon from '@material-ui/icons/Reply';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
@@ -97,7 +97,10 @@ export default function Comment(props) {
       <div className="header">
         <div className="comment-container">
           <div className="v-avatar avatar">
-            <img src="https://images.unsplash.com/photo-1490894641324-cfac2f5cd077?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=70"></img>
+            <img
+              src="https://images.unsplash.com/photo-1490894641324-cfac2f5cd077?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=70"
+              alt="user icon"
+            ></img>
           </div>
           <span className="displayName title">
             @{props.comment_info.commenter}

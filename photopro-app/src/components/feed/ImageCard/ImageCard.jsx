@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './ImageCard.css';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core';
@@ -56,11 +56,10 @@ const styles = {
     },
   },
   edit: {
-    left: '92%',
+    left: '82%',
     top: '10%',
     width: '14%',
     height: '18%',
-    left: '82%',
     '&:hover': {
       backgroundColor: 'rgba(6, 149, 193, 0.7)',
     },
@@ -77,7 +76,6 @@ class ImageCard extends Component {
     this.state = { redirect: null, spans: 0 };
 
     // for Bookmarks
-    //this.state = { modalIsOpen: false };
   }
 
   componentDidMount() {
@@ -100,7 +98,6 @@ class ImageCard extends Component {
 
   handleBookmarkClicked = (e) => {
     e.stopPropagation();
-    //this.setState({ modalIsOpen: true });
     this.props.setOpenBookmarkModal(true);
     this.props.setPhotoId(parseInt(this.props.image.id));
   };
