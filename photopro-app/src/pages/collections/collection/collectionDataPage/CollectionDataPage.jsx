@@ -48,12 +48,14 @@ export default function CollectionDataPage(props) {
     return <CollectionImage key={img.id} image_info={img} />;
   });
 
+  console.log(`PRIVATE? ${props.location.state.private}`);
+
   return (
     <React.Fragment>
       <Toolbar />
       <div className="collectionDataWrapper">
         <div className="collection-info">
-          {props.location.state.private == 1 ? <LockIcon /> : null}
+          {props.location.state.private == "true" ? <LockIcon /> : null}
           <h1>{props.location.state.collection_name}</h1>
           <p>by @{props.location.state.creator_id}</p>
           <p>Total photos: {props.location.state.num_photos}</p>

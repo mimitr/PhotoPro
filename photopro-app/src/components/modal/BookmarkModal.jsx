@@ -30,7 +30,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
       method: "GET",
       url: "http://localhost:5000/get_users_collection",
       params: {
-        batch_size: 10,
+        batch_size: 20,
       },
     }).then((response) => {
       console.log(response);

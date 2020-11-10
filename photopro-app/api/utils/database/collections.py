@@ -23,6 +23,12 @@ def create_collection(user_id, collection_name, private, conn, cur):
 def delete_collection(collection_id, user_id, conn, cur):
     try:
         cur.execute('SAVEPOINT save_point')
+        cmd = "DELETE FROM collection_photos WHERE collection_id={}".format(
+            int(collection_id))
+        cur.execute(cmd)
+        conn.commit()
+
+        cur.execute('SAVEPOINT save_point')
         cmd = "DELETE FROM collections WHERE collection_id={} AND creator_id={}".format(int(collection_id),
                                                                                         int(user_id))
         cur.execute(cmd)
