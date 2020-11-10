@@ -60,9 +60,7 @@ const Feed = (props) => {
     });
   };
 
-  console.log(`LENGTH = ${imgs.length}`);
-  console.log(`HASMORE = ${hasMore}`);
-  console.log(`LOADING = ${loading}`);
+  console.log(`Modal is open is ${modalIsOpen}`);
 
   return (
     <React.Fragment>
@@ -114,11 +112,13 @@ const Feed = (props) => {
         {!hasMore && "No more images to display"}
       </h2>
 
-      <BookmarkModal
-        openModal={modalIsOpen}
-        setOpenModal={setModalIsOpen}
-        photoId={photoIdBookmarked}
-      ></BookmarkModal>
+      {modalIsOpen ? (
+        <BookmarkModal
+          openModal={modalIsOpen}
+          setOpenModal={setModalIsOpen}
+          photoId={photoIdBookmarked}
+        ></BookmarkModal>
+      ) : null}
     </React.Fragment>
   );
 };
