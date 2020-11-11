@@ -31,6 +31,8 @@ from utils.database.connect import (
     curImages,
     connImages2,
     curImages2,
+    connLikes,
+    curLikes,
 )
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -419,7 +421,7 @@ def api_get_likers_of_image():
     limit = request.args.get("batch_size")
     if image_id is not None and app.user_id is not None and limit is not None:
         print("=======================================")
-        result = get_likers(int(image_id), int(limit), conn, cur)
+        result = get_likers(int(image_id), int(limit), connLikes, curLikes)
         print("=======================================")
         if result != False:
             processed_result = []
