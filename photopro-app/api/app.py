@@ -230,11 +230,8 @@ def api_discovery():
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
-<<<<<<< HEAD
-=======
 
                 print("id - %d, start_point - %d" % (id, app.start_point))
->>>>>>> frontend-collections
                 if id > app.start_point:
                     app.start_point = id
                     processed_result.append(
@@ -250,13 +247,9 @@ def api_discovery():
                             "tags": tags,
                         }
                     )
-<<<<<<< HEAD
-        except PIL.UnidentifiedImageError as e:
-=======
                     print("processed result appended to %d" % len(processed_result))
         except PIL.UnidentifiedImageError as e:
             print("=================== Unidentified image error ===================")
->>>>>>> frontend-collections
             print(e)
             print("===========================================================")
 
@@ -823,7 +816,7 @@ def api_add_purchase():
     if user_id is None or purchased is None or image_id is None or save_for_later is None:
         return jsonify({"result": False})
     result = add_purchase(
-        int(user_id), int(image_id), bool(save_for_later), bool(purchased), conn, cur
+        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
     )
     return jsonify({"result": result})
 
@@ -847,7 +840,7 @@ def api_get_user_purchases():
 
     if user_id is None or save_for_later is None or purchased is None:
         return jsonify({"result": False})
-    result = get_user_purchases(int(user_id), bool(save_for_later), bool(purchased), conn, cur)
+    result = get_user_purchases(int(user_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur)
     if result:
 
         processed_result = []
@@ -870,10 +863,12 @@ def api_get_user_purchases():
                     "purchased": purchased,
                     "title": title,
                     "caption": caption,
-                    "price": price,
+                    "price": str(price),
                     "img": img
                 }
             )
+        # print("+++++++++++++PROCESSED RESULT+++++++++++++++")
+        # print(processed_result)
         retval = jsonify({"result": processed_result})
         return retval
     return jsonify({"result": result})
@@ -889,6 +884,6 @@ def api_update_user_purchases_details():
     if user_id is None or purchased is None or image_id is None or save_for_later is None:
         return jsonify({"result": False})
     result = update_user_purchases_details(
-        int(user_id), int(image_id), bool(save_for_later), bool(purchased), conn, cur
+        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
     )
     return jsonify({"result": result})
