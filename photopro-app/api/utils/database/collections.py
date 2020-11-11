@@ -72,9 +72,9 @@ def add_photo_to_collection(collection_id, user_id, image_id, conn, cur):
 def get_users_collection(user_id, limit, conn, cur):
     try:
         cmd = "select user_collection_agg.collection_id, collection_name, creator_id, private, num_photos,first(file)\
-                from user_collection_agg INNER JOIN collection_photos ON \
-                user_collection_agg.collection_id=collection_photos.collection_id INNER JOIN\
-                 images ON images.image_id=collection_photos.image_id WHERE creator_id=1 GROUP BY\
+                from user_collection_agg LEFT JOIN collection_photos ON \
+                user_collection_agg.collection_id=collection_photos.collection_id LEFT JOIN\
+                 images ON images.image_id=collection_photos.image_id WHERE creator_id={} GROUP BY\
                   user_collection_agg.collection_id, collection_name, creator_id, private,\
                    num_photos".format(int(user_id))
         cur.execute(cmd)
