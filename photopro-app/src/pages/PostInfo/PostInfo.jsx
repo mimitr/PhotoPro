@@ -4,9 +4,11 @@ import Toolbar from '../../components/toolbar/toolbar';
 import Likes from '../../components/likes/Likes';
 import Comments from '../../components/comments/Comments';
 import axios from 'axios';
+import Button from '@material-ui/core/Button';
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
+  const [tags, setTags] = useState([]);
   const [commentUpdated, updateComments] = useState('');
   const cancelAxiosRequest = useRef();
   const {
@@ -19,6 +21,25 @@ const PostInfo = (props) => {
 
   useEffect(() => {
     let mounted = true;
+
+    const fetchTags = (id) => {
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/get_tags',
+        params: { image_id: id },
+        cancelToken: new axios.CancelToken(
+          (c) => (cancelAxiosRequest.current = c)
+        ),
+      }).then((res) => {
+        console.log(res);
+        if (res.data.result !== false && mounted) {
+          console.log(res.data.result);
+          setTags(res.data.result);
+        } else if (mounted) {
+          setTags([]);
+        }
+      });
+    };
 
     const fetchComments = (id) => {
       axios({
@@ -34,6 +55,7 @@ const PostInfo = (props) => {
         } else if (mounted) {
           setComments([]);
         }
+        fetchTags(id);
       });
     };
     fetchComments(imageID);
@@ -83,6 +105,19 @@ const PostInfo = (props) => {
           <div className="postTags">
             <h2 className="roboto">{props.location.state.caption}</h2>
             <h3>Tags:</h3>
+            <div className="flexbox-tags">
+              {tags.length > 0 ? (
+                tags.map((tag, index) => {
+                  return (
+                    <Button key={index} variant="contained">
+                      #{tag}
+                    </Button>
+                  );
+                })
+              ) : (
+                <h2>This post has no tags to display</h2>
+              )}
+            </div>
           </div>
           <div className="postPrice">
             <h2 className="roboto">Price: ${props.location.state.price}</h2>
