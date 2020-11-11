@@ -718,12 +718,15 @@ def api_get_users_collection():
             if num_photos is None:
                 num_photos = 0
             num_photos = int(num_photos)
-            file = "image.jpeg"
-            photo = open(file, "wb")
-            photo.write(img)
-            photo.close()
-            img = apply_watermark(file).getvalue()
-            img = base64.encodebytes(img).decode("utf-8")
+            if img:
+                file = "image.jpeg"
+                photo = open(file, "wb")
+                photo.write(img)
+                photo.close()
+                img = apply_watermark(file).getvalue()
+                img = base64.encodebytes(img).decode("utf-8")
+            else:
+                img = ""
             processed_result.append(
                 {
                     "collection_id": collection_id,
