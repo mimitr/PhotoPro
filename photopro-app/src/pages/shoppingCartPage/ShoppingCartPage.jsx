@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import ToolBar from "../../components/toolbar/toolbar";
-import ShoppingItem from "./shoppingItem/ShoppingItem";
-import Button from "@material-ui/core/Button";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import ToolBar from '../../components/toolbar/toolbar';
+import ShoppingItem from './shoppingItem/ShoppingItem';
+import Button from '@material-ui/core/Button';
+import axios from 'axios';
 
-import { Redirect } from "react-router-dom";
+import { Redirect } from 'react-router-dom';
 
-import "./ShoppingCartPage.css";
+import './ShoppingCartPage.css';
 
 export default function ShoppingCart() {
   const [checkoutButtonClicked, setCheckoutButtonClicked] = useState(false);
@@ -17,13 +17,14 @@ export default function ShoppingCart() {
 
   const getUserNotPurchasedItems = () => {
     axios({
-      method: "GET",
-      url: "http://localhost:5000/get_user_purchases",
+      method: 'GET',
+      url: 'http://localhost:5000/get_user_purchases',
       params: {
         save_for_later: 0,
         purchased: 0,
       },
     }).then((response) => {
+      getUserSavedLaterItems();
       if (response.data.result !== false) {
         console.log(response);
         setShoppingCartItems(response.data.result);
@@ -33,8 +34,8 @@ export default function ShoppingCart() {
 
   const getUserSavedLaterItems = () => {
     axios({
-      method: "GET",
-      url: "http://localhost:5000/get_user_purchases",
+      method: 'GET',
+      url: 'http://localhost:5000/get_user_purchases',
       params: {
         save_for_later: 1,
         purchased: 0,
@@ -51,7 +52,6 @@ export default function ShoppingCart() {
 
   useEffect(() => {
     getUserNotPurchasedItems();
-    getUserSavedLaterItems();
   }, []);
 
   const handleCheckoutButton = () => {
