@@ -41,6 +41,7 @@ const Feed = (props) => {
 
     return () => {
       console.log("CLEAN UP - Feed");
+
       if (cancelAxiosRequest.current != null) cancelAxiosRequest.current();
 
       fetchIsCancelled.current = true;

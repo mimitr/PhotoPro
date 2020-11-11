@@ -33,6 +33,7 @@ export default function CollectionsPage() {
         batch_size: 10,
       },
     }).then((response) => {
+      console.log(response);
       if (response.data.result !== false) {
         console.log(response);
         setAllCollections(response.data.result);
