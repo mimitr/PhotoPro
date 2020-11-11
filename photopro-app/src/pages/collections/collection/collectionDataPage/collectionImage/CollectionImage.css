@@ -5,9 +5,15 @@
   justify-content: center;
 
   overflow: hidden;
+  opacity: 0;
+
   /* border: 3px solid red; */
 }
 
+.image-container.image-container-animate {
+  opacity: 1;
+  transition: opacity 500ms ease-out;
+}
 .image-container::before {
   content: '';
   position: absolute;
