@@ -714,10 +714,16 @@ def api_get_users_collection():
         processed_result = []
 
         for tup in result:
-            collection_id, collection_name, creator_id, private, num_photos = tup
+            collection_id, collection_name, creator_id, private, num_photos, img = tup
             if num_photos is None:
                 num_photos = 0
             num_photos = int(num_photos)
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
             processed_result.append(
                 {
                     "collection_id": collection_id,
@@ -725,6 +731,7 @@ def api_get_users_collection():
                     "creator_id": creator_id,
                     "private": private,
                     "num_photos": num_photos,
+                    "img": img
                 }
             )
         retval = jsonify({"result": processed_result})
