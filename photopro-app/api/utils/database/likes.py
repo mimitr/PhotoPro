@@ -80,7 +80,7 @@ def get_likers(image_id, limit, conn, cur):
         result = cur.fetchall()
 
         if len(result) == 0:
-            return false
+            return False
         else:
             return result
     except psycopg2.Error as e:

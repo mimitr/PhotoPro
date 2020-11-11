@@ -41,7 +41,9 @@ const Feed = (props) => {
 
     return () => {
       console.log('CLEAN UP - Feed');
-      cancelAxiosRequest.current();
+
+      if (cancelAxiosRequest.current != null) cancelAxiosRequest.current();
+
       fetchIsCancelled.current = true;
       setImgs([]);
       setHasMore(true);
