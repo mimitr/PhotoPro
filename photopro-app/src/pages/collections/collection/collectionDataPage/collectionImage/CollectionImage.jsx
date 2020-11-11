@@ -6,59 +6,41 @@ import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import DeleteIcon from '@material-ui/icons/Delete';
-
-const deleteFromCollectionRequest = async function (imageID) {
-  const response = await axios.get('http://localhost:5000/delete_image_post', {
-    params: { image_id: String(imageID) }, //user_id: 1
-  });
-
-  return response;
-};
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 // matrial-ui component style override
 const styles = {
   root: {
     position: 'absolute',
-    bottom: '0%',
-    left: '50%',
     color: 'rgba(255, 255, 255,1)',
-    height: '15%',
-    width: '15%',
   },
-  iconSize: {
-    width: '60%',
-    height: '60%',
+  likeIcon: {
+    width: '50%',
+    height: '10%',
   },
-  likeSize: {
-    width: '80%',
-    height: '80%',
+  removeIcon: {
+    width: '95%',
+    height: '10%',
   },
-  like: {
+  likeButton: {
+    bottom: '0%',
     left: '5%',
-  },
-  bookmark: {
-    left: '60%',
+    width: '20%',
+    height: '15%',
   },
   buy: {
+    bottom: '0%',
     left: '80%',
+    width: '20%',
+    height: '15%',
   },
-  delete: {
-    left: '4%',
-    top: '10%',
-    width: '16%',
-    height: '20%',
+  remove: {
+    right: '0%',
+    top: '0%',
+    width: '15%',
+    height: '25%',
     '&:hover': {
-      backgroundColor: 'rgba(180, 65, 65, 0.82)',
-    },
-  },
-  edit: {
-    left: '82%',
-    top: '10%',
-    width: '14%',
-    height: '18%',
-    '&:hover': {
-      backgroundColor: 'rgba(6, 149, 193, 0.7)',
+      backgroundColor: 'rgba(234, 241, 223, 0.26)',
     },
   },
 };
@@ -73,11 +55,20 @@ class CollectionImage extends Component {
     this.state = {
       redirect: null,
       spans: 0,
+      animateImages: '',
     };
+
+    this.collection_id = props.image.collection_id;
+    this.image_id = props.image.id;
   }
 
   componentDidMount() {
     this.imageRef.current.addEventListener('load', this.setSpans);
+    setTimeout(() => {
+      this.setState({
+        animateImages: 'image-container-animate',
+      });
+    }, 100);
   }
 
   setSpans = () => {
@@ -92,16 +83,29 @@ class CollectionImage extends Component {
     this.setState({ redirect: `/post-${this.props.image.id}` });
   };
 
+  handleLikeClicked = (e) => {
+    e.stopPropagation();
+  };
+
   handleBuyClicked = (e) => {
     e.stopPropagation();
   };
 
-  // handleDeleteClicked = (e) => {
-  //   let response = deletePostRequest(this.props.image.id);
-  //   console.log(response);
-  //   e.stopPropagation();
-  //   window.location.reload();
-  // };
+  handleDeleteClicked = (e) => {
+    const deletePhotoFromCollection = () => {
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/delete_photo_from_collection',
+        params: { collection_id: this.collection_id, image_id: this.image_id }, //user_id: 1
+      }).then((res) => {
+        console.log(res);
+      });
+    };
+
+    deletePhotoFromCollection();
+    e.stopPropagation();
+    window.location.reload();
+  };
 
   render() {
     let component;
@@ -127,7 +131,10 @@ class CollectionImage extends Component {
     } else {
       component = (
         // <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
-        <div className="image-container" onClick={this.handleImageClicked}>
+        <div
+          className={`image-container ${this.state.animateImages}`}
+          onClick={this.handleImageClicked}
+        >
           <div className="icon-bar"></div>
 
           <img
@@ -139,24 +146,38 @@ class CollectionImage extends Component {
 
           <IconButton
             classes={{
-              root: `${this.props.classes.root} ${this.props.classes.like}`,
+              root: `${this.props.classes.root} ${this.props.classes.likeButton}`,
             }}
             variant="contained"
             onClick={this.handleLikeClicked}
           >
-            <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
+            <FavoriteIcon classes={{ root: this.props.classes.likeIcon }} />
             <div className="num-likes">{this.props.image.num_likes}</div>
           </IconButton>
 
-          <IconButton
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.buy}`,
-            }}
-            variant="contained"
-            onClick={this.handleBuyClicked}
-          >
-            <ShoppingCartIcon />
-          </IconButton>
+          <React.Fragment>
+            <IconButton
+              classes={{
+                root: `${this.props.classes.root} ${this.props.classes.buy}`,
+              }}
+              variant="contained"
+              onClick={this.handleBuyClicked}
+            >
+              <ShoppingCartIcon />
+            </IconButton>
+
+            <IconButton
+              variant="contained"
+              classes={{
+                root: `${this.props.classes.root} ${this.props.classes.remove}`,
+              }}
+              onClick={this.handleDeleteClicked}
+            >
+              <HighlightOffIcon
+                classes={{ root: `${this.props.classes.removeIcon}` }}
+              />
+            </IconButton>
+          </React.Fragment>
         </div>
         // </div>
       );
