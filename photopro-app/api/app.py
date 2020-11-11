@@ -365,7 +365,7 @@ def api_fetch_notifications():
             )
     if comment_notifs != False:
         for tup in comment_notifs:
-            title, image, commenter, comment, created_at = tup
+            title, image, commenter, comment, reply_id, created_at = tup
             created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
             results.append(
                 {
@@ -373,6 +373,7 @@ def api_fetch_notifications():
                     "image_id": image,
                     "commenter": commenter,
                     "comment": comment,
+                    "reply_id": reply_id,
                     "created_at": created_at,
                 }
             )

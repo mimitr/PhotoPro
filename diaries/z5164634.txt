@@ -81,3 +81,9 @@ results.
 7/11/2020
 After the demo this week, I modified the api call a bit more, since some errors with the code occurred prior to the demo. Some of this
 code is messy and redundant however, and I need to refactor some of it.
+
+===== Week 9 =====
+
+12/11/2020
+I tweaked the comment notifications view and function to also return a reply_id, in order to check if the comment returned is a reply
+to another comment.

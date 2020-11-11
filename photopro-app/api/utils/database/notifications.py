@@ -17,7 +17,7 @@ def get_like_notification(user_id, timestamp, conn, cur):
 
 def get_comment_notification(user_id, timestamp, conn, cur):
     try:
-        cmd = "SELECT title, image_id, commenter, comment, created_at FROM test_comment_notif " \
+        cmd = "SELECT title, image_id, commenter, comment, reply_id, created_at FROM test_comment_notif " \
               "WHERE uploader={} AND commenter!={} " \
               "AND test_comment_notif.created_at > TO_TIMESTAMP('{}', 'YYYY-MM-DD HH24:MI:SS.US') ".format(user_id, user_id, timestamp)
         cur.execute(cmd)
