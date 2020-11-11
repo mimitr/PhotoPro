@@ -27,6 +27,8 @@ const UserPhotos = () => {
       if (res.data.result !== false) {
         setLoading(false);
         setProfileImgs(res.data.result);
+      } else {
+        setLoading(false);
       }
     });
   };
@@ -34,6 +36,11 @@ const UserPhotos = () => {
   return (
     <React.Fragment>
       <h2>Uploaded Images: {profileImgs.length}</h2>
+      {profileImgs.length === 0 ? (
+        <h2 style={{ textAlign: 'center' }}>
+          You haven't uploaded any photos!
+        </h2>
+      ) : null}
 
       <div className="image-grid">
         {profileImgs.map((image, index) => {

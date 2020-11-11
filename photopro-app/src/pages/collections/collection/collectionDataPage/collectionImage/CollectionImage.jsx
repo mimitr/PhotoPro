@@ -1,16 +1,168 @@
-import React from 'react';
+import React, { Component } from 'react';
+import axios from 'axios';
 import './CollectionImage.css';
+import { Redirect } from 'react-router-dom';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/core';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import DeleteIcon from '@material-ui/icons/Delete';
 
-export default function CollectionImage(props) {
-  console.log(props);
+const deleteFromCollectionRequest = async function (imageID) {
+  const response = await axios.get('http://localhost:5000/delete_image_post', {
+    params: { image_id: String(imageID) }, //user_id: 1
+  });
 
-  return (
-    <div>
-      <img
-        src={`data:image/jpg;base64,${props.image_info.img}`}
-        alt={props.image_info.collection_name}
-        key={props.image_info.collection_id}
-      />
-    </div>
-  );
+  return response;
+};
+
+// matrial-ui component style override
+const styles = {
+  root: {
+    position: 'absolute',
+    bottom: '0%',
+    left: '50%',
+    color: 'rgba(255, 255, 255,1)',
+    height: '15%',
+    width: '15%',
+  },
+  iconSize: {
+    width: '60%',
+    height: '60%',
+  },
+  likeSize: {
+    width: '80%',
+    height: '80%',
+  },
+  like: {
+    left: '5%',
+  },
+  bookmark: {
+    left: '60%',
+  },
+  buy: {
+    left: '80%',
+  },
+  delete: {
+    left: '4%',
+    top: '10%',
+    width: '16%',
+    height: '20%',
+    '&:hover': {
+      backgroundColor: 'rgba(180, 65, 65, 0.82)',
+    },
+  },
+  edit: {
+    left: '82%',
+    top: '10%',
+    width: '14%',
+    height: '18%',
+    '&:hover': {
+      backgroundColor: 'rgba(6, 149, 193, 0.7)',
+    },
+  },
+};
+
+class CollectionImage extends Component {
+  constructor(props) {
+    super(props);
+
+    // CreateRef is used to access the DOM
+    // after accessing the DOM, we can get the height of each ImageCard
+    this.imageRef = React.createRef();
+    this.state = {
+      redirect: null,
+      spans: 0,
+    };
+  }
+
+  componentDidMount() {
+    this.imageRef.current.addEventListener('load', this.setSpans);
+  }
+
+  setSpans = () => {
+    if (this.imageRef.current != null) {
+      const height = this.imageRef.current.clientHeight;
+      const spansRows = Math.ceil(height / 10);
+      this.setState({ spans: spansRows });
+    }
+  };
+
+  handleImageClicked = (e) => {
+    this.setState({ redirect: `/post-${this.props.image.id}` });
+  };
+
+  handleBuyClicked = (e) => {
+    e.stopPropagation();
+  };
+
+  // handleDeleteClicked = (e) => {
+  //   let response = deletePostRequest(this.props.image.id);
+  //   console.log(response);
+  //   e.stopPropagation();
+  //   window.location.reload();
+  // };
+
+  render() {
+    let component;
+
+    if (this.state.redirect) {
+      component = (
+        <Redirect
+          push
+          to={{
+            pathname: `${this.state.redirect}`,
+            state: {
+              id: `${this.props.image.id}`,
+              url: `${this.props.image.img}`,
+              caption: `${this.props.image.caption}`,
+              price: `${this.props.image.price}`,
+              title: `${this.props.image.title}`,
+              uploader: `${this.props.image.uploader}`,
+              num_likes: `${this.props.image.num_likes}`,
+            },
+          }}
+        />
+      );
+    } else {
+      component = (
+        // <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
+        <div className="image-container" onClick={this.handleImageClicked}>
+          <div className="icon-bar"></div>
+
+          <img
+            className="image-size"
+            ref={this.imageRef}
+            src={`data:image/jpg;base64,${this.props.image.img}`}
+            alt={this.props.caption}
+          />
+
+          <IconButton
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.like}`,
+            }}
+            variant="contained"
+            onClick={this.handleLikeClicked}
+          >
+            <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
+            <div className="num-likes">{this.props.image.num_likes}</div>
+          </IconButton>
+
+          <IconButton
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.buy}`,
+            }}
+            variant="contained"
+            onClick={this.handleBuyClicked}
+          >
+            <ShoppingCartIcon />
+          </IconButton>
+        </div>
+        // </div>
+      );
+    }
+    return <React.Fragment>{component}</React.Fragment>;
+  }
 }
+
+export default withStyles(styles)(CollectionImage);

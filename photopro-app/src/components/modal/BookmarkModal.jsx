@@ -4,6 +4,8 @@ import './BookmarkModal.css';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
@@ -18,7 +20,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
     true
   );
 
-  const [privateCollection, setPrivateCollection] = useState(false);
+  const [privateCollection, setPrivateCollection] = useState(0);
 
   console.log('TESTT');
 
@@ -27,7 +29,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
       method: 'GET',
       url: 'http://localhost:5000/get_users_collection',
       params: {
-        batch_size: 10,
+        batch_size: 20,
       },
     }).then((response) => {
       console.log(response);
@@ -164,9 +166,9 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
                   checked={privateCollection}
                   onChange={() => {
                     if (privateCollection === true) {
-                      setPrivateCollection(false);
+                      setPrivateCollection(0);
                     } else {
-                      setPrivateCollection(true);
+                      setPrivateCollection(1);
                     }
                   }}
                   name="privateCheckbox"

@@ -31,6 +31,8 @@ from utils.database.connect import (
     curImages,
     connImages2,
     curImages2,
+    connLikes,
+    curLikes,
 )
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -419,7 +421,7 @@ def api_get_likers_of_image():
     limit = request.args.get("batch_size")
     if image_id is not None and app.user_id is not None and limit is not None:
         print("=======================================")
-        result = get_likers(int(image_id), int(limit), conn, cur)
+        result = get_likers(int(image_id), int(limit), connLikes, curLikes)
         print("=======================================")
         if result != False:
             processed_result = []
@@ -637,14 +639,14 @@ def api_create_collection():
     if user_id is None or collection_name is None or private is None:
         return jsonify({"result": False})
     result = create_collection(
-        int(user_id), str(collection_name), bool(private), conn, cur
+        int(user_id), str(collection_name), bool(int(private)), conn, cur
     )
     return jsonify({"result": result})
 
 
 @app.route("/delete_collection", methods=["GET", "POST"])
 def api_delete_collection():
-    collection_id = request.args.get("collection_name")
+    collection_id = request.args.get("collection_id")
     user_id = app.user_id
 
     if user_id is None or collection_id is None:
@@ -690,7 +692,7 @@ def api_update_collections_private():
     if user_id is None or collection_id is None or private is None:
         return jsonify({"result": False})
     result = update_collections_private(
-        int(collection_id), bool(private), int(user_id), conn, cur
+        int(collection_id), bool(int(private)), int(user_id), conn, cur
     )
     return jsonify({"result": result})
 
@@ -755,12 +757,18 @@ def api_get_collection_data():
                 collection_name,
                 creator_id,
                 private,
-                image_id,
+                img_id,
+                img_caption,
                 uploader,
                 img,
+                title,
+                price,
                 created_at,
                 tags,
+                num_likes,
             ) = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -773,11 +781,15 @@ def api_get_collection_data():
                     "collection_name": collection_name,
                     "creator_id": creator_id,
                     "private": private,
-                    "image_id": image_id,
+                    "id": img_id,
+                    "caption": img_caption,
                     "uploader": uploader,
-                    "created_at": created_at,
-                    "tags": tags,
                     "img": img,
+                    "title": title,
+                    "price": str(price),
+                    "created_at": created_at,
+                    "num_likes": num_likes,
+                    "tags": tags,
                 }
             )
         retval = jsonify({"result": processed_result})
