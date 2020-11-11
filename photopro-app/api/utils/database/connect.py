@@ -35,3 +35,11 @@ connImages2 = psycopg2.connect(
 )
 curImages2 = connImages2.cursor()
 
+connLikes = psycopg2.connect(
+    user=database_user,
+    password=database_password,
+    host=host,
+    port=port,
+    database=database_name,
+)
+curLikes = connLikes.cursor()

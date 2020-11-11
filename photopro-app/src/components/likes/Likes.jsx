@@ -47,9 +47,7 @@ function Likes(props) {
         }
       });
     };
-    setTimeout(() => {
-      checkIfLiked();
-    }, 150);
+    checkIfLiked();
   }, [userID, imageID]);
 
   const handleLikeClicked = () => {
