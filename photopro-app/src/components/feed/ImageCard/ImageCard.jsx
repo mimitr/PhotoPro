@@ -76,11 +76,17 @@ class ImageCard extends Component {
     this.state = {
       redirect: null,
       spans: 0,
+      animateImages: '',
     };
   }
 
   componentDidMount() {
     this.imageRef.current.addEventListener('load', this.setSpans);
+    setTimeout(() => {
+      this.setState({
+        animateImages: 'image-container-animate',
+      });
+    }, 200);
   }
 
   setSpans = () => {
@@ -177,7 +183,10 @@ class ImageCard extends Component {
 
       component = (
         // <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
-        <div className="image-container" onClick={this.handleImageClicked}>
+        <div
+          className={`image-container ${this.state.animateImages}`}
+          onClick={this.handleImageClicked}
+        >
           <div className="icon-bar"></div>
 
           <img
