@@ -755,12 +755,18 @@ def api_get_collection_data():
                 collection_name,
                 creator_id,
                 private,
-                image_id,
+                img_id,
+                img_caption,
                 uploader,
                 img,
+                title,
+                price,
                 created_at,
                 tags,
+                num_likes,
             ) = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -773,11 +779,15 @@ def api_get_collection_data():
                     "collection_name": collection_name,
                     "creator_id": creator_id,
                     "private": private,
-                    "image_id": image_id,
+                    "id": img_id,
+                    "caption": img_caption,
                     "uploader": uploader,
-                    "created_at": created_at,
-                    "tags": tags,
                     "img": img,
+                    "title": title,
+                    "price": str(price),
+                    "created_at": created_at,
+                    "num_likes": num_likes,
+                    "tags": tags,
                 }
             )
         retval = jsonify({"result": processed_result})

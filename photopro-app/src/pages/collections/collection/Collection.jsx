@@ -4,10 +4,7 @@ import LockIcon from '@material-ui/icons/Lock';
 import './Collection.css';
 
 export default function Collection(props) {
-  console.log(props);
-
   const handleCollectionClicked = () => {
-    console.log('collection clicked!');
     props.setCollectionClicked(true);
     props.setCollectionIdClicked(props.collection_id);
     props.setCollectionNameClicked(props.collection_name);
@@ -15,8 +12,6 @@ export default function Collection(props) {
     props.setCollectionNumPhotosClicked(props.num_photos);
     props.setCollectionCreatorClicked(props.creator_id);
   };
-
-  console.log(props.private);
 
   return (
     <React.Fragment>

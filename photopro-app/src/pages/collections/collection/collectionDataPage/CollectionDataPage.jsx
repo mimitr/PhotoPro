@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CollectionDataPage.css';
-import CollectionImage from './collectionImage/CollectionImage';
 import LockIcon from '@material-ui/icons/Lock';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-
 import Toolbar from '../../../../components/toolbar/toolbar';
+import CollectionFeed from './CollectionFeed';
 
 export default function CollectionDataPage(props) {
   const [collectionImages, setCollectionImages] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   const [privateCollection, setPrivateCollection] = useState(
     props.location.state.private
   );
@@ -38,6 +37,7 @@ export default function CollectionDataPage(props) {
         if (response.data.result) {
           setCollectionImages(response.data.result);
         }
+        setLoading(false);
       });
     };
     getCollectionsById();
@@ -73,14 +73,6 @@ export default function CollectionDataPage(props) {
     });
   };
 
-  console.log(collectionImages);
-
-  const collectionImagesComponents = collectionImages.map((img) => {
-    return <CollectionImage key={img.id} image_info={img} />;
-  });
-
-  console.log(`PRIVATE? ${props.location.state.private}`);
-
   const handleEditCollectionClose = () => {
     setAnchorEl(null);
   };
@@ -88,10 +80,8 @@ export default function CollectionDataPage(props) {
   const handleChangePrivateClicked = () => {
     if (privateCollection === 'true') {
       updateCollectionsPrivate(0);
-      console.log('changing to public');
     } else {
       updateCollectionsPrivate(1);
-      console.log('changing to private');
     }
   };
 
@@ -144,8 +134,9 @@ export default function CollectionDataPage(props) {
             </MenuItem>
           </Menu>
         </div>
-        {collectionImagesComponents}
+        <CollectionFeed retrievedImgs={collectionImages} />
       </div>
+      <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
     </React.Fragment>
   );
 }
