@@ -743,13 +743,13 @@ def api_add_purchase():
 
 
 @app.route("/delete_item_from_cart", methods=["GET", "POST"])
-def api_delete_photo_from_collection():
+def api_delete_item_from_cart():
     image_id = request.args.get("image_id")
     user_id = app.user_id
 
     if user_id is None or image_id is None:
         return jsonify({"result": False})
-    result = delete_photo_from_collection(int(user_id), int(image_id), conn, cur)
+    result = delete_item_from_cart(int(user_id), int(image_id), conn, cur)
     return jsonify({"result": result})
 
 
