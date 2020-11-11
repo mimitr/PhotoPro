@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import LockIcon from "@material-ui/icons/Lock";
+import React from 'react';
+import LockIcon from '@material-ui/icons/Lock';
 
-import "./Collection.css";
+import './Collection.css';
 
 export default function Collection(props) {
   console.log(props);
 
   const handleCollectionClicked = () => {
-    console.log("collection clicked!");
+    console.log('collection clicked!');
     props.setCollectionClicked(true);
     props.setCollectionIdClicked(props.collection_id);
     props.setCollectionNameClicked(props.collection_name);

@@ -27,7 +27,7 @@ export default function ChangePasswordPage() {
     return (
       new_confirmed_password.length >= 8 &&
       new_confirmed_password.length < 16 &&
-      new_confirmed_password == new_password
+      new_confirmed_password === new_password
     );
   }
 

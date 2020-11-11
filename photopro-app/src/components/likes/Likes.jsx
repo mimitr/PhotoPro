@@ -23,14 +23,34 @@ function Likes(props) {
   const [postLiked, setPostLiked] = useState(false);
   const classes = useStyles();
 
+  const { image_id: imageID } = props;
+  let userID = localStorage.getItem('userID');
+
   useEffect(() => {
     console.log('check if liked called');
+    const checkIfLiked = () => {
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/get_likers_of_image',
+        params: { image_id: imageID, batch_size: 50 },
+      }).then((response) => {
+        console.log(response);
+        if (response.data.result.length > 0) {
+          for (let i = 0; i < response.data.result.length; i++) {
+            if (parseInt(userID) === response.data.result[i].user_id) {
+              setPostLiked(true);
+              console.log('This image has been liked before :o');
+            }
+          }
+        } else {
+          console.log('no likers found');
+        }
+      });
+    };
     setTimeout(() => {
       checkIfLiked();
     }, 150);
-  }, []);
-
-  let userID = localStorage.getItem('userID');
+  }, [userID, imageID]);
 
   const handleLikeClicked = () => {
     if (userID != null) {
@@ -42,26 +62,6 @@ function Likes(props) {
     } else {
       console.log('user is not logged in yet');
     }
-  };
-
-  const checkIfLiked = () => {
-    axios({
-      method: 'GET',
-      url: 'http://localhost:5000/get_likers_of_image',
-      params: { image_id: props.image_id, batch_size: 50 },
-    }).then((response) => {
-      console.log(response);
-      if (response.data.result.length > 0) {
-        for (let i = 0; i < response.data.result.length; i++) {
-          if (parseInt(userID) === response.data.result[i].user_id) {
-            setPostLiked(true);
-            console.log('This image has been liked before :o');
-          }
-        }
-      } else {
-        console.log('no likers found');
-      }
-    });
   };
 
   const post_likes = (img_id) => {
@@ -112,6 +112,7 @@ function Likes(props) {
           <IconButton
             classes={{ root: `${classes.root} ${buttonClass}` }}
             onClick={handleLikeClicked}
+            disabled={localStorage.getItem('userLoggedIn') ? false : true}
           >
             <FavoriteIcon />
           </IconButton>

@@ -24,7 +24,7 @@ const UserPhotos = () => {
       params: { batch_size: 30 }, //user_id: 1
     }).then((res) => {
       console.log(res);
-      if (res.data.result != false) {
+      if (res.data.result !== false) {
         setLoading(false);
         setProfileImgs(res.data.result);
       }
@@ -54,11 +54,13 @@ const UserPhotos = () => {
       </div>
       <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
 
-      <BookmarkModal
-        openModal={modalIsOpen}
-        onCloseModal={() => setModalIsOpen(false)}
-        photoId={photoIdBookmarked}
-      ></BookmarkModal>
+      {modalIsOpen ? (
+        <BookmarkModal
+          openModal={modalIsOpen}
+          setOpenModal={setModalIsOpen}
+          photoId={photoIdBookmarked}
+        ></BookmarkModal>
+      ) : null}
     </React.Fragment>
   );
 };
