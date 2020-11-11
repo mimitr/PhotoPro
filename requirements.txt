@@ -1,32 +1,75 @@
+aiohttp @ file:///home/conda/feedstock_root/build_artifacts/aiohttp_1603792544705/work
 appdirs==1.4.4
+async-timeout==3.0.1
+attrs @ file:///home/conda/feedstock_root/build_artifacts/attrs_1599308529326/work
+beautifulsoup4==4.9.3
+brotlipy==0.7.0
+cachetools @ file:///home/conda/feedstock_root/build_artifacts/cachetools_1593420445823/work
 certifi==2020.6.20
+cffi @ file:///home/conda/feedstock_root/build_artifacts/cffi_1602537219008/work
+chardet @ file:///home/conda/feedstock_root/build_artifacts/chardet_1602255309768/work
 click==7.1.2
+cryptography @ file:///home/conda/feedstock_root/build_artifacts/cryptography_1604179075887/work
 cycler==0.10.0
 distlib==0.3.0
+filelock==3.0.12
 Flask==1.1.2
 Flask-Cors==3.0.9
 future==0.18.2
 google==3.0.0
+google-api-core==1.23.0
+google-api-python-client @ file:///home/conda/feedstock_root/build_artifacts/google-api-python-client_1603391000335/work
+google-auth @ file:///home/conda/feedstock_root/build_artifacts/google-auth_1604068942758/work
+google-auth-httplib2 @ file:///home/conda/feedstock_root/build_artifacts/google-auth-httplib2_1601483325475/work
+google-cloud-core==1.4.3
+google-cloud-datastore==1.15.3
+google-cloud-vision==2.0.0
+googleapis-common-protos @ file:///home/conda/feedstock_root/build_artifacts/googleapis-common-protos-feedstock_1604414770577/work
+graphviz @ file:///home/conda/feedstock_root/build_artifacts/python-graphviz_1602067273230/work
+grpcio==1.33.2
+httplib2 @ file:///home/conda/feedstock_root/build_artifacts/httplib2_1590007784658/work
+idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1593328102638/work
 importlib-metadata==1.6.0
 itsdangerous==1.1.0
 Jinja2==2.11.2
 joblib==0.16.0
 kiwisolver==1.2.0
+libcst==0.3.13
 MarkupSafe==1.1.1
 matplotlib==3.3.2
+multidict @ file:///home/conda/feedstock_root/build_artifacts/multidict_1602413133191/work
+mypy-extensions==0.4.3
 numpy==1.19.2
 Pillow==7.2.0
+proto-plus==1.11.0
+protobuf==3.13.0
 psycopg2-binary==2.8.6
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1593275161868/work
+pyOpenSSL==19.1.0
 pyparsing==2.4.7
+PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1602326924965/work
 python-dateutil==2.8.1
 python-dotenv==0.14.0
 pythonenv==0.0.34
+pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1604321279890/work
+PyYAML==5.3.1
+requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1592425495151/work
+rsa @ file:///home/conda/feedstock_root/build_artifacts/rsa_1591996208734/work
 scikit-learn==0.23.2
 scipy==1.5.2
-six==1.15.0
+simplejson @ file:///home/conda/feedstock_root/build_artifacts/simplejson_1602514248663/work
+six @ file:///home/conda/feedstock_root/build_artifacts/six_1590081179328/work
 sklearn==0.0
+soupsieve==2.0.1
 threadpoolctl==2.1.0
 torch==1.6.0
+typing-extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1602702424206/work
+typing-inspect==0.6.0
+uritemplate==3.0.1
+urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1603125704209/work
 virtualenv==20.0.21
 Werkzeug==1.0.1
+yarl @ file:///home/conda/feedstock_root/build_artifacts/yarl_1602671471836/work
 zipp==3.1.0
