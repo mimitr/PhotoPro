@@ -460,7 +460,7 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (image_id)
+        cmd = """select tags from images where image_id=%d """ % (int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
