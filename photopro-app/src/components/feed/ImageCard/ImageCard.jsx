@@ -102,7 +102,7 @@ class ImageCard extends Component {
       this.setState({
         animateImages: "image-container-animate",
       });
-    }, 200);
+    }, 100);
   }
 
   setSpans = () => {

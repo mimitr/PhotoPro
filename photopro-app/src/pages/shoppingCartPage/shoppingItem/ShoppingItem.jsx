@@ -13,8 +13,10 @@ export default function ShoppingItem(props) {
             />
           </div>
           <div className="image-info">
-            <h2>Photo title: {props.title}</h2>
-            <p>Price: {props.price}</p>
+            <h2>Title: {props.title}</h2>
+            <h2>Caption:</h2>
+            <p>{props.caption}</p>
+            <h3>Price: {props.price}</h3>
           </div>
         </div>
       </div>

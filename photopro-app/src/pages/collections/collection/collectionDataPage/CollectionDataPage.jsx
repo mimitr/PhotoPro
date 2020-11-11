@@ -97,7 +97,7 @@ export default function CollectionDataPage(props) {
           {privateCollection === 'true' ? <LockIcon /> : null}
           <h1>{props.location.state.collection_name}</h1>
           <p>by @{props.location.state.creator_id}</p>
-          <p>Total photos: {props.location.state.num_photos}</p>
+          <p>Total photos: {collectionImages.length}</p>
 
           <Button
             aria-controls="simple-menu"
