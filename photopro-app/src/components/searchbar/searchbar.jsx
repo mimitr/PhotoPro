@@ -1,48 +1,16 @@
 import React, { useState } from 'react';
 import './searchbar.css';
 import Feed from '../feed/feed';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    margin: theme.spacing(1),
-    width: '100ch',
-  },
-}));
+import SearchBarInput from './searchBarInput';
 
 function SearchBar() {
-  const [query, setQuery] = useState('');
-  const [searchVal, setSearchVal] = useState('');
-  const classes = useStyles();
+  const [query, setQuery] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setQuery(searchVal);
-  };
+  console.log(`The query is - ${query}`);
 
   return (
     <React.Fragment>
-      <div className="searchBar">
-        <form
-          onSubmit={handleSubmit}
-          className={classes.root}
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            className={classes.text}
-            id="outlined-basic"
-            label="Search for stock photos"
-            variant="outlined"
-            size="small"
-            fullWidth
-            value={searchVal}
-            onChange={(event) => setSearchVal(event.target.value)}
-          />
-        </form>
-      </div>
-
+      <SearchBarInput setQuery={setQuery} />
       <Feed query={query} />
     </React.Fragment>
   );

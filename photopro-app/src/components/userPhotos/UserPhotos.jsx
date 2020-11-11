@@ -24,9 +24,11 @@ const UserPhotos = () => {
       params: { batch_size: 30 }, //user_id: 1
     }).then((res) => {
       console.log(res);
-      if (res.data.result != false) {
+      if (res.data.result !== false) {
         setLoading(false);
         setProfileImgs(res.data.result);
+      } else {
+        setLoading(false);
       }
     });
   };
@@ -34,6 +36,11 @@ const UserPhotos = () => {
   return (
     <React.Fragment>
       <h2>Uploaded Images: {profileImgs.length}</h2>
+      {profileImgs.length === 0 ? (
+        <h2 style={{ textAlign: 'center' }}>
+          You haven't uploaded any photos!
+        </h2>
+      ) : null}
 
       <div className="image-grid">
         {profileImgs.map((image, index) => {
@@ -54,11 +61,13 @@ const UserPhotos = () => {
       </div>
       <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
 
-      <BookmarkModal
-        openModal={modalIsOpen}
-        onCloseModal={() => setModalIsOpen(false)}
-        photoId={photoIdBookmarked}
-      ></BookmarkModal>
+      {modalIsOpen ? (
+        <BookmarkModal
+          openModal={modalIsOpen}
+          setOpenModal={setModalIsOpen}
+          photoId={photoIdBookmarked}
+        ></BookmarkModal>
+      ) : null}
     </React.Fragment>
   );
 };

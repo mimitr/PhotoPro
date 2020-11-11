@@ -3,7 +3,7 @@ import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-export default function LoginPage(props) {
+export default function LoginPage() {
   const [email, set_email] = useState('');
   const [password, set_password] = useState('');
   const [loginFailed, setLoginFailed] = useState(false);

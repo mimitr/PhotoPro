@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Toolbar from "../../components/toolbar/toolbar";
-import "./CollectionsPage.css";
-import { Redirect } from "react-router-dom";
-import Collection from "./collection/Collection";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Toolbar from '../../components/toolbar/toolbar';
+import './CollectionsPage.css';
+import { Redirect } from 'react-router-dom';
+import Collection from './collection/Collection';
 
 export default function CollectionsPage() {
   const [allCollections, setAllCollections] = useState([]);
@@ -22,14 +22,13 @@ export default function CollectionsPage() {
   );
 
   useEffect(() => {
-    console.log("getting users collections");
     getUsersCollections();
   }, []);
 
   const getUsersCollections = () => {
     axios({
-      method: "GET",
-      url: "http://localhost:5000/get_users_collection",
+      method: 'GET',
+      url: 'http://localhost:5000/get_users_collection',
       params: {
         batch_size: 10,
       },

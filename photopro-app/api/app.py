@@ -24,7 +24,16 @@ from utils.database.general_user import (
     remove_tag,
     delete_image_post,
 )
-from utils.database.connect import conn, cur
+from utils.database.connect import (
+    conn,
+    cur,
+    connImages,
+    curImages,
+    connImages2,
+    curImages2,
+    connLikes,
+    curLikes,
+)
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import sys
@@ -59,7 +68,7 @@ from utils.database.collections import (
     get_collection_data,
     delete_collection,
     delete_photo_from_collection,
-    update_collections_private
+    update_collections_private,
 )
 
 from utils.database.user_purchases import (
@@ -158,31 +167,60 @@ def api_discovery():
         user_id = 0
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
-    if query is None:
-        query = ""
+
+    print(
+        "++++++++++++++++++++++ DISCOVERY API CALLED - %s ++++++++++++++++++++++++++++++"
+        % query
+    )
     start_point = 0
 
     if app.last_query == query:
+        print("------------------ last query === query ----------------------")
         start_point = app.start_point
     else:
+        print("---------------------- app.start_point reset to 0 ------------------")
         app.start_point = 0
     app.last_query = query
     if query is not None:
-        result = search_by_tag(user_id, batch_size, query, start_point, conn, cur)
+        result = search_by_tag(
+            user_id, batch_size, query, start_point, connImages, curImages
+        )
     else:
-        result = discovery(user_id, batch_size, conn, cur)
+        print("==================== QUERY IS NONE =======================")
+        result = discovery(user_id, batch_size, start_point, connImages2, curImages2)
 
     if not result:
-        result = discovery_with_search_term(user_id, batch_size, query, start_point, conn, cur)
+        result = discovery_with_search_term(
+            user_id, batch_size, query, start_point, connImages, curImages
+        )
 
         if not result:
             return jsonify({"result": False})
         processed_result = []
 
         try:
+            start_point_before_iteration = app.start_point
             for tup in result:
+                if query != app.last_query:  # bug fix for rapid searching
+                    print(
+                        "=============== THIS REQUEST FOR - %s - HAS BEEN CANCELLED ============="
+                        % query
+                    )
+                    app.start_point = start_point_before_iteration
+                    return jsonify({"result": False})
+
                 print(tup)
-                id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
+                (
+                    id,
+                    caption,
+                    uploader,
+                    img,
+                    title,
+                    price,
+                    created_at,
+                    tags,
+                    num_likes,
+                ) = tup
                 if not num_likes:
                     num_likes = 0
                 print(num_likes)
@@ -192,6 +230,11 @@ def api_discovery():
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
+<<<<<<< HEAD
+=======
+
+                print("id - %d, start_point - %d" % (id, app.start_point))
+>>>>>>> frontend-collections
                 if id > app.start_point:
                     app.start_point = id
                     processed_result.append(
@@ -204,17 +247,25 @@ def api_discovery():
                             "price": str(price),
                             "created_at": created_at,
                             "num_likes": num_likes,
-                            "tags": tags
+                            "tags": tags,
                         }
                     )
+<<<<<<< HEAD
         except PIL.UnidentifiedImageError as e:
+=======
+                    print("processed result appended to %d" % len(processed_result))
+        except PIL.UnidentifiedImageError as e:
+            print("=================== Unidentified image error ===================")
+>>>>>>> frontend-collections
             print(e)
+            print("===========================================================")
 
         if len(processed_result) > 0:
             retval = jsonify({"result": processed_result})
             print(retval)
             return retval
         else:
+            print("---------------- HEREE -------------------")
             return jsonify({"result": False})
 
     elif result:
@@ -223,8 +274,25 @@ def api_discovery():
 
         try:
             for tup in result:
+                if query != app.last_query:  # bug fix for rapid searching
+                    print(
+                        "=============== THIS REQUEST FOR - %s - HAS BEEN CANCELLED ============="
+                        % query
+                    )
+                    app.start_point = start_point_before_iteration
+                    return jsonify({"result": False})
                 print(tup)
-                id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
+                (
+                    id,
+                    caption,
+                    uploader,
+                    img,
+                    title,
+                    price,
+                    created_at,
+                    tags,
+                    num_likes,
+                ) = tup
                 if not num_likes:
                     num_likes = 0
                 print(num_likes)
@@ -246,7 +314,7 @@ def api_discovery():
                             "price": str(price),
                             "created_at": created_at,
                             "num_likes": num_likes,
-                            "tags": tags
+                            "tags": tags,
                         }
                     )
 
@@ -297,7 +365,7 @@ def api_profile_photos():
                     "price": str(price),
                     "created_at": created_at,
                     "num_likes": num_likes,
-                    "tags": tags
+                    "tags": tags,
                 }
             )
 
@@ -367,7 +435,7 @@ def api_get_likers_of_image():
     limit = request.args.get("batch_size")
     if image_id is not None and app.user_id is not None and limit is not None:
         print("=======================================")
-        result = get_likers(int(image_id), int(limit), conn, cur)
+        result = get_likers(int(image_id), int(limit), connLikes, curLikes)
         print("=======================================")
         if result != False:
             processed_result = []
@@ -466,8 +534,12 @@ def api_delete_comment():
 
 @app.route("/get_comments_to_image", methods=["GET", "POST"])
 def api_get_comments_to_image():
+    print(
+        "++++++++++++++++++++++++ API CALL - get_comments_to_image ++++++++++++++++++++++++"
+    )
     image_id = request.args.get("image_id")
     batch_size = request.args.get("batch_size")
+    print("+++++++++++++ image_id - %s +++++++++++" % image_id)
     if image_id is None or batch_size is None:
         return jsonify({"result": False})
     else:
@@ -619,7 +691,9 @@ def api_delete_photo_from_collection():
 
     if user_id is None or collection_id is None or image_id is None:
         return jsonify({"result": False})
-    result = delete_photo_from_collection(int(collection_id), int(image_id), int(user_id), conn, cur)
+    result = delete_photo_from_collection(
+        int(collection_id), int(image_id), int(user_id), conn, cur
+    )
     return jsonify({"result": result})
 
 
@@ -631,7 +705,9 @@ def api_update_collections_private():
 
     if user_id is None or collection_id is None or private is None:
         return jsonify({"result": False})
-    result = update_collections_private(int(collection_id), bool(int(private)), int(user_id), conn, cur)
+    result = update_collections_private(
+        int(collection_id), bool(int(private)), int(user_id), conn, cur
+    )
     return jsonify({"result": result})
 
 
@@ -695,12 +771,18 @@ def api_get_collection_data():
                 collection_name,
                 creator_id,
                 private,
-                image_id,
+                img_id,
+                img_caption,
                 uploader,
                 img,
+                title,
+                price,
                 created_at,
                 tags,
+                num_likes,
             ) = tup
+            if not num_likes:
+                num_likes = 0
             file = "image.jpeg"
             photo = open(file, "wb")
             photo.write(img)
@@ -713,11 +795,15 @@ def api_get_collection_data():
                     "collection_name": collection_name,
                     "creator_id": creator_id,
                     "private": private,
-                    "image_id": image_id,
+                    "id": img_id,
+                    "caption": img_caption,
                     "uploader": uploader,
-                    "created_at": created_at,
-                    "tags": tags,
                     "img": img,
+                    "title": title,
+                    "price": str(price),
+                    "created_at": created_at,
+                    "num_likes": num_likes,
+                    "tags": tags,
                 }
             )
         retval = jsonify({"result": processed_result})
