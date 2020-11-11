@@ -1,0 +1,13 @@
+.shopping-cart-grid {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-column-gap: 1em;
+  grid-auto-rows: minmax(50px, auto);
+}
+
+.shopping-cart-subtotal {
+  border: #333 1px solid;
+  height: 150px;
+  margin: 30px;
+  padding: 20px;
+}

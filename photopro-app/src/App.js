@@ -11,6 +11,8 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import EditPostPage from "./pages/EditPostPage";
 import CollectionsPage from "./pages/collections/CollectionsPage";
 import CollectionDataPage from "./pages/collections/collection/collectionDataPage/CollectionDataPage"
+import ShoppingCartPage from "./pages/shoppingCartPage/ShoppingCartPage"
+import CheckoutPage from "./pages/checkoutPage/CheckoutPage"
 
 import { Switch, Route } from "react-router-dom";
 
@@ -36,6 +38,8 @@ function App() {
         <Route path="/editpost/:id" component={EditPostPage} />
         <Route path="/collections" component={CollectionsPage} />
         <Route path="/collection-:id" component={CollectionDataPage} />
+        <Route path="/shopping-cart" component={ShoppingCartPage} />
+        <Route path="/checkout" component={CheckoutPage} />
       </Switch>
     </React.Fragment>
   );

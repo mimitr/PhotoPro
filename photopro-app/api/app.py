@@ -71,6 +71,13 @@ from utils.database.collections import (
     update_collections_private,
 )
 
+from utils.database.user_purchases import (
+    add_purchase,
+    delete_item_from_cart,
+    get_user_purchases,
+    update_user_purchases_details
+)
+
 print(conn, cur)
 
 app = Flask(__name__)
@@ -806,4 +813,87 @@ def api_get_collection_data():
         print(retval)
         return retval
 
+    return jsonify({"result": result})
+
+
+@app.route("/add_purchase", methods=["GET", "POST"])
+def api_add_purchase():
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or purchased is None or image_id is None or save_for_later is None:
+        return jsonify({"result": False})
+    result = add_purchase(
+        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+    )
+    return jsonify({"result": result})
+
+
+@app.route("/delete_item_from_cart", methods=["GET", "POST"])
+def api_delete_item_from_cart():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or image_id is None:
+        return jsonify({"result": False})
+    result = delete_item_from_cart(int(user_id), int(image_id), conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/get_user_purchases", methods=["GET", "POST"])
+def api_get_user_purchases():
+    user_id = app.user_id
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+
+    if user_id is None or save_for_later is None or purchased is None:
+        return jsonify({"result": False})
+    result = get_user_purchases(int(user_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur)
+    if result:
+
+        processed_result = []
+
+        for tup in result:
+            (
+                user_id, image_id, save_for_later, purchased, title, caption, price, img
+            ) = tup
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            processed_result.append(
+                {
+                    "user_id": user_id,
+                    "image_id": image_id,
+                    "save_for_later": save_for_later,
+                    "purchased": purchased,
+                    "title": title,
+                    "caption": caption,
+                    "price": str(price),
+                    "img": img
+                }
+            )
+        # print("+++++++++++++PROCESSED RESULT+++++++++++++++")
+        # print(processed_result)
+        retval = jsonify({"result": processed_result})
+        return retval
+    return jsonify({"result": result})
+
+
+@app.route("/update_user_purchases_details", methods=["GET", "POST"])
+def api_update_user_purchases_details():
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or purchased is None or image_id is None or save_for_later is None:
+        return jsonify({"result": False})
+    result = update_user_purchases_details(
+        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+    )
     return jsonify({"result": result})

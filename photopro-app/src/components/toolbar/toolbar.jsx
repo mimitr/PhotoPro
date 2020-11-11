@@ -66,6 +66,10 @@ function Toolbar() {
     history.push("/collections");
   };
 
+  const handleCartClicked = () => {
+    history.push("/shopping-cart");
+  };
+
   let buttons;
   if (loggedIn === "true") {
     buttons = (
@@ -84,6 +88,14 @@ function Toolbar() {
             onClick={handleCollectionsClicked}
           >
             Collections
+          </Button>
+
+          <Button
+            className={classes.button}
+            size="small"
+            onClick={handleCartClicked}
+          >
+            My Cart
           </Button>
 
           <Button

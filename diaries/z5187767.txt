@@ -68,3 +68,11 @@ I complete the database tables and views and api calls for the collections funct
 there is some updating for optimal performance to be done. I also have tried debugging alot
 with the frontend and also backend to fix some of our issues with the database calls or image
 recognition, etc.
+
+=======================    WEEK 9    =======================
+I've just added the cart and past purchases API's which are tested an callable. They store the photos
+the user has added to the cart, saved for later or purched in the past. The user can edit these items
+except for those purchased prior, which in that case it will be in their history of purchases
+permanently. I've also helped Cristain debug some issues with the API for stress testing, in which
+we will likely just have multiple database connections instead of a single global connection.
+
