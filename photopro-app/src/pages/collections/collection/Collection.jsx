@@ -21,7 +21,7 @@ export default function Collection(props) {
   return (
     <React.Fragment>
       <div className="collection-box" onClick={handleCollectionClicked}>
-        {props.private == true ? <LockIcon /> : null}
+        {props.private === true ? <LockIcon /> : null}
         {props.collection_name}
       </div>
     </React.Fragment>

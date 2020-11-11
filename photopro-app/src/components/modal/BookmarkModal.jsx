@@ -165,7 +165,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
                 <Checkbox
                   checked={privateCollection}
                   onChange={() => {
-                    if (privateCollection == true) {
+                    if (privateCollection === true) {
                       setPrivateCollection(0);
                     } else {
                       setPrivateCollection(1);

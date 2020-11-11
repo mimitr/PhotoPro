@@ -65,7 +65,7 @@ export default function CollectionDataPage(props) {
       },
     }).then((response) => {
       console.log(response);
-      if (privValue == 0) {
+      if (privValue === 0) {
         setPrivateCollection('false');
       } else {
         setPrivateCollection('true');
@@ -86,7 +86,7 @@ export default function CollectionDataPage(props) {
   };
 
   const handleChangePrivateClicked = () => {
-    if (privateCollection == 'true') {
+    if (privateCollection === 'true') {
       updateCollectionsPrivate(0);
       console.log('changing to public');
     } else {
@@ -104,7 +104,7 @@ export default function CollectionDataPage(props) {
       <Toolbar />
       <div className="collectionDataWrapper">
         <div className="collection-info">
-          {privateCollection == 'true' ? <LockIcon /> : null}
+          {privateCollection === 'true' ? <LockIcon /> : null}
           <h1>{props.location.state.collection_name}</h1>
           <p>by @{props.location.state.creator_id}</p>
           <p>Total photos: {props.location.state.num_photos}</p>
@@ -126,7 +126,7 @@ export default function CollectionDataPage(props) {
             open={Boolean(anchorEl)}
             onClose={handleEditCollectionClose}
           >
-            {privateCollection == 'true' ? (
+            {privateCollection === 'true' ? (
               <MenuItem onClick={handleChangePrivateClicked}>
                 Make Public
               </MenuItem>
