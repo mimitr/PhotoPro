@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -28,7 +29,17 @@ export default function Notifications() {
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
+    const fetchNotifications = () => {
+      axios({
+        url: 'http://localhost:5000/fetch_notification',
+        params: {},
+      }).then((res) => {
+        console.log(res);
+      });
+    };
+
     setAnchorEl(event.currentTarget);
+    fetchNotifications();
   };
 
   const handleClose = () => {

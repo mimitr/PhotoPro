@@ -23,6 +23,7 @@ from utils.database.general_user import (
     get_tags,
     remove_tag,
     delete_image_post,
+    set_user_timestamp,
 )
 from utils.database.connect import (
     conn,
@@ -75,7 +76,7 @@ from utils.database.user_purchases import (
     add_purchase,
     delete_item_from_cart,
     get_user_purchases,
-    update_user_purchases_details
+    update_user_purchases_details,
 )
 
 print(conn, cur)
@@ -485,6 +486,15 @@ def api_fetch_notifications():
     return jsonify({"notifications": False})
 
 
+@app.route("/set_last_active", methods=["POST"])
+def api_set_last_active():
+    user_id = app.user_id
+
+    result = set_user_timestamp(user_id, conn, cur)
+    print("~~~~~~~~~~~~~~~~~~ set_user_timestamp returned - %s" % result)
+    return jsonify({"result": result})
+
+
 @app.route("/post_comment_to_image", methods=["GET", "POST"])
 def api_post_comment_to_image():
     image_id = request.args.get("image_id")
@@ -741,7 +751,7 @@ def api_get_users_collection():
                     "creator_id": creator_id,
                     "private": private,
                     "num_photos": num_photos,
-                    "img": img
+                    "img": img,
                 }
             )
         retval = jsonify({"result": processed_result})
@@ -823,10 +833,20 @@ def api_add_purchase():
     image_id = request.args.get("image_id")
     user_id = app.user_id
 
-    if user_id is None or purchased is None or image_id is None or save_for_later is None:
+    if (
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
+    ):
         return jsonify({"result": False})
     result = add_purchase(
-        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+        int(user_id),
+        int(image_id),
+        bool(int(save_for_later)),
+        bool(int(purchased)),
+        conn,
+        cur,
     )
     return jsonify({"result": result})
 
@@ -850,14 +870,23 @@ def api_get_user_purchases():
 
     if user_id is None or save_for_later is None or purchased is None:
         return jsonify({"result": False})
-    result = get_user_purchases(int(user_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur)
+    result = get_user_purchases(
+        int(user_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+    )
     if result:
 
         processed_result = []
 
         for tup in result:
             (
-                user_id, image_id, save_for_later, purchased, title, caption, price, img
+                user_id,
+                image_id,
+                save_for_later,
+                purchased,
+                title,
+                caption,
+                price,
+                img,
             ) = tup
             file = "image.jpeg"
             photo = open(file, "wb")
@@ -874,7 +903,7 @@ def api_get_user_purchases():
                     "title": title,
                     "caption": caption,
                     "price": str(price),
-                    "img": img
+                    "img": img,
                 }
             )
         # print("+++++++++++++PROCESSED RESULT+++++++++++++++")
@@ -891,9 +920,19 @@ def api_update_user_purchases_details():
     image_id = request.args.get("image_id")
     user_id = app.user_id
 
-    if user_id is None or purchased is None or image_id is None or save_for_later is None:
+    if (
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
+    ):
         return jsonify({"result": False})
     result = update_user_purchases_details(
-        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+        int(user_id),
+        int(image_id),
+        bool(int(save_for_later)),
+        bool(int(purchased)),
+        conn,
+        cur,
     )
     return jsonify({"result": result})

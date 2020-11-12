@@ -50,8 +50,10 @@ def login_user(email, password, conn, cur):
             # return "Incorrect email or password! Please try again.", None
             return False, None
         elif length == 1:
-            (id, first, last, email, password, last_active) = data[0]
-            print(id, first, last, email, password, last_active)
+            (id, first, last, email, password, last_active, username) = data[0]
+            print("------------User details---------------")
+            print(id, first, last, email, password, last_active, username)
+            print("----------------------------------------")
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -59,7 +61,10 @@ def login_user(email, password, conn, cur):
             return False, None
     except psycopg2.Error as e:
         error = e.pgcode
+        print("================ LOGIN ERROR ====================")
+        print(e)
         print(error)
+        print("=================================================")
         return False, None
 
 
