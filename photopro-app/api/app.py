@@ -475,10 +475,13 @@ def api_send_notification():
     notif_type = request.args.get("notification")  # I DUNNO WHAT TO PUT HERE
     image_id = request.args.get("image_id")
     sender_id = app.user_id  # assumes that logged in user comments or likes image
+
     if uploader_id is not None and sender_id is not None and notif_type is not None:
+        conn, cur = get_conn_and_cur()
         result = send_notification(
             uploader_id, sender_id, notif_type, image_id, conn, cur
         )
+        conn.close()
         return jsonify({"result": result})
     return jsonify({"result": False})
 
@@ -487,7 +490,9 @@ def api_send_notification():
 def api_fetch_notification():
     uploader_id = app.user_id
     if uploader_id is not None:
-        result = fetch_notification(uploader_id, connNotifications, curNotifications)
+        conn, cur = get_conn_and_cur()
+        result = fetch_notification(uploader_id, conn, cur)
+        conn.close()
         if result != False:
             processed = []
             for tup in result:
@@ -510,7 +515,9 @@ def api_fetch_notification():
 def api_clear_notification():
     uploader_id = app.user_id
     if uploader_id is not None:
+        conn, cur = get_conn_and_cur()
         result = clear_notification(uploader_id, conn, cur)
+        conn.close()
         return jsonify({"result": result})
     return jsonify({"result": False})
 
@@ -518,8 +525,9 @@ def api_clear_notification():
 @app.route("/set_last_active", methods=["POST"])
 def api_set_last_active():
     user_id = app.user_id
-
+    conn, cur = get_conn_and_cur()
     result = set_user_timestamp(user_id, conn, cur)
+    connc.lose()
     print("~~~~~~~~~~~~~~~~~~ set_user_timestamp returned - %s" % result)
     return jsonify({"result": result})
 
