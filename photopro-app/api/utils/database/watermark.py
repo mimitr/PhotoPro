@@ -9,7 +9,8 @@ def apply_watermark(input):
     watermark = Image.new('RGBA', photo.size, (255,255,255,0))
 
     # Setting up watermark
-    wfont = ImageFont.load_default() # ImageFont.truetype("arial.ttf", 24)
+    #wfont = ImageFont.load_default() # ImageFont.truetype("arial.ttf", 24)
+    wfont = ImageFont.truetype("utils/database/Ubuntu-Title.ttf", 24, encoding = "unic")
     wtxt = "PhotoPro Copyright"
     wmdraw = ImageDraw.Draw(watermark)
 
