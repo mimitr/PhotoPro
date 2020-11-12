@@ -494,7 +494,7 @@ def api_fetch_notification():
     return jsonify({"result": False})
 
 
-@app.route("/clear_notification")
+@app.route("/clear_notifications")
 def api_clear_notification():
     uploader_id = app.user_id
     if uploader_id is not None:

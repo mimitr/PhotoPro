@@ -52,17 +52,6 @@ function Toolbar() {
   };
 
   const handleLogoutClicked = () => {
-    const setLastActive = () => {
-      axios({
-        method: 'POST',
-        url: 'http://localhost:5000/set_last_active',
-        params: {},
-      }).then((res) => {
-        console.log(res);
-      });
-    };
-
-    setLastActive();
     localStorage.clear();
     history.push('/');
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information

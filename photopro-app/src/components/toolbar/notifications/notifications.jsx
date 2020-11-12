@@ -29,6 +29,8 @@ export default function Notifications() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
+  console.log(notifications);
+
   const handleClick = (event) => {
     const fetchNotifications = () => {
       axios({
@@ -37,6 +39,7 @@ export default function Notifications() {
       }).then((res) => {
         console.log(res);
         if (res.data.result) {
+          console.log('setting notifications');
           setNotifications(res.data.result);
         }
       });
@@ -52,6 +55,17 @@ export default function Notifications() {
 
   const handleClearNotifications = () => {
     console.log('clear notifications');
+    const clearNotifications = () => {
+      axios({
+        url: 'http://localhost:5000/clear_notifications',
+        params: {},
+      }).then((res) => {
+        console.log(res);
+      });
+    };
+
+    clearNotifications();
+    setNotifications([]);
   };
 
   return (
@@ -81,23 +95,33 @@ export default function Notifications() {
           notifications.map((notification, index) => {
             if (index === 0) {
               return (
-                <MenuItem key={index} onClick={handleClearNotifications}>
-                  Clear Notifications
-                </MenuItem>
-              );
-            } else {
-              return (
-                <MenuItem key={index} onClick={handleClose}>
-                  <div>
-                    User {notification.sender}{' '}
-                    {notification.type === 'like'
-                      ? 'liked your'
-                      : 'commented on your'}{' '}
-                    post - {`'${notification.image_id}'`}
-                  </div>
-                </MenuItem>
+                <div key={index}>
+                  <MenuItem key={index} onClick={handleClearNotifications}>
+                    Clear Notifications
+                  </MenuItem>
+                  <MenuItem key={index + 1} onClick={handleClose}>
+                    <div>
+                      User {notification.sender}{' '}
+                      {notification.type === 'like'
+                        ? 'liked your'
+                        : 'commented on your'}{' '}
+                      post - {`'${notification.image_id}'`}
+                    </div>
+                  </MenuItem>
+                </div>
               );
             }
+            return (
+              <MenuItem key={index + 1} onClick={handleClose}>
+                <div>
+                  User {notification.sender}{' '}
+                  {notification.type === 'like'
+                    ? 'liked your'
+                    : 'commented on your'}{' '}
+                  post - {`'${notification.image_id}'`}
+                </div>
+              </MenuItem>
+            );
           })
         ) : (
           <MenuItem onClick={handleClose}>
