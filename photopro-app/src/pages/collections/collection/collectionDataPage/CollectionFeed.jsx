@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import './CollectionFeed.css';
-import CollectionImage from './collectionImage/CollectionImage';
+import React, { useState, useEffect } from "react";
+import "./CollectionFeed.css";
+import CollectionImage from "./collectionImage/CollectionImage";
 
 const CollectionFeed = (props) => {
   const [collectionImgs, setCollectionImgs] = useState([]);
