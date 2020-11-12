@@ -1,70 +1,17 @@
 import React, { useState } from 'react';
 import './searchbar.css';
-import axios from 'axios';
 import Feed from '../feed/feed';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import SearchBarInput from './searchBarInput';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    margin: theme.spacing(1),
-    width: '100ch',
-  },
-}));
+function SearchBar() {
+  const [query, setQuery] = useState(null);
 
-function SearchBar(props) {
-  const [imgs, setImgs] = useState([]);
-  const [searchVal, setSearchVal] = useState('');
-  const classes = useStyles();
-
-  const onSearchSubmit = async function (term) {
-    console.log(`The term is ${term}`);
-    const response = await axios.get('http://localhost:5000/discovery', {
-      params: { query: term, batch_size: 30 }, //user_id: 1
-    });
-
-    console.log(response.data.result);
-
-    console.log(response);
-
-    return response;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const images = onSearchSubmit(searchVal);
-    images.then((imageResults) => {
-      console.log(imageResults);
-      // this means no images were found
-      if (imageResults.data.result !== false) {
-        setImgs(imageResults.data.result);
-      }
-    });
-  };
+  console.log(`The query is - ${query}`);
 
   return (
     <React.Fragment>
-      <div className="searchBar">
-        <form
-          onSubmit={handleSubmit}
-          className={classes.root}
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            className={classes.text}
-            id="outlined-basic"
-            label="Search for stock photos"
-            variant="outlined"
-            size="small"
-            fullWidth
-            value={searchVal}
-            onChange={(event) => setSearchVal(event.target.value)}
-          />
-        </form>
-      </div>
-
-      <Feed foundImages={imgs} />
+      <SearchBarInput setQuery={setQuery} />
+      <Feed query={query} />
     </React.Fragment>
   );
 }

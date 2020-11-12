@@ -10,6 +10,7 @@ export default function RegistrationPage() {
   const [password, set_password] = useState('');
   const [first_name, set_first_name] = useState('');
   const [last_name, set_last_name] = useState('');
+  const [username, set_username] = useState('');
 
   function validate_email() {
     return email.length > 0 && email.length < 50;
@@ -27,11 +28,15 @@ export default function RegistrationPage() {
     return password.length > 0 && password.length < 50;
   }
 
+  function validate_username() {
+    return password.length > 0 && password.length < 32;
+  }
+
   async function attempt_registration(event) {
     event.preventDefault();
 
     const response = await axios.get('http://localhost:5000/create_user', {
-      params: { email: email, password: password },
+      params: { email: email, password: password, first:first_name, last:last_name, username:username },
     });
     console.log(response);
 
@@ -57,6 +62,14 @@ export default function RegistrationPage() {
           <FormControl
             value={last_name}
             onChange={(e) => set_last_name(e.target.value)}
+          />
+        </FormGroup>
+
+        <FormGroup controlId="username" bsSize="large">
+          <FormLabel>Username</FormLabel>
+          <FormControl
+            value={username}
+            onChange={(e) => set_username(e.target.value)}
           />
         </FormGroup>
 
@@ -87,7 +100,8 @@ export default function RegistrationPage() {
             !validate_first_name() ||
             !validate_last_name() ||
             !validate_email() ||
-            !validate_password()
+            !validate_password() ||
+            !validate_username()
           }
           type="submit"
         >

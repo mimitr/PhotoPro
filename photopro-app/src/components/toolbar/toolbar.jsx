@@ -41,7 +41,12 @@ function Toolbar() {
   };
 
   const handleProfileClicked = function () {
-    history.push('/profile/1');
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/profile/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleLogoutClicked = () => {
@@ -62,6 +67,19 @@ function Toolbar() {
     history.push('/changepassword');
   };
 
+  const handleCollectionsClicked = () => {
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/collections/${userID}`,
+      state: { uploaderID: userID },
+    });
+  };
+
+  const handleCartClicked = () => {
+    history.push('/shopping-cart');
+  };
+
   let buttons;
   if (loggedIn === 'true') {
     buttons = (
@@ -74,8 +92,20 @@ function Toolbar() {
           >
             Discovery
           </Button>
-          <Button className={classes.button} size="small">
+          <Button
+            className={classes.button}
+            size="small"
+            onClick={handleCollectionsClicked}
+          >
             Collections
+          </Button>
+
+          <Button
+            className={classes.button}
+            size="small"
+            onClick={handleCartClicked}
+          >
+            My Cart
           </Button>
 
           <Button

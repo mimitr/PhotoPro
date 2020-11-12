@@ -15,11 +15,11 @@ vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
 
 
-def create_user(first, last, email, password, conn, cur):
+def create_user(first, last, email, password, username, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "INSERT INTO users(first,last,email,password) VALUES('{}','{}','{}', '{}');".format(
-            first, last, email, password
+        cmd = "INSERT INTO users(first,last,email,password, username) VALUES('{}','{}','{}', '{}', '{}');".format(
+            first, last, email, password, username
         )
         print(cmd)
         cur.execute(cmd)
@@ -38,7 +38,8 @@ def create_user(first, last, email, password, conn, cur):
 
 def login_user(email, password, conn, cur):
     try:
-        cmd = "SELECT * FROM users WHERE email='{}' AND password='{}'".format(
+        cmd = "SELECT id, first, last, email, password, last_active, username\
+                FROM users WHERE email='{}' AND password='{}'".format(
             email, password
         )
         print(cmd)
@@ -50,7 +51,7 @@ def login_user(email, password, conn, cur):
             # return "Incorrect email or password! Please try again.", None
             return False, None
         elif length == 1:
-            (id, first, last, email, password, last_active) = data[0]
+            (id, first, last, email, password, last_active, username) = data[0]
             print(id, first, last, email, password, last_active)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
@@ -88,7 +89,8 @@ def change_password(email, password, new_password, conn, cur):
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "SELECT * FROM users WHERE email='{}'".format(recipient)
+        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(
+            recipient)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -201,8 +203,8 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
 
 
 def delete_image_post(image_id, uploader, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         cmd = "DELETE FROM comments WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
         conn.commit()
@@ -230,19 +232,22 @@ def delete_image_post(image_id, uploader, conn, cur):
         return False
 
 
-def discovery(user_id, batch_size, conn, cur):
+def discovery(user_id, batch_size, start_point, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = (
-            "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader!={} "
-            "ORDER BY created_at DESC LIMIT {}".format(user_id, batch_size)
+
+        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                    WHERE images.image_id> {} AND uploader!={} \
+                     ORDER BY created_at DESC LIMIT {}".format(
+            start_point, user_id, batch_size
         )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
-        data = cur.fetchmany(batch_size)
+        data = cur.fetchall()
 
         length = len(data)
         if length == 0:
@@ -254,50 +259,71 @@ def discovery(user_id, batch_size, conn, cur):
         print(error)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
+    except psycopg2.ProgrammingError as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
 
 
-def discovery_with_search_term(user_id, batch_size, query, conn, cur):
+def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE uploader!={} AND caption ILIKE '%{}%' ORDER BY created_at DESC LIMIT {}".format(
-            user_id, query, batch_size
+                    WHERE images.image_id> {} AND uploader!={} AND caption ILIKE '%{}%'\
+                     ORDER BY created_at DESC LIMIT {}".format(
+            start_point, user_id, query, batch_size
         )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
-        data = cur.fetchmany(batch_size)
+        data = cur.fetchall()
 
         length = len(data)
         # print(length)
         if length == 0:
+            print("--------------------- NO RESULTS FOUND ----------------------")
             return False
         else:
+            print("-------------------- RESULTS FOUND -----------------------")
             print(data)
+            print("----------------------------------------------------------")
             return data
     except psycopg2.Error as e:
         error = e.pgcode
+        print(
+            "===================== ERROR IN DISCOVERY WITH SEARCH TERM ======================="
+        )
         print(error)
+        print(e)
+        print(
+            " ==============================================================================="
+        )
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+    except psycopg2.ProgrammingError as e:
+        print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
-def search_by_tag(user_id, batch_size, query, conn, cur):
+def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, num_likes FROM num_likes_per_image\
+        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                     WHERE uploader != {} AND '{}' ILIKE ANY(tags) ORDER BY created_at DESC LIMIT {}".format(
-            user_id, query, batch_size
+                     WHERE images.image_id> {} AND uploader != {} AND '{}' ILIKE ANY(tags)\
+                      ORDER BY created_at DESC LIMIT {}".format(
+            start_point, user_id, query, batch_size
         )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
-        data = cur.fetchmany(batch_size)
+        data = cur.fetchall()
         length = len(data)
         # print("length of data is ", data)
         if length == 0:
@@ -315,17 +341,13 @@ def profiles_photos(user_id, batch_size, conn, cur):
         cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
-        if batch_size > 0:
-            cmd = "select images.image_id, caption, uploader, file, title, price, num_likes, created_at FROM num_likes_per_image\
-                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                     WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
-                user_id, batch_size
-            )
-        else:
-            cmd = (
-                "SELECT image_id, caption, uploader, file, title, price, created_at FROM images WHERE uploader={} "
-                "ORDER BY created_at DESC ".format(user_id)
-            )
+
+        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                 WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
+            user_id, batch_size
+        )
+
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -346,8 +368,8 @@ def profiles_photos(user_id, batch_size, conn, cur):
 
 
 def edit_post(user_id, image, title, price, caption, tags, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cur.execute("SAVEPOINT save_point")
         # If you want to test, change 'images' to 'test_images' in cmd query
         cmd = """UPDATE images SET title = '%s', price = %s, caption = '%s', tags = '{%s}'
                  WHERE uploader = %s and image_id = %s""" % (
@@ -440,7 +462,7 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (image_id)
+        cmd = """select tags from images where image_id=%d """ % (int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -464,6 +486,29 @@ def set_user_timestamp(user_id, conn, cur):
         conn.commit()
         return True
     except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
+def get_username_by_id(user_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "SELECT email, username from users where id={}".format(int(user_id))
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        (email, username) = query_result[0]
+        print(email, username)
+        if username is None:
+            username = email.split('@')[0]
+        print("get_username_by_id", username)
+        return True
+    except Exception as e:
+        print(e)
         return False
     except psycopg2.Error as e:
         error = e.pgcode
