@@ -10,6 +10,7 @@ import os
 import base64
 import binascii
 import io
+from pathlib import Path
 
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
@@ -479,9 +480,12 @@ def download_image(image_id, conn, cur):
         cur.execute(cmd)
         conn.commit()
         query_result = cur.fetchall()
+        dl_location = str(os.path.join(Path.home(), "Downloads"))
+        print(dl_location)
         for row in query_result:
             id, file = row
-            filename = "{}.jpeg".format(id)
+            filename = dl_location + "\\{}.jpeg".format(id)
+            print(filename)
             photo = open(filename, "wb")
             photo.write(file)
             photo.close()
