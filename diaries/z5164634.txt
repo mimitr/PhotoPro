@@ -87,3 +87,8 @@ code is messy and redundant however, and I need to refactor some of it.
 12/11/2020
 I tweaked the comment notifications view and function to also return a reply_id, in order to check if the comment returned is a reply
 to another comment.
+UPDATE
+I improved and updated the watermark function to now use a custom font as well as scale the font size based on the image dimensions
+UPDATE
+At the suggestion of Christian, I did a complete overhaul of the notifications functions, which now pull from a table which stores
+tuples representing different types of notifications
