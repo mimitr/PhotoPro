@@ -2,52 +2,72 @@ import psycopg2
 from datetime import datetime
 
 
-def get_like_notification(user_id, timestamp, conn, cur):
+def send_notification(uploader, sender, notification, image, conn, cur):
+    cur.execute("SAVEPOINT save_point")
     try:
-        cmd = (
-            "SELECT title, image_id, liker, created_at FROM like_notif "
-            "WHERE uploader={} AND liker!={} "
-            "AND like_notif.created_at > TO_TIMESTAMP('{}', 'YYYY-MM-DD HH24:MI:SS.US') ".format(
-                user_id, user_id, timestamp
-            )
-        )
+        cmd = "INSERT INTO notifications (uploader, sender, notification, image_id)" \
+              "VALUES({}, {}, '{}', {}})".format(uploader, sender, notification, image)
         cur.execute(cmd)
         conn.commit()
-        result = cur.fetchall()
-        return result
+        return True
+    except psycopg2.errors.UniqueViolation as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+    except psycopg2.Error as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
     except Exception as e:
         print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+def fetch_notification(user, conn, cur):
+    cur.execute("SAVEPOINT save_point")
+    try:
+        cmd = "SELECT * FROM notifications WHERE uploader = {}".format(user)
+        cur.execute(cmd)
+        conn.commit()
+        data = cur.fetchall()
+        length = len(data)
+        if length == 0:
+            print("==============length of data is 0==============")
+            return False
+        else:
+            print(data)
+            return data
+    except psycopg2.errors.UniqueViolation as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+    except psycopg2.Error as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+    except Exception as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+def clear_notification(user, conn, cur):
+    cur.execute("SAVEPOINT save_point")
+    try:
+        cmd = "DELETE FROM notifications WHERE uploader = {}".format(user)
+        cur.execute(cmd)
+        conn.commit()
+
+    except psycopg2.errors.UniqueViolation as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+    except psycopg2.Error as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+    except Exception as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
-def get_comment_notification(user_id, timestamp, conn, cur):
-    try:
-        cmd = (
-            "SELECT title, image_id, commenter, comment, created_at FROM comment_notif "
-            "WHERE uploader={} AND commenter!={} "
-            "AND comment_notif.created_at > TO_TIMESTAMP('{}', 'YYYY-MM-DD HH24:MI:SS.US') ".format(
-                user_id, user_id, timestamp
-            )
-        )
-        cur.execute(cmd)
-        conn.commit()
-        result = cur.fetchall()
-        return result
-    except Exception as e:
-        print(e)
-        return False
-
-
-def get_user_timestamp(user_id, conn, cur):
-    try:
-        cmd = "SELECT last_active FROM users WHERE id = {}".format(user_id)
-        cur.execute(cmd)
-        conn.commit()
-        result = cur.fetchone()
-        print(result)
-        result = result[0]
-        print(result)
-        return result
-    except Exception as e:
-        print(e)
-        return False
