@@ -24,6 +24,10 @@ export default function LoginPage() {
       params: { email: email, password: password },
     });
 
+    const a = await axios.get('http://localhost:5000/get_user_username', {
+      params: { user_id: 26},
+    });
+
     if (response.data.result) {
       localStorage.setItem('userLoggedIn', true);
       localStorage.setItem('userID', response.data.user_id);

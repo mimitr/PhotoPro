@@ -89,7 +89,8 @@ def change_password(email, password, new_password, conn, cur):
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(recipient)
+        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(
+            recipient)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -485,6 +486,29 @@ def set_user_timestamp(user_id, conn, cur):
         conn.commit()
         return True
     except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
+def get_username_by_id(user_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "SELECT email, username from users where id={}".format(int(user_id))
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        (email, username) = query_result[0]
+        print(email, username)
+        if username is None:
+            username = email.split('@')[0]
+        print("get_username_by_id", username)
+        return True
+    except Exception as e:
+        print(e)
         return False
     except psycopg2.Error as e:
         error = e.pgcode

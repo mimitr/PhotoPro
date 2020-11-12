@@ -76,3 +76,8 @@ except for those purchased prior, which in that case it will be in their history
 permanently. I've also helped Cristain debug some issues with the API for stress testing, in which
 we will likely just have multiple database connections instead of a single global connection.
 
+I added following, unfollowing and usernames functionality. I also debugged some cart work and other API functions
+with the frontend team. The new functionality on thurdsay I added  were follow user, unfollow user,
+is_following user and get_user's usernames by ID. This required some changes to the google cloud database and also
+some new queries and corresponding API calls in app.py.
+

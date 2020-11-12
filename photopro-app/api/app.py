@@ -21,6 +21,7 @@ from utils.database.general_user import (
     profiles_photos,
     add_tags,
     get_tags,
+    get_username_by_id,
     remove_tag,
     delete_image_post,
 )
@@ -1029,6 +1030,23 @@ def api_update_user_purchases_details():
         int(image_id),
         bool(int(save_for_later)),
         bool(int(purchased)),
+        conn,
+        cur,
+    )
+    return jsonify({"result": result})
+
+
+@app.route("/get_user_username", methods=["GET", "POST"])
+def api_get_user_username():
+    uid = request.args.get("user_id")
+
+    if (
+        uid is None
+    ):
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = get_username_by_id(
+        int(uid),
         conn,
         cur,
     )
