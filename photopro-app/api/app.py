@@ -75,7 +75,7 @@ from utils.database.user_purchases import (
     add_purchase,
     delete_item_from_cart,
     get_user_purchases,
-    update_user_purchases_details
+    update_user_purchases_details,
 )
 
 print(conn, cur)
@@ -109,7 +109,7 @@ def api_create_user():
     password = request.args.get("password")
     username = request.args.get("username")
     if username is None:
-        username = str(str(first)+" "+str(last))
+        username = str(str(first) + " " + str(last))
     print(username)
 
     result = create_user(first, last, email, password, username, conn, cur)
@@ -329,14 +329,17 @@ def api_discovery():
 
 @app.route("/profile_photos")
 def api_profile_photos():
-    user_id = app.user_id
+
+    user_id = request.args.get("user_id")
+    batch_size = int(request.args.get("batch_size"))
+
     if user_id is None:
         return jsonify({"result": False})
-    batch_size = int(request.args.get("batch_size"))
+
     if batch_size is None or batch_size <= 0:
         batch_size = 32
 
-    result = profiles_photos(user_id, batch_size, conn, cur)
+    result = profiles_photos(int(user_id), batch_size, conn, cur)
 
     if result:
 
@@ -745,7 +748,7 @@ def api_get_users_collection():
                     "creator_id": creator_id,
                     "private": private,
                     "num_photos": num_photos,
-                    "img": img
+                    "img": img,
                 }
             )
         retval = jsonify({"result": processed_result})
@@ -827,10 +830,20 @@ def api_add_purchase():
     image_id = request.args.get("image_id")
     user_id = app.user_id
 
-    if user_id is None or purchased is None or image_id is None or save_for_later is None:
+    if (
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
+    ):
         return jsonify({"result": False})
     result = add_purchase(
-        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+        int(user_id),
+        int(image_id),
+        bool(int(save_for_later)),
+        bool(int(purchased)),
+        conn,
+        cur,
     )
     return jsonify({"result": result})
 
@@ -854,14 +867,23 @@ def api_get_user_purchases():
 
     if user_id is None or save_for_later is None or purchased is None:
         return jsonify({"result": False})
-    result = get_user_purchases(int(user_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur)
+    result = get_user_purchases(
+        int(user_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+    )
     if result:
 
         processed_result = []
 
         for tup in result:
             (
-                user_id, image_id, save_for_later, purchased, title, caption, price, img
+                user_id,
+                image_id,
+                save_for_later,
+                purchased,
+                title,
+                caption,
+                price,
+                img,
             ) = tup
             file = "image.jpeg"
             photo = open(file, "wb")
@@ -878,7 +900,7 @@ def api_get_user_purchases():
                     "title": title,
                     "caption": caption,
                     "price": str(price),
-                    "img": img
+                    "img": img,
                 }
             )
         # print("+++++++++++++PROCESSED RESULT+++++++++++++++")
@@ -895,9 +917,19 @@ def api_update_user_purchases_details():
     image_id = request.args.get("image_id")
     user_id = app.user_id
 
-    if user_id is None or purchased is None or image_id is None or save_for_later is None:
+    if (
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
+    ):
         return jsonify({"result": False})
     result = update_user_purchases_details(
-        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+        int(user_id),
+        int(image_id),
+        bool(int(save_for_later)),
+        bool(int(purchased)),
+        conn,
+        cur,
     )
     return jsonify({"result": result})

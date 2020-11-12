@@ -1,21 +1,20 @@
-import React from "react";
+import React from 'react';
 
-import MainPage from "./pages/MainPage";
-import LoginPage from "./pages/LoginPage";
-import RegistrationPage from "./pages/RegistrationPage";
-import ProfilePage from "./pages/ProfilePage";
-import PostInfo from "./pages/PostInfo/PostInfo";
-import CapturePhotoPage from "./pages/CapturePhotoPage";
-import ChangePasswordPage from "./pages/ChangePasswordPage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import EditPostPage from "./pages/EditPostPage";
-import CollectionsPage from "./pages/collections/CollectionsPage";
-import CollectionDataPage from "./pages/collections/collection/collectionDataPage/CollectionDataPage"
-import ShoppingCartPage from "./pages/shoppingCartPage/ShoppingCartPage"
-import CheckoutPage from "./pages/checkoutPage/CheckoutPage"
+import MainPage from './pages/MainPage';
+import LoginPage from './pages/LoginPage';
+import RegistrationPage from './pages/RegistrationPage';
+import ProfilePage from './pages/ProfilePage';
+import PostInfo from './pages/PostInfo/PostInfo';
+import CapturePhotoPage from './pages/CapturePhotoPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import EditPostPage from './pages/EditPostPage';
+import CollectionsPage from './pages/collections/CollectionsPage';
+import CollectionDataPage from './pages/collections/collection/collectionDataPage/CollectionDataPage';
+import ShoppingCartPage from './pages/shoppingCartPage/ShoppingCartPage';
+import CheckoutPage from './pages/checkoutPage/CheckoutPage';
 
-import { Switch, Route } from "react-router-dom";
-
+import { Switch, Route } from 'react-router-dom';
 
 function App() {
   return (
@@ -32,7 +31,7 @@ function App() {
         </Route>
         <Route path="/changepassword" component={ChangePasswordPage} />
         <Route path="/forgotpassword" component={ForgotPasswordPage} />
-        <Route path="/profile" component={ProfilePage} />
+        <Route path="/profile/:userID" component={ProfilePage} />
         <Route path="/uploadphoto" component={CapturePhotoPage} />
         <Route path="/post-:id" component={PostInfo} />
         <Route path="/editpost/:id" component={EditPostPage} />

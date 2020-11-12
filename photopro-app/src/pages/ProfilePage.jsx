@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Toolbar from '../components/toolbar/toolbar';
 import UserPhotos from '../components/userPhotos/UserPhotos';
 
-function ProfilePage() {
+function ProfilePage(props) {
   return (
     <React.Fragment>
       <Toolbar />
-      <UserPhotos />
+      <UserPhotos userID={props.match.params.userID} />
     </React.Fragment>
   );
 }

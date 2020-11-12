@@ -41,7 +41,9 @@ function Toolbar() {
   };
 
   const handleProfileClicked = function () {
-    history.push('/profile/1');
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({ pathname: `/profile/${userID}`, state: { id: userID } });
   };
 
   const handleLogoutClicked = () => {
@@ -67,7 +69,7 @@ function Toolbar() {
   };
 
   const handleCartClicked = () => {
-    history.push("/shopping-cart");
+    history.push('/shopping-cart');
   };
 
   let buttons;
