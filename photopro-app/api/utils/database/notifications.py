@@ -32,7 +32,11 @@ def get_comment_notification(user_id, timestamp, conn, cur):
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
-        return result
+
+        if len(result) == 0:
+            return False
+        else:
+            return result
     except Exception as e:
         print(e)
         return False
