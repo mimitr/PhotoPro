@@ -62,6 +62,14 @@ function Toolbar() {
     history.push('/changepassword');
   };
 
+  const handleCollectionsClicked = () => {
+    history.push('/collections');
+  };
+
+  const handleCartClicked = () => {
+    history.push("/shopping-cart");
+  };
+
   let buttons;
   if (loggedIn === 'true') {
     buttons = (
@@ -74,8 +82,20 @@ function Toolbar() {
           >
             Discovery
           </Button>
-          <Button className={classes.button} size="small">
+          <Button
+            className={classes.button}
+            size="small"
+            onClick={handleCollectionsClicked}
+          >
             Collections
+          </Button>
+
+          <Button
+            className={classes.button}
+            size="small"
+            onClick={handleCartClicked}
+          >
+            My Cart
           </Button>
 
           <Button

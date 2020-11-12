@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
-import axios from "axios";
+import React, { useState } from 'react';
+import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
+import axios from 'axios';
 
 export default function EditPostPage() {
-  const [caption, set_caption] = useState("");
-  const [title, set_title] = useState("");
-  const [price, set_price] = useState("");
+  const [caption, set_caption] = useState('');
+  const [title, set_title] = useState('');
+  const [price, set_price] = useState('');
 
   function validate_title() {
     return title.length > 0 && title.length < 50;
@@ -21,7 +21,7 @@ export default function EditPostPage() {
   async function edit_post(event) {
     event.preventDefault();
 
-    var response = await axios.get("http://localhost:5000/edit_post", {
+    var response = await axios.get('http://localhost:5000/edit_post', {
       params: { title: title, price: price, caption: caption },
     });
     console.log(response);

@@ -3,47 +3,53 @@ import psycopg2
 
 def post_like(image_id, user_id, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
-        cmd = "INSERT INTO likes(image_id, liker) VALUES({}, {})".format(image_id, user_id)
+        cur.execute("SAVEPOINT save_point")
+        cmd = "INSERT INTO likes(image_id, liker) VALUES({}, {})".format(
+            image_id, user_id
+        )
         cur.execute(cmd)
         conn.commit()
         return True
     except psycopg2.errors.UniqueViolation as e:
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except psycopg2.Error as e:
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except Exception as e:
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
+
 
 def delete_like(image_id, user_id, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
-        cmd = "DELETE FROM LIKES WHERE image_id={} AND liker={}".format(image_id, user_id)
+        cur.execute("SAVEPOINT save_point")
+        cmd = "DELETE FROM LIKES WHERE image_id={} AND liker={}".format(
+            image_id, user_id
+        )
         cur.execute(cmd)
         conn.commit()
         return True
     except psycopg2.errors.UniqueViolation as e:
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except psycopg2.Error as e:
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except Exception as e:
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
+
 
 def get_num_likes(image_id, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
+        cur.execute("SAVEPOINT save_point")
         cmd = "SELECT COUNT(liker) FROM likes WHERE image_id={}".format(image_id)
         cur.execute(cmd)
         conn.commit()
@@ -54,28 +60,40 @@ def get_num_likes(image_id, conn, cur):
         return result
     except psycopg2.Error as e:
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except Exception as e:
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
 
 def get_likers(image_id, limit, conn, cur):
     try:
-        cur.execute('SAVEPOINT save_point')
-        cmd = "SELECT liker,first,last FROM users_likes WHERE image_id={} \
-                ORDER BY created_at DESC LIMIT {}".format(image_id, limit)
+        # cur.execute("SAVEPOINT save_point")
+        cmd = "SELECT liker,first,last FROM users_likes WHERE image_id={} LIMIT {}".format(
+            int(image_id), int(limit)
+        )
+        print(cmd)
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
-        return result
+
+        if len(result) == 0:
+            return False
+        else:
+            return result
     except psycopg2.Error as e:
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+        # cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except Exception as e:
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print(e)
-        cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+        # cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
