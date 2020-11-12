@@ -43,7 +43,7 @@ def get_user_timestamp(user_id, conn, cur):
         cmd = "SELECT last_active FROM users WHERE id = {}".format(user_id)
         cur.execute(cmd)
         conn.commit()
-        result = cur.fetchall()
+        result = cur.fetchone()
         print(result)
         result = result[0]
         print(result)
