@@ -35,7 +35,7 @@ function App() {
         <Route path="/uploadphoto" component={CapturePhotoPage} />
         <Route path="/post-:id" component={PostInfo} />
         <Route path="/editpost/:id" component={EditPostPage} />
-        <Route path="/collections" component={CollectionsPage} />
+        <Route path="/collections/:userID" component={CollectionsPage} />
         <Route path="/collection-:id" component={CollectionDataPage} />
         <Route path="/shopping-cart" component={ShoppingCartPage} />
         <Route path="/checkout" component={CheckoutPage} />

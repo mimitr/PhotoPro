@@ -65,7 +65,12 @@ function Toolbar() {
   };
 
   const handleCollectionsClicked = () => {
-    history.push('/collections');
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/collections/${userID}`,
+      state: { userID: userID },
+    });
   };
 
   const handleCartClicked = () => {

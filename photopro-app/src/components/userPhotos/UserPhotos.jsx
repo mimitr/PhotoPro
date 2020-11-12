@@ -9,13 +9,17 @@ const UserPhotos = (props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [hasPhotos, setHasPhotos] = useState(true);
 
   const { userID } = props;
   const displayMyProfile =
     localStorage.getItem('userID') == userID ? true : false;
 
   useEffect(() => {
-    fetchProfilePhotos();
+    setTimeout(() => {
+      // temp fix to api call the clashes with another and which both modify file = "image.jpg"
+      fetchProfilePhotos();
+    }, 500);
 
     return () => {
       setProfileImgs([]);
@@ -36,6 +40,7 @@ const UserPhotos = (props) => {
         setProfileImgs(res.data.result);
       } else {
         setLoading(false);
+        setHasPhotos(false);
       }
     });
   };
@@ -46,14 +51,14 @@ const UserPhotos = (props) => {
         <h2>Uploaded Images: {profileImgs.length}</h2>
       ) : (
         <h2>
-          Uploads by {userID}: {profileImgs.length}
+          Uploads by @{userID}: {profileImgs.length}
         </h2>
       )}
-      {profileImgs.length === 0 ? (
+      {hasPhotos ? null : (
         <h2 style={{ textAlign: 'center' }}>
           You haven't uploaded any photos!
         </h2>
-      ) : null}
+      )}
 
       <div className="image-grid">
         {profileImgs.map((image, index) => {

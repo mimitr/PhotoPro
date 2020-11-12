@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import './PostInfo.css';
 import Toolbar from '../../components/toolbar/toolbar';
 import Likes from '../../components/likes/Likes';
@@ -17,6 +17,7 @@ const PostInfo = (props) => {
       state: { id: imageID },
     },
   } = props;
+  const history = useHistory();
 
   console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
 
@@ -74,14 +75,16 @@ const PostInfo = (props) => {
       <div className="postWrapper">
         <div className="postInfo">
           <div className="username">
-            <Link
-              to={{
-                pathname: `/profile/${props.location.state.uploader}`,
-                state: { id: props.location.state.uploader },
+            <Button
+              onClick={() => {
+                history.push({
+                  pathname: `/profile/${props.location.state.uploader}`,
+                  state: { uploaderID: props.location.state.uploader },
+                });
               }}
             >
-              <p>@{props.location.state.uploader}</p>
-            </Link>
+              @{props.location.state.uploader}
+            </Button>
             <button className="btn">Follow</button>
             <Likes
               num_likes={props.location.state.num_likes}
@@ -93,9 +96,6 @@ const PostInfo = (props) => {
               </svg>
             </button>
           </div>
-          {/* <div className="follow"></div>
-          <div className="like"></div>
-          <div className="bookmark"></div> */}
         </div>
         <div className="postImage">
           <img

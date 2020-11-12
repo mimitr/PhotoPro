@@ -33,6 +33,8 @@ from utils.database.connect import (
     curImages2,
     connLikes,
     curLikes,
+    connCollections,
+    curCollections,
 )
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -713,15 +715,16 @@ def api_update_collections_private():
 
 @app.route("/get_users_collection")
 def api_get_users_collection():
+    user_id = request.args.get("user_id")
     limit = request.args.get("batch_size")
-    user_id = app.user_id
+
     if limit is None:
         limit = 32
 
     if user_id is None and limit is not None:
         return jsonify({"result": False})
 
-    result = get_users_collection(user_id, limit, conn, cur)
+    result = get_users_collection(int(user_id), limit, connCollections, curCollections)
 
     if result:
 
@@ -761,9 +764,10 @@ def api_get_users_collection():
 
 @app.route("/get_collection_data")
 def api_get_collection_data():
+    user_id = app.user_id
     collection_id = request.args.get("collection_id")
     limit = request.args.get("batch_size")
-    user_id = app.user_id
+
     if limit is None:
         limit = 32
 
