@@ -34,6 +34,11 @@ from utils.database.connect import (
     curImages2,
     connLikes,
     curLikes,
+
+    connPurchases,
+    curPurchases,
+    connShoppingCart,
+    curShoppingCart,
 )
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -855,7 +860,7 @@ def api_get_user_purchases():
 
     if user_id is None or save_for_later is None or purchased is None:
         return jsonify({"result": False})
-    result = get_user_purchases(int(user_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur)
+    result = get_user_purchases(int(user_id), bool(int(save_for_later)), bool(int(purchased)), connPurchases, curPurchases)
     if result:
 
         processed_result = []
@@ -899,8 +904,12 @@ def api_update_user_purchases_details():
     if user_id is None or purchased is None or image_id is None or save_for_later is None:
         return jsonify({"result": False})
     result = update_user_purchases_details(
-        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+        int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), connShoppingCart, curShoppingCart
     )
+
+    return jsonify({"result": result})
+
+
 @app.route("/download")
 def api_download():
     image_id = request.args.get("image_id")

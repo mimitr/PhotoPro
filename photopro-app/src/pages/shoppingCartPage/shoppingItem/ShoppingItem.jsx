@@ -16,7 +16,7 @@ export default function ShoppingItem(props) {
     }).then((response) => {
       console.log(response);
       if (response.data.result !== false) {
-        props.setSaveForLaterButtonClicked(true);
+        props.setMoveButtonClicked(!props.moveButtonClicked);
       }
     });
   };
@@ -31,7 +31,7 @@ export default function ShoppingItem(props) {
     }).then((response) => {
       if (response.data.result !== false) {
         console.log(response);
-        props.setDeleteButtonClicked(true);
+        props.setDeleteButtonClicked(!props.deleteButtonClicked);
       }
     });
   };

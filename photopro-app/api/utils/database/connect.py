@@ -43,3 +43,21 @@ connLikes = psycopg2.connect(
     database=database_name,
 )
 curLikes = connLikes.cursor()
+
+connPurchases = psycopg2.connect(
+    user=database_user,
+    password=database_password,
+    host=host,
+    port=port,
+    database=database_name,
+)
+curPurchases = connPurchases.cursor()
+
+connShoppingCart = psycopg2.connect(
+    user=database_user,
+    password=database_password,
+    host=host,
+    port=port,
+    database=database_name,
+)
+curShoppingCart = connShoppingCart.cursor()

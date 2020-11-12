@@ -66,6 +66,7 @@ export default function CheckoutPage(props) {
     if (detailsValidated) {
       shoppingCartItems.map((item) => {
         console.log(item.image_id);
+
         updatePurchase(item.image_id);
       });
     }
@@ -97,7 +98,7 @@ export default function CheckoutPage(props) {
           <div className="payment-info">
             <h2>Fill payment info:</h2>
             <form className={classes.root} noValidate autoComplete="off">
-              <div className="card-details-grid">
+              <div className="cart-details-grid">
                 <h3>CARD NUMBER</h3>
                 <TextField
                   required

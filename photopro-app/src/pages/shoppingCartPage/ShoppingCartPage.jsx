@@ -15,11 +15,7 @@ export default function ShoppingCart() {
 
   const [savedLaterItems, setSavedLaterItems] = useState([]);
 
-  const [saveForLaterButtonClicked, setSaveForLaterButtonClicked] = useState(
-    false
-  );
-
-  const [moveToCartButtonClicked, setMoveToCartButtonClicked] = useState(false);
+  const [moveButtonClicked, setMoveButtonClicked] = useState(false);
 
   const [deleteButtonClicked, setDeleteButtonClicked] = useState(false);
 
@@ -37,9 +33,7 @@ export default function ShoppingCart() {
         setShoppingCartItems(response.data.result);
       }
 
-      setTimeout(() => {
-        getUserSavedLaterItems();
-      }, 100);
+      getUserSavedLaterItems();
     });
   };
 
@@ -55,6 +49,7 @@ export default function ShoppingCart() {
       if (response.data.result !== false) {
         console.log(response);
         if (response.data) {
+          console.log(response.data.result);
           setSavedLaterItems(response.data.result);
         }
       }
@@ -63,10 +58,8 @@ export default function ShoppingCart() {
 
   useEffect(() => {
     getUserNotPurchasedItems();
-    setSaveForLaterButtonClicked(false);
-    setDeleteButtonClicked(false);
     console.log("rerendering shopping page");
-  }, [saveForLaterButtonClicked, deleteButtonClicked]);
+  }, [moveButtonClicked, deleteButtonClicked]);
 
   const handleCheckoutButton = () => {
     setCheckoutButtonClicked(true);
@@ -84,8 +77,10 @@ export default function ShoppingCart() {
         purchased={item.purchased}
         save_for_later={item.save_for_later}
         title={item.title}
-        setSaveForLaterButtonClicked={setSaveForLaterButtonClicked}
+        setMoveButtonClicked={setMoveButtonClicked}
+        moveButtonClicked={moveButtonClicked}
         setDeleteButtonClicked={setDeleteButtonClicked}
+        deleteButtonClicked={deleteButtonClicked}
       />
     );
   });
@@ -104,8 +99,10 @@ export default function ShoppingCart() {
         purchased={item.purchased}
         save_for_later={item.save_for_later}
         title={item.title}
-        setMoveToCartButtonClicked={setMoveToCartButtonClicked}
+        setMoveButtonClicked={setMoveButtonClicked}
+        moveButtonClicked={moveButtonClicked}
         setDeleteButtonClicked={setDeleteButtonClicked}
+        deleteButtonClicked={deleteButtonClicked}
       />
     );
   });
@@ -145,13 +142,16 @@ export default function ShoppingCart() {
               <h2>
                 Subtotal ({shoppingCartItems.length} items): ${subTotal}
               </h2>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleCheckoutButton}
-              >
-                Proceed to Checkout
-              </Button>
+
+              {shoppingCartItems.length > 0 ? (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleCheckoutButton}
+                >
+                  Proceed to Checkout
+                </Button>
+              ) : null}
             </div>
           </div>
         </div>
