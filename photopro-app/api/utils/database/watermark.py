@@ -8,9 +8,13 @@ def apply_watermark(input):
     # Create semi-transparent watermark text image
     watermark = Image.new('RGBA', photo.size, (255,255,255,0))
 
+    #Calculate font size based on image dimensions
+    fontsize = int(h * 0.1875)
+    fontsize = int(fontsize / 3)
+
     # Setting up watermark
     #wfont = ImageFont.load_default() # ImageFont.truetype("arial.ttf", 24)
-    wfont = ImageFont.truetype("utils/database/Ubuntu-Title.ttf", 24, encoding = "unic")
+    wfont = ImageFont.truetype("utils/database/Ubuntu-Title.ttf", fontsize, encoding = "unic")
     wtxt = "PhotoPro Copyright"
     wmdraw = ImageDraw.Draw(watermark)
 
