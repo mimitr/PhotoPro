@@ -52,7 +52,7 @@ def login_user(email, password, conn, cur):
             return False, None
         elif length == 1:
             (id, first, last, email, password, last_active, username) = data[0]
-            print(id, first, last, email, password, last_active)
+            print(id, first, last, email, password, last_active, username)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -89,7 +89,9 @@ def change_password(email, password, new_password, conn, cur):
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(recipient)
+        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(
+            recipient
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
