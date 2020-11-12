@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './CollectionFeed.css';
-import ImageCard from '../../../../components/feed/ImageCard/ImageCard';
+import CollectionImage from './collectionImage/CollectionImage';
 
 const CollectionFeed = (props) => {
   const [collectionImgs, setCollectionImgs] = useState([]);
@@ -22,7 +22,7 @@ const CollectionFeed = (props) => {
           }
 
           return (
-            <ImageCard
+            <CollectionImage
               key={index}
               image={image}
               openBookmarkModal={modalIsOpen}

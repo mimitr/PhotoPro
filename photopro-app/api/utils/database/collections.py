@@ -71,13 +71,12 @@ def add_photo_to_collection(collection_id, user_id, image_id, conn, cur):
 
 def get_users_collection(user_id, limit, conn, cur):
     try:
-        cmd = "select collection_content.collection_id, collection_content.collection_name, collection_content.creator_id,\
-                    collection_content.private, COUNT(images.image_id) as num_photos FROM collection_content FULL JOIN images ON\
-                     images.image_id=collection_content.image_id WHERE collection_content.creator_id={}\
-                    GROUP BY collection_content.collection_id, collection_content.collection_name, collection_content.creator_id,\
-                     collection_content.private".format(
-            int(user_id)
-        )
+        cmd = "select user_collection_agg.collection_id, collection_name, creator_id, private, num_photos,first(file)\
+                from user_collection_agg LEFT JOIN collection_photos ON \
+                user_collection_agg.collection_id=collection_photos.collection_id LEFT JOIN\
+                 images ON images.image_id=collection_photos.image_id WHERE creator_id={} GROUP BY\
+                  user_collection_agg.collection_id, collection_name, creator_id, private,\
+                   num_photos".format(int(user_id))
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
