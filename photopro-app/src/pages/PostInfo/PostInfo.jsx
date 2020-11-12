@@ -138,6 +138,7 @@ const PostInfo = (props) => {
               image_id={props.location.state.id}
               comments_list={comments}
               updateComments={updateComments}
+              uploader_id={props.location.state.uploader}
             />
           </div>
         </div>

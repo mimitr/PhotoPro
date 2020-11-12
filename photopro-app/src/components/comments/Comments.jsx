@@ -36,6 +36,19 @@ export default function Comments(props) {
     postComments(comment_input);
   };
 
+  const sendCommentNotification = () => {
+    axios({
+      url: 'http://localhost:5000/send_notification',
+      params: {
+        uploader_id: props.uploader_id,
+        notification: 'comment',
+        image_id: props.image_id,
+      },
+    }).then((response) => {
+      console.log(response);
+    });
+  };
+
   const postComments = (comment_input) => {
     axios({
       method: 'POST',
@@ -46,6 +59,7 @@ export default function Comments(props) {
         console.log(`comment posted successfully with ${response.data.result}`);
         props.updateComments(props.comments_list.concat(comment_input));
         set_comment_input('');
+        sendCommentNotification();
       }
     });
   };

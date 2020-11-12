@@ -50,6 +50,10 @@ export default function Notifications() {
     setAnchorEl(null);
   };
 
+  const handleClearNotifications = () => {
+    console.log('clear notifications');
+  };
+
   return (
     <div>
       <IconButton
@@ -74,17 +78,27 @@ export default function Notifications() {
         }}
       >
         {notifications.length > 0 ? (
-          notifications.map((notification, index) => (
-            <MenuItem key={index} onClick={handleClose}>
-              <div>
-                User {notification.sender}{' '}
-                {notification.type === 'like'
-                  ? 'liked your'
-                  : 'commented on your'}{' '}
-                post - {`'${notification.image_id}'`}
-              </div>
-            </MenuItem>
-          ))
+          notifications.map((notification, index) => {
+            if (index === 0) {
+              return (
+                <MenuItem key={index} onClick={handleClearNotifications}>
+                  Clear Notifications
+                </MenuItem>
+              );
+            } else {
+              return (
+                <MenuItem key={index} onClick={handleClose}>
+                  <div>
+                    User {notification.sender}{' '}
+                    {notification.type === 'like'
+                      ? 'liked your'
+                      : 'commented on your'}{' '}
+                    post - {`'${notification.image_id}'`}
+                  </div>
+                </MenuItem>
+              );
+            }
+          })
         ) : (
           <MenuItem onClick={handleClose}>
             No Notifications at this time
