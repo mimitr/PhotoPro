@@ -34,6 +34,10 @@ from utils.database.connect import (
     curImages2,
     connLikes,
     curLikes,
+    connCollections,
+    curCollections,
+    connCollections2,
+    curCollections2,
 )
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -102,14 +106,18 @@ def api_login():
     return jsonify({"result": result, "user_id": user_id})
 
 
-@app.route("/create_user")
+@app.route("/create_user", methods=["GET", "POST"])
 def api_create_user():
     first = request.args.get("first")
     last = request.args.get("last")
     email = request.args.get("email")
     password = request.args.get("password")
+    username = request.args.get("username")
+    if username is None:
+        username = str(str(first) + " " + str(last))
+    print(username)
 
-    result = create_user(first, last, email, password, conn, cur)
+    result = create_user(first, last, email, password, username, conn, cur)
     if result:
         (result, user_id) = login_user(email, password, conn, cur)
         print(result, user_id)
@@ -119,7 +127,7 @@ def api_create_user():
     return jsonify({"result": result})
 
 
-@app.route("/change_password")
+@app.route("/change_password", methods=["GET", "POST"])
 def api_change_password():
     email = request.args.get("email")
     password = request.args.get("password")
@@ -129,7 +137,7 @@ def api_change_password():
     return {"result": result}
 
 
-@app.route("/forgot_password_get_change_password_link")
+@app.route("/forgot_password_get_change_password_link", methods=["GET", "POST"])
 def api_forgot_password():
     email = request.args.get("email")
     result = forgot_password_get_change_password_link(email, conn, cur)
@@ -326,14 +334,17 @@ def api_discovery():
 
 @app.route("/profile_photos")
 def api_profile_photos():
-    user_id = app.user_id
+
+    user_id = request.args.get("user_id")
+    batch_size = int(request.args.get("batch_size"))
+
     if user_id is None:
         return jsonify({"result": False})
-    batch_size = int(request.args.get("batch_size"))
+
     if batch_size is None or batch_size <= 0:
         batch_size = 32
 
-    result = profiles_photos(user_id, batch_size, conn, cur)
+    result = profiles_photos(int(user_id), batch_size, conn, cur)
 
     if result:
 
@@ -716,15 +727,16 @@ def api_update_collections_private():
 
 @app.route("/get_users_collection")
 def api_get_users_collection():
+    user_id = request.args.get("user_id")
     limit = request.args.get("batch_size")
-    user_id = app.user_id
+
     if limit is None:
         limit = 32
 
     if user_id is None and limit is not None:
         return jsonify({"result": False})
 
-    result = get_users_collection(user_id, limit, conn, cur)
+    result = get_users_collection(int(user_id), limit, connCollections, curCollections)
 
     if result:
 
@@ -764,15 +776,18 @@ def api_get_users_collection():
 
 @app.route("/get_collection_data")
 def api_get_collection_data():
+    user_id = app.user_id
     collection_id = request.args.get("collection_id")
     limit = request.args.get("batch_size")
-    user_id = app.user_id
+
     if limit is None:
         limit = 32
 
     if user_id is None and limit is not None and collection_id is not None:
         return jsonify({"result": False})
-    result = get_collection_data(collection_id, limit, conn, cur)
+    result = get_collection_data(
+        collection_id, limit, connCollections2, curCollections2
+    )
 
     if result:
 

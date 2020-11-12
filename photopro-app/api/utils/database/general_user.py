@@ -15,11 +15,11 @@ vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
 
 
-def create_user(first, last, email, password, conn, cur):
+def create_user(first, last, email, password, username, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "INSERT INTO users(first,last,email,password) VALUES('{}','{}','{}', '{}');".format(
-            first, last, email, password
+        cmd = "INSERT INTO users(first,last,email,password, username) VALUES('{}','{}','{}', '{}', '{}');".format(
+            first, last, email, password, username
         )
         print(cmd)
         cur.execute(cmd)
@@ -38,7 +38,8 @@ def create_user(first, last, email, password, conn, cur):
 
 def login_user(email, password, conn, cur):
     try:
-        cmd = "SELECT * FROM users WHERE email='{}' AND password='{}'".format(
+        cmd = "SELECT id, first, last, email, password, last_active, username\
+                FROM users WHERE email='{}' AND password='{}'".format(
             email, password
         )
         print(cmd)
@@ -93,7 +94,9 @@ def change_password(email, password, new_password, conn, cur):
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "SELECT * FROM users WHERE email='{}'".format(recipient)
+        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(
+            recipient
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()

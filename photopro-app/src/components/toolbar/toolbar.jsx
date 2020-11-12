@@ -43,7 +43,12 @@ function Toolbar() {
   };
 
   const handleProfileClicked = function () {
-    history.push('/profile/1');
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/profile/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleLogoutClicked = () => {
@@ -76,7 +81,12 @@ function Toolbar() {
   };
 
   const handleCollectionsClicked = () => {
-    history.push('/collections');
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/collections/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleCartClicked = () => {
