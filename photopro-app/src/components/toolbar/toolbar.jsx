@@ -70,6 +70,10 @@ function Toolbar() {
     history.push("/shopping-cart");
   };
 
+  const handleMyPurchasesClicked = () => {
+    history.push("/my-purchases");
+  };
+
   let buttons;
   if (loggedIn === "true") {
     buttons = (
@@ -114,6 +118,7 @@ function Toolbar() {
             onClose={handleAccountClose}
           >
             <MenuItem onClick={handleProfileClicked}>Profile</MenuItem>
+            <MenuItem onClick={handleMyPurchasesClicked}>My Purchases</MenuItem>
             <MenuItem onClick={handleChangePassClicked}>
               Change Password
             </MenuItem>

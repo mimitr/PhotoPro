@@ -36,7 +36,10 @@ export default function ShoppingCart() {
         console.log(response);
         setShoppingCartItems(response.data.result);
       }
-      getUserSavedLaterItems();
+
+      setTimeout(() => {
+        getUserSavedLaterItems();
+      }, 100);
     });
   };
 
@@ -62,6 +65,7 @@ export default function ShoppingCart() {
     getUserNotPurchasedItems();
     setSaveForLaterButtonClicked(false);
     setDeleteButtonClicked(false);
+    console.log("rerendering shopping page");
   }, [saveForLaterButtonClicked, deleteButtonClicked]);
 
   const handleCheckoutButton = () => {
@@ -106,21 +110,26 @@ export default function ShoppingCart() {
     );
   });
 
+  let subTotal = 0;
+  shoppingCartItems.map((item) => {
+    subTotal += parseFloat(item.price);
+  });
+
+  console.log(subTotal);
+
   const checkoutComponent = (
     <Redirect
       push
       to={{
         pathname: `/checkout`,
+        state: {
+          totalPrice: `${subTotal}`,
+        },
       }}
     />
   );
 
   console.log(shoppingItems);
-
-  // const subTotal = 0;
-  // shoppingCartItems.map((item) => {
-  //   subTotal += parseInt(item.price);
-  // });
 
   let componentsRender;
   if (checkoutButtonClicked) {
@@ -133,7 +142,9 @@ export default function ShoppingCart() {
           <div className="shopping-cart-grid">
             <div className="shopping-cart-items">{shoppingItems}</div>
             <div className="shopping-cart-subtotal">
-              <h2>Subtotal ({shoppingCartItems.length} items): $999</h2>
+              <h2>
+                Subtotal ({shoppingCartItems.length} items): ${subTotal}
+              </h2>
               <Button
                 variant="outlined"
                 color="primary"

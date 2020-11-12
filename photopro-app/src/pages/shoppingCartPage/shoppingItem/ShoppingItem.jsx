@@ -4,12 +4,12 @@ import "./ShoppingItem.css";
 import axios from "axios";
 
 export default function ShoppingItem(props) {
-  const updatePurchase = () => {
+  const updatePurchase = (save_later_value) => {
     axios({
       method: "POST",
       url: "http://localhost:5000/update_user_purchases_details",
       params: {
-        save_for_later: 1,
+        save_for_later: save_later_value,
         purchased: 0,
         image_id: props.image_id,
       },
@@ -36,14 +36,21 @@ export default function ShoppingItem(props) {
     });
   };
 
-  const handSaveLaterButton = () => {
+  const handSaveLaterOrMoveCartButton = () => {
     console.log("save later clicked");
-    updatePurchase();
+    if (props.save_for_later === true) {
+      console.log("save_for_later is true->change to move to cart");
+      updatePurchase(0);
+    } else {
+      updatePurchase(1);
+    }
   };
 
   const handleDeleteButton = () => {
     deleteItem();
   };
+
+  console.log(props.save_for_later);
 
   return (
     <React.Fragment>
@@ -59,13 +66,16 @@ export default function ShoppingItem(props) {
             <h2>Title: {props.title}</h2>
             <h2>Caption:</h2>
             <p>{props.caption}</p>
-            <h3>Price: {props.price}</h3>
+            <h3>Price: ${props.price}</h3>
+
             <Button
               variant="outlined"
               color="primary"
-              onClick={handSaveLaterButton}
+              onClick={handSaveLaterOrMoveCartButton}
             >
-              Save for later
+              {props.save_for_later === true
+                ? "Move to Cart"
+                : "Save for Later"}
             </Button>
             <Button
               variant="outlined"
