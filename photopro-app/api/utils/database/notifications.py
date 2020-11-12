@@ -40,10 +40,10 @@ def get_comment_notification(user_id, timestamp, conn, cur):
 
 def get_user_timestamp(user_id, conn, cur):
     try:
-        cmd = "SELECT last_active FROM test_users WHERE id = {}".format(user_id)
+        cmd = "SELECT last_active FROM users WHERE id = {}".format(user_id)
         cur.execute(cmd)
         conn.commit()
-        result = cur.fetchone()
+        result = cur.fetchall()
         print(result)
         result = result[0]
         print(result)
