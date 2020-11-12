@@ -43,7 +43,10 @@ function Toolbar() {
   const handleProfileClicked = function () {
     const userID = localStorage.getItem('userID');
     console.log(`In toolbar the userID = ${userID}`);
-    history.push({ pathname: `/profile/${userID}`, state: { id: userID } });
+    history.push({
+      pathname: `/profile/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleLogoutClicked = () => {
@@ -69,7 +72,7 @@ function Toolbar() {
     console.log(`In toolbar the userID = ${userID}`);
     history.push({
       pathname: `/collections/${userID}`,
-      state: { userID: userID },
+      state: { uploaderID: userID },
     });
   };
 
