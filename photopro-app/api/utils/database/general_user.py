@@ -10,6 +10,7 @@ import os
 import base64
 import binascii
 import io
+from pathlib import Path
 
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
@@ -89,7 +90,8 @@ def change_password(email, password, new_password, conn, cur):
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(recipient)
+        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(
+            recipient)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -461,7 +463,8 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (int(image_id))
+        cmd = """select tags from images where image_id=%d """ % (
+            int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -494,14 +497,18 @@ def set_user_timestamp(user_id, conn, cur):
 
 def download_image(image_id, conn, cur):
     try:
-        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(image_id)
+        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(
+            image_id)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
         query_result = cur.fetchall()
+        dl_location = str(os.path.join(Path.home(), "Downloads"))
+        print(dl_location)
         for row in query_result:
             id, file = row
-            filename = "{}.jpeg".format(id)
+            filename = dl_location + "\\{}.jpeg".format(id)
+            print(filename)
             photo = open(filename, "wb")
             photo.write(file)
             photo.close()
