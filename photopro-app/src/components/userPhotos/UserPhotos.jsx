@@ -19,7 +19,7 @@ const UserPhotos = (props) => {
     setTimeout(() => {
       // temp fix to api call the clashes with another and which both modify file = "image.jpg"
       fetchProfilePhotos();
-    }, 500);
+    }, 750);
 
     return () => {
       setProfileImgs([]);
