@@ -23,6 +23,7 @@ from utils.database.general_user import (
     get_tags,
     remove_tag,
     delete_image_post,
+    download_image,
 )
 from utils.database.connect import (
     conn,
@@ -900,4 +901,10 @@ def api_update_user_purchases_details():
     result = update_user_purchases_details(
         int(user_id), int(image_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
     )
+@app.route("/download")
+def api_download():
+    image_id = request.args.get("image_id")
+    if not image_id:
+        return jsonify({"result": False})
+    result = download_image(image_id, conn, cur)
     return jsonify({"result": result})

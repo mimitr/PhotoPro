@@ -99,7 +99,18 @@ class PurchasedImage extends Component {
   };
 
   handleDownloadClicked = (e) => {
+    const downloadPhoto = () => {
+      axios({
+        method: "GET",
+        url: "http://localhost:5000/download",
+        params: { image_id: this.props.image.image_id },
+      }).then((res) => {
+        console.log(res);
+      });
+    };
+
     console.log("download clicked");
+    downloadPhoto();
     e.stopPropagation();
   };
 

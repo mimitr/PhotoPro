@@ -77,3 +77,11 @@ sql query it used, which works. Have yet to implement an api call for it.
 UPDATE
 I modified the discovery api call to now execute a search by tag first, then search by term if the first search doesn't return enough
 results.
+
+===== Week 9 =====
+
+10/11/2020
+I created a function 'download_image', which should download an image direct from the database without a watermark. Still need to test
+and create an api call for this function.
+UPDATE
+Have tested and revised the function, now requires API call
