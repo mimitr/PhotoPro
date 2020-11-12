@@ -25,12 +25,8 @@ from utils.database.general_user import (
     remove_tag,
     delete_image_post,
 )
-from utils.database.connect import (
-    get_conn_and_cur
-)
-from utils.database.follows import (
-    follow, unfollow, is_following
-)
+from utils.database.connect import get_conn_and_cur
+from utils.database.follows import follow, unfollow, is_following
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -218,7 +214,7 @@ def api_discovery():
                         "=============== THIS REQUEST FOR - %s - HAS BEEN CANCELLED ============="
                         % query
                     )
-                    app.start_point = start_point_before_iteration
+                    app.start_point = 0
                     return jsonify({"result": False})
 
                 print(tup)
@@ -876,6 +872,7 @@ def api_get_collection_data():
 
     return jsonify({"result": result})
 
+
 @app.route("/follow", methods=["GET", "POST"])
 def api_follow():
     to_follow = request.args.get("to_follow")
@@ -884,9 +881,7 @@ def api_follow():
     if user_id is None or to_follow is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = follow(
-        int(user_id), int(to_follow), conn, cur
-    )
+    result = follow(int(user_id), int(to_follow), conn, cur)
     conn.close()
     return jsonify({"result": result})
 
@@ -899,9 +894,7 @@ def api_unfollow():
     if user_id is None or following is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = unfollow(
-        int(user_id), int(following), conn, cur
-    )
+    result = unfollow(int(user_id), int(following), conn, cur)
     conn.close()
     return jsonify({"result": result})
 
@@ -914,9 +907,7 @@ def api_is_following():
     if user_id is None or following is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = is_following(
-        int(user_id), int(following), conn, cur
-    )
+    result = is_following(int(user_id), int(following), conn, cur)
     conn.close()
 
 
@@ -1040,14 +1031,9 @@ def api_update_user_purchases_details():
 def api_get_user_username():
     uid = request.args.get("user_id")
 
-    if (
-        uid is None
-    ):
+    if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_username_by_id(
-        int(uid),
-        conn,
-        cur,
-    )
+    result = get_username_by_id(int(uid), conn, cur,)
     return jsonify({"result": result})
+
