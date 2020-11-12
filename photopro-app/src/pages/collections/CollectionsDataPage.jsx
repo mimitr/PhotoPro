@@ -5,8 +5,8 @@ import LockIcon from '@material-ui/icons/Lock';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Toolbar from '../../../../components/toolbar/toolbar';
-import CollectionFeed from './CollectionFeed';
+import Toolbar from '../../components/toolbar/toolbar';
+import CollectionFeed from '../../components/collections/collection/collectionDataPage/CollectionFeed';
 
 export default function CollectionDataPage(props) {
   const [collectionImages, setCollectionImages] = useState([]);
@@ -22,6 +22,8 @@ export default function CollectionDataPage(props) {
       state: { collection_id: collectionID },
     },
   } = props;
+
+  console.log(props.location.state);
 
   useEffect(() => {
     console.log('getting collections data');
@@ -99,16 +101,17 @@ export default function CollectionDataPage(props) {
           <p>by @{props.location.state.creator_id}</p>
           <p>Total photos: {collectionImages.length}</p>
 
-          <Button
-            aria-controls="simple-menu"
-            aria-haspopup="true"
-            variant="outlined"
-            color="primary"
-            onClick={handleEditCollectionClicked}
-          >
-            Edit collection
-          </Button>
-
+          {props.location.state.isMyCollection === 'true' ? (
+            <Button
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              variant="outlined"
+              color="primary"
+              onClick={handleEditCollectionClicked}
+            >
+              Edit collection
+            </Button>
+          ) : null}
           <Menu
             id="simple-menu"
             anchorEl={anchorEl}
@@ -134,7 +137,11 @@ export default function CollectionDataPage(props) {
             </MenuItem>
           </Menu>
         </div>
-        <CollectionFeed retrievedImgs={collectionImages} />
+        <CollectionFeed
+          retrievedImgs={collectionImages}
+          isMyCollection={props.location.state.isMyCollection}
+          loading={loading}
+        />
       </div>
       <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
     </React.Fragment>

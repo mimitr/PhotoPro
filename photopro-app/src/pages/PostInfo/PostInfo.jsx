@@ -19,8 +19,6 @@ const PostInfo = (props) => {
   } = props;
   const history = useHistory();
 
-  console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
-
   useEffect(() => {
     let mounted = true;
 

@@ -35,6 +35,8 @@ from utils.database.connect import (
     curLikes,
     connCollections,
     curCollections,
+    connCollections2,
+    curCollections2,
 )
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -773,7 +775,9 @@ def api_get_collection_data():
 
     if user_id is None and limit is not None and collection_id is not None:
         return jsonify({"result": False})
-    result = get_collection_data(collection_id, limit, conn, cur)
+    result = get_collection_data(
+        collection_id, limit, connCollections2, curCollections2
+    )
 
     if result:
 

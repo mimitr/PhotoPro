@@ -10,7 +10,7 @@ import ChangePasswordPage from './pages/ChangePasswordPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import EditPostPage from './pages/EditPostPage';
 import CollectionsPage from './pages/collections/CollectionsPage';
-import CollectionDataPage from './pages/collections/collection/collectionDataPage/CollectionDataPage';
+import CollectionDataPage from './pages/collections/CollectionsDataPage';
 import ShoppingCartPage from './pages/shoppingCartPage/ShoppingCartPage';
 import CheckoutPage from './pages/checkoutPage/CheckoutPage';
 

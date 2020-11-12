@@ -71,6 +71,7 @@ export default function Collections(props) {
           private: `${collectionPrivateClicked}`,
           num_photos: `${collectionNumPhotosClicked}`,
           creator_id: `${collectionCreatorClicked}`,
+          isMyCollection: `${displayMyProfile}`,
         },
       }}
     />

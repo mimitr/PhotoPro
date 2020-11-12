@@ -18,7 +18,7 @@ export default function CollectionsPage(props) {
       <Collections
         userID={props.location.state.uploaderID}
         displayMyProfile={displayMyProfile}
-      />{' '}
+      />
     </React.Fragment>
   );
 }

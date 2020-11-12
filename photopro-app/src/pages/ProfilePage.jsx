@@ -13,13 +13,15 @@ function ProfilePage(props) {
     );
   } else {
     const displayMyProfile =
-      localStorage.getItem('userID') == props.location.state.uploaderID
+      localStorage.getItem('userID') === props.location.state.uploaderID
         ? true
         : false;
 
     console.log(
       `ProfilePage - props.location.state is ${props.location.state.uploaderID}`
     );
+
+    console.log(`ProfilePage - displayMyProfile is ${displayMyProfile}`);
     return (
       <React.Fragment>
         <Toolbar />

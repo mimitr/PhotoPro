@@ -69,6 +69,8 @@ class CollectionImage extends Component {
         animateImages: 'image-container-animate',
       });
     }, 100);
+
+    console.log(`isMyCollection=${this.props.isMyCollection}`);
   }
 
   setSpans = () => {
@@ -166,17 +168,19 @@ class CollectionImage extends Component {
               <ShoppingCartIcon />
             </IconButton>
 
-            <IconButton
-              variant="contained"
-              classes={{
-                root: `${this.props.classes.root} ${this.props.classes.remove}`,
-              }}
-              onClick={this.handleDeleteClicked}
-            >
-              <HighlightOffIcon
-                classes={{ root: `${this.props.classes.removeIcon}` }}
-              />
-            </IconButton>
+            {this.props.isMyCollection === 'true' ? (
+              <IconButton
+                variant="contained"
+                classes={{
+                  root: `${this.props.classes.root} ${this.props.classes.remove}`,
+                }}
+                onClick={this.handleDeleteClicked}
+              >
+                <HighlightOffIcon
+                  classes={{ root: `${this.props.classes.removeIcon}` }}
+                />
+              </IconButton>
+            ) : null}
           </React.Fragment>
         </div>
         // </div>
