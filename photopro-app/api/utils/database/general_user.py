@@ -52,7 +52,7 @@ def login_user(email, password, conn, cur):
             return False, None
         elif length == 1:
             (id, first, last, email, password, last_active, username) = data[0]
-            print(id, first, last, email, password, last_active)
+            print(id, first, last, email, password, last_active, username)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -60,7 +60,10 @@ def login_user(email, password, conn, cur):
             return False, None
     except psycopg2.Error as e:
         error = e.pgcode
+        print("================ LOGIN ERROR ====================")
+        print(e)
         print(error)
+        print("=================================================")
         return False, None
 
 
@@ -90,7 +93,8 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
         cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(
-            recipient)
+            recipient
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -504,7 +508,7 @@ def get_username_by_id(user_id, conn, cur):
         (email, username) = query_result[0]
         print(email, username)
         if username is None:
-            username = email.split('@')[0]
+            username = email.split("@")[0]
         print("get_username_by_id", username)
         return True
     except Exception as e:

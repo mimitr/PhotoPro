@@ -87,6 +87,7 @@ const PostInfo = (props) => {
             <Likes
               num_likes={props.location.state.num_likes}
               image_id={props.location.state.id}
+              uploader_id={props.location.state.uploader}
             />
             <button className="btn bookmark-btn">
               <svg width="25" height="25">
@@ -108,8 +109,9 @@ const PostInfo = (props) => {
           </div>
         </div>
         <div className="postFeed-nested">
+          <h1>{props.location.state.title}</h1>
+          <h2 className="roboto">{props.location.state.caption}</h2>
           <div className="postTags">
-            <h2 className="roboto">{props.location.state.caption}</h2>
             <h3>Tags:</h3>
             <div className="flexbox-tags">
               {tags.length > 0 ? (
@@ -136,6 +138,7 @@ const PostInfo = (props) => {
               image_id={props.location.state.id}
               comments_list={comments}
               updateComments={updateComments}
+              uploader_id={props.location.state.uploader}
             />
           </div>
         </div>

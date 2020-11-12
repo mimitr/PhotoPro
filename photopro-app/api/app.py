@@ -24,6 +24,7 @@ from utils.database.general_user import (
     get_username_by_id,
     remove_tag,
     delete_image_post,
+    set_user_timestamp,
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following
@@ -42,9 +43,9 @@ for i in sys.path:
 from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
 from utils.database.watermark import apply_watermark
 from utils.database.notifications import (
-    get_like_notification,
-    get_comment_notification,
-    get_user_timestamp,
+    send_notification,
+    fetch_notification,
+    clear_notification,
 )
 from utils.database.comments import (
     post_comment_to_image,
@@ -468,47 +469,59 @@ def api_get_likers_of_image():
     return jsonify({"result": False})
 
 
+@app.route("/send_notification")
+def api_send_notification():
+    uploader_id = request.args.get("uploader_id")
+    notif_type = request.args.get("notification")  # I DUNNO WHAT TO PUT HERE
+    image_id = request.args.get("image_id")
+    sender_id = app.user_id  # assumes that logged in user comments or likes image
+    if uploader_id is not None and sender_id is not None and notif_type is not None:
+        result = send_notification(
+            uploader_id, sender_id, notif_type, image_id, conn, cur
+        )
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
 @app.route("/fetch_notification")
-def api_fetch_notifications():
+def api_fetch_notification():
+    uploader_id = app.user_id
+    if uploader_id is not None:
+        result = fetch_notification(uploader_id, connNotifications, curNotifications)
+        if result != False:
+            processed = []
+            for tup in result:
+                print(tup)
+                uploader, sender, notification, timestamp, image_id = tup
+                processed.append(
+                    {
+                        "uploader": uploader,
+                        "sender": sender,
+                        "type": notification,
+                        "timestamp": timestamp,
+                        "image_id": image_id,
+                    }
+                )
+            return jsonify({"result": processed})
+    return jsonify({"result": False})
+
+
+@app.route("/clear_notifications")
+def api_clear_notification():
+    uploader_id = app.user_id
+    if uploader_id is not None:
+        result = clear_notification(uploader_id, conn, cur)
+        return jsonify({"result": result})
+    return jsonify({"result": False})
+
+
+@app.route("/set_last_active", methods=["POST"])
+def api_set_last_active():
     user_id = app.user_id
-    conn, cur = get_conn_and_cur()
-    timestamp = get_user_timestamp(user_id, conn, cur)
 
-    like_notifs = get_like_notification(user_id, timestamp, conn, cur)
-    comment_notifs = get_comment_notification(user_id, timestamp, conn, cur)
-    conn.close()
-    results = []
-
-    if like_notifs != False:
-        for tup in like_notifs:
-            title, image, liker, created_at = tup
-            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
-            results.append(
-                {
-                    "title": title,
-                    "image_id": image,
-                    "liker": liker,
-                    "created_at": created_at,
-                }
-            )
-    if comment_notifs != False:
-        for tup in comment_notifs:
-            title, image, commenter, comment, created_at = tup
-            created_at = created_at.strftime("%Y/%m/%d, %H:%M:%S")
-            results.append(
-                {
-                    "title": title,
-                    "image_id": image,
-                    "commenter": commenter,
-                    "comment": comment,
-                    "created_at": created_at,
-                }
-            )
-    if results:
-        results = sorted(results, key=lambda x: x["created_at"], reverse=True)
-        return jsonify({"notifications": results})
-
-    return jsonify({"notifications": False})
+    result = set_user_timestamp(user_id, conn, cur)
+    print("~~~~~~~~~~~~~~~~~~ set_user_timestamp returned - %s" % result)
+    return jsonify({"result": result})
 
 
 @app.route("/post_comment_to_image", methods=["GET", "POST"])

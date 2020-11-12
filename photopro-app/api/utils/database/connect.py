@@ -1,5 +1,6 @@
 import psycopg2
 
+
 def get_conn_and_cur():
     port = 5432
     host = "34.87.239.111"
