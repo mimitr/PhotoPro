@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -25,7 +25,8 @@ const options = [
 const ITEM_HEIGHT = 48;
 
 export default function Notifications() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -35,6 +36,9 @@ export default function Notifications() {
         params: {},
       }).then((res) => {
         console.log(res);
+        if (res.data.result) {
+          setNotifications(res.data.result);
+        }
       });
     };
 
@@ -65,19 +69,27 @@ export default function Notifications() {
         PaperProps={{
           style: {
             maxHeight: ITEM_HEIGHT * 4.5,
-            width: '20ch',
+            width: '50ch',
           },
         }}
       >
-        {options.map((option) => (
-          <MenuItem
-            key={option}
-            selected={option === 'Pyxis'}
-            onClick={handleClose}
-          >
-            {option}
+        {notifications.length > 0 ? (
+          notifications.map((notification, index) => (
+            <MenuItem key={index} onClick={handleClose}>
+              <div>
+                User {notification.sender}{' '}
+                {notification.type === 'like'
+                  ? 'liked your'
+                  : 'commented on your'}{' '}
+                post - {`'${notification.image_id}'`}
+              </div>
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem onClick={handleClose}>
+            No Notifications at this time
           </MenuItem>
-        ))}
+        )}
       </Menu>
     </div>
   );

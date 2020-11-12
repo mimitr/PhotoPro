@@ -38,6 +38,8 @@ from utils.database.connect import (
     curCollections,
     connCollections2,
     curCollections2,
+    connNotifications,
+    curNotifications,
 )
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -454,14 +456,17 @@ def api_get_likers_of_image():
             return jsonify({"result": processed_result})
     return jsonify({"result": False})
 
+
 @app.route("/send_notification")
 def api_send_notification():
     uploader_id = request.args.get("uploader_id")
-    sender_id = app.user_id     # assumes that logged in user comments or likes image
-    notif_type = request.args.get("notification") # I DUNNO WHAT TO PUT HERE
+    notif_type = request.args.get("notification")  # I DUNNO WHAT TO PUT HERE
     image_id = request.args.get("image_id")
-    if uploader_id is not None and sender_id is not None:
-        result = send_notification(uploader_id, sender_id, notif_type, image_id, conn, cur)
+    sender_id = app.user_id  # assumes that logged in user comments or likes image
+    if uploader_id is not None and sender_id is not None and notif_type is not None:
+        result = send_notification(
+            uploader_id, sender_id, notif_type, image_id, conn, cur
+        )
         return jsonify({"result": result})
     return jsonify({"result": False})
 
@@ -470,20 +475,26 @@ def api_send_notification():
 def api_fetch_notification():
     uploader_id = app.user_id
     if uploader_id is not None:
-        result = fetch_notification(uploader_id, conn, cur)
+        result = fetch_notification(uploader_id, connNotifications, curNotifications)
         if result != False:
             processed = []
             for tup in result:
                 print(tup)
                 uploader, sender, notification, timestamp, image_id = tup
                 processed.append(
-                    {"uploader": uploader, "sender": sender, "type": notification, "timestamp": timestamp, "image_id": image_id}
+                    {
+                        "uploader": uploader,
+                        "sender": sender,
+                        "type": notification,
+                        "timestamp": timestamp,
+                        "image_id": image_id,
+                    }
                 )
             return jsonify({"result": processed})
     return jsonify({"result": False})
 
 
-@app.route("clear_notification")
+@app.route("/clear_notification")
 def api_clear_notification():
     uploader_id = app.user_id
     if uploader_id is not None:

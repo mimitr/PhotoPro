@@ -7,7 +7,7 @@ def send_notification(uploader, sender, notification, image, conn, cur):
     try:
         cmd = (
             "INSERT INTO notifications (uploader, sender, notification, image_id)"
-            "VALUES({}, {}, '{}', {}})".format(uploader, sender, notification, image)
+            "VALUES({}, {}, '{}', {})".format(uploader, sender, notification, image)
         )
         cur.execute(cmd)
         conn.commit()
