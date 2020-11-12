@@ -62,3 +62,12 @@ connCollections2 = psycopg2.connect(
 )
 curCollections2 = connCollections2.cursor()
 
+connNotifications = psycopg2.connect(
+    user=database_user,
+    password=database_password,
+    host=host,
+    port=port,
+    database=database_name,
+)
+curNotifications = connNotifications.cursor()
+

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './toolbar.css';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
@@ -6,6 +7,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Notifications from './notifications/notifications';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -129,6 +131,7 @@ function Toolbar() {
             </MenuItem>
             <MenuItem onClick={handleLogoutClicked}>Logout</MenuItem>
           </Menu>
+          <Notifications />
         </div>
         <div className="toolbar-left">
           <Button

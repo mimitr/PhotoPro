@@ -60,7 +60,10 @@ def login_user(email, password, conn, cur):
             return False, None
     except psycopg2.Error as e:
         error = e.pgcode
+        print("================ LOGIN ERROR ====================")
+        print(e)
         print(error)
+        print("=================================================")
         return False, None
 
 
