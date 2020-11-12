@@ -145,13 +145,16 @@ export default function ShoppingCart() {
               <h2>
                 Subtotal ({shoppingCartItems.length} items): ${subTotal}
               </h2>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleCheckoutButton}
-              >
-                Proceed to Checkout
-              </Button>
+
+              {shoppingCartItems.length > 0 ? (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleCheckoutButton}
+                >
+                  Proceed to Checkout
+                </Button>
+              ) : null}
             </div>
           </div>
         </div>
