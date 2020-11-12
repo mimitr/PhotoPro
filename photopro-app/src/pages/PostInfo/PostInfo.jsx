@@ -108,8 +108,9 @@ const PostInfo = (props) => {
           </div>
         </div>
         <div className="postFeed-nested">
+          <h1>{props.location.state.title}</h1>
+          <h2 className="roboto">{props.location.state.caption}</h2>
           <div className="postTags">
-            <h2 className="roboto">{props.location.state.caption}</h2>
             <h3>Tags:</h3>
             <div className="flexbox-tags">
               {tags.length > 0 ? (
