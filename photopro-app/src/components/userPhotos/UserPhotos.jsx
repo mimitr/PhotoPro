@@ -4,16 +4,27 @@ import axios from 'axios';
 import ImageCard from '../feed/ImageCard/ImageCard';
 import BookmarkModal from '../modal/BookmarkModal';
 
-const UserPhotos = () => {
+const UserPhotos = (props) => {
   const [profileImgs, setProfileImgs] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [hasPhotos, setHasPhotos] = useState(true);
+
+  const { userID } = props;
+  const displayMyProfile =
+    localStorage.getItem('userID') == userID ? true : false;
 
   useEffect(() => {
-    setProfileImgs([]);
-    fetchProfilePhotos();
-  }, []);
+    setTimeout(() => {
+      // temp fix to api call the clashes with another and which both modify file = "image.jpg"
+      fetchProfilePhotos();
+    }, 1000);
+
+    return () => {
+      setProfileImgs([]);
+    };
+  }, [userID]);
 
   const fetchProfilePhotos = () => {
     setLoading(true);
@@ -21,7 +32,7 @@ const UserPhotos = () => {
     axios({
       method: 'GET',
       url: 'http://localhost:5000/profile_photos',
-      params: { batch_size: 30 }, //user_id: 1
+      params: { user_id: userID, batch_size: 30 }, //user_id: 1
     }).then((res) => {
       console.log(res);
       if (res.data.result !== false) {
@@ -29,18 +40,25 @@ const UserPhotos = () => {
         setProfileImgs(res.data.result);
       } else {
         setLoading(false);
+        setHasPhotos(false);
       }
     });
   };
 
   return (
     <React.Fragment>
-      <h2>Uploaded Images: {profileImgs.length}</h2>
-      {profileImgs.length === 0 ? (
+      {displayMyProfile ? (
+        <h2>Uploaded Images: {profileImgs.length}</h2>
+      ) : (
+        <h2>
+          Uploads by @{userID}: {profileImgs.length}
+        </h2>
+      )}
+      {hasPhotos ? null : (
         <h2 style={{ textAlign: 'center' }}>
           You haven't uploaded any photos!
         </h2>
-      ) : null}
+      )}
 
       <div className="image-grid">
         {profileImgs.map((image, index) => {

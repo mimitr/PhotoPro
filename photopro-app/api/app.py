@@ -30,6 +30,7 @@ from utils.database.connect import (
 from utils.database.follows import (
     follow, unfollow, is_following
 )
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import sys
@@ -66,6 +67,14 @@ from utils.database.collections import (
     delete_photo_from_collection,
     update_collections_private,
 )
+
+from utils.database.user_purchases import (
+    add_purchase,
+    delete_item_from_cart,
+    get_user_purchases,
+    update_user_purchases_details,
+)
+
 
 app = Flask(__name__)
 app.user_id = None
@@ -327,12 +336,16 @@ def api_discovery():
 
 @app.route("/profile_photos")
 def api_profile_photos():
-    user_id = app.user_id
+
+    user_id = request.args.get("user_id")
+    batch_size = int(request.args.get("batch_size"))
+
     if user_id is None:
         return jsonify({"result": False})
-    batch_size = int(request.args.get("batch_size"))
+
     if batch_size is None or batch_size <= 0:
         batch_size = 32
+
     conn, cur = get_conn_and_cur()
     result = profiles_photos(user_id, batch_size, conn, cur)
     conn.close()
@@ -746,13 +759,15 @@ def api_update_collections_private():
 
 @app.route("/get_users_collection")
 def api_get_users_collection():
+    user_id = request.args.get("user_id")
     limit = request.args.get("batch_size")
-    user_id = app.user_id
+
     if limit is None:
         limit = 32
 
     if user_id is None and limit is not None:
         return jsonify({"result": False})
+
     conn, cur = get_conn_and_cur()
     result = get_users_collection(user_id, limit, conn, cur)
     conn.close()
@@ -762,10 +777,19 @@ def api_get_users_collection():
         processed_result = []
 
         for tup in result:
-            collection_id, collection_name, creator_id, private, num_photos = tup
+            collection_id, collection_name, creator_id, private, num_photos, img = tup
             if num_photos is None:
                 num_photos = 0
             num_photos = int(num_photos)
+            if img:
+                file = "image.jpeg"
+                photo = open(file, "wb")
+                photo.write(img)
+                photo.close()
+                img = apply_watermark(file).getvalue()
+                img = base64.encodebytes(img).decode("utf-8")
+            else:
+                img = ""
             processed_result.append(
                 {
                     "collection_id": collection_id,
@@ -773,6 +797,7 @@ def api_get_users_collection():
                     "creator_id": creator_id,
                     "private": private,
                     "num_photos": num_photos,
+                    "img": img,
                 }
             )
         retval = jsonify({"result": processed_result})
@@ -785,14 +810,16 @@ def api_get_users_collection():
 
 @app.route("/get_collection_data")
 def api_get_collection_data():
+    user_id = app.user_id
     collection_id = request.args.get("collection_id")
     limit = request.args.get("batch_size")
-    user_id = app.user_id
+
     if limit is None:
         limit = 32
 
     if user_id is None and limit is not None and collection_id is not None:
         return jsonify({"result": False})
+
     conn, cur = get_conn_and_cur()
     result = get_collection_data(collection_id, limit, conn, cur)
     conn.close()
@@ -848,7 +875,6 @@ def api_get_collection_data():
 
     return jsonify({"result": result})
 
-
 @app.route("/follow", methods=["GET", "POST"])
 def api_follow():
     to_follow = request.args.get("to_follow")
@@ -891,4 +917,119 @@ def api_is_following():
         int(user_id), int(following), conn, cur
     )
     conn.close()
+
+
+@app.route("/add_purchase", methods=["GET", "POST"])
+def api_add_purchase():
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if (
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
+    ):
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = add_purchase(
+        int(user_id),
+        int(image_id),
+        bool(int(save_for_later)),
+        bool(int(purchased)),
+        conn,
+        cur,
+    )
+    return jsonify({"result": result})
+
+
+@app.route("/delete_item_from_cart", methods=["GET", "POST"])
+def api_delete_item_from_cart():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or image_id is None:
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = delete_item_from_cart(int(user_id), int(image_id), conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/get_user_purchases", methods=["GET", "POST"])
+def api_get_user_purchases():
+    user_id = app.user_id
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+
+    if user_id is None or save_for_later is None or purchased is None:
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = get_user_purchases(
+        int(user_id), bool(int(save_for_later)), bool(int(purchased)), conn, cur
+    )
+    if result:
+
+        processed_result = []
+
+        for tup in result:
+            (
+                user_id,
+                image_id,
+                save_for_later,
+                purchased,
+                title,
+                caption,
+                price,
+                img,
+            ) = tup
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            processed_result.append(
+                {
+                    "user_id": user_id,
+                    "image_id": image_id,
+                    "save_for_later": save_for_later,
+                    "purchased": purchased,
+                    "title": title,
+                    "caption": caption,
+                    "price": str(price),
+                    "img": img,
+                }
+            )
+        # print("+++++++++++++PROCESSED RESULT+++++++++++++++")
+        # print(processed_result)
+        retval = jsonify({"result": processed_result})
+        return retval
+    return jsonify({"result": result})
+
+
+@app.route("/update_user_purchases_details", methods=["GET", "POST"])
+def api_update_user_purchases_details():
+    save_for_later = request.args.get("save_for_later")
+    purchased = request.args.get("purchased")
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if (
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
+    ):
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = update_user_purchases_details(
+        int(user_id),
+        int(image_id),
+        bool(int(save_for_later)),
+        bool(int(purchased)),
+        conn,
+        cur,
+    )
     return jsonify({"result": result})

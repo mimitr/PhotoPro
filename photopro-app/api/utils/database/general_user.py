@@ -246,7 +246,7 @@ def discovery(user_id, batch_size, start_point, conn, cur):
         print(cmd)
         cur.execute(cmd)
         conn.commit()
-        data = cur.fetchmany(batch_size)
+        data = cur.fetchall()
 
         length = len(data)
         if length == 0:
@@ -256,6 +256,10 @@ def discovery(user_id, batch_size, start_point, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+    except psycopg2.ProgrammingError as e:
+        print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
@@ -318,7 +322,7 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
         print(cmd)
         cur.execute(cmd)
         conn.commit()
-        data = cur.fetchmany(batch_size)
+        data = cur.fetchall()
         length = len(data)
         # print("length of data is ", data)
         if length == 0:
@@ -457,7 +461,7 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (image_id)
+        cmd = """select tags from images where image_id=%d """ % (int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
