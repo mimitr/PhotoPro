@@ -527,7 +527,7 @@ def api_set_last_active():
     user_id = app.user_id
     conn, cur = get_conn_and_cur()
     result = set_user_timestamp(user_id, conn, cur)
-    connc.lose()
+    conn.close()
     print("~~~~~~~~~~~~~~~~~~ set_user_timestamp returned - %s" % result)
     return jsonify({"result": result})
 
@@ -903,6 +903,8 @@ def api_follow():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = follow(int(user_id), int(to_follow), conn, cur)
+    if result:
+        send_notification(int(to_follow), int(user_id), "follow", None, conn, cur)
     conn.close()
     return jsonify({"result": result})
 
@@ -1056,6 +1058,7 @@ def api_download():
     image_id = request.args.get("image_id")
     if not image_id:
         return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
     result = download_image(image_id, conn, cur)
     return jsonify({"result": result})
 
