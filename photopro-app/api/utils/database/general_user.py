@@ -162,25 +162,17 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         # array = array[:len(array) - 1] + "]"
 
         # classification code goes here
-        print("1")
         print(os.getcwd())
         vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
-        print("2", os.getcwd())
         vision_client = vision.ImageAnnotatorClient.from_service_account_file(
             vision_key_filepath
         )
-        print("3")
 
         content = image
-        print("4")
-        print(content)
-        print("5")
         vision_image = vision.Image(content=content)
         # vision_image = types.Image(content=content)
-        print("6")
         vision_response = vision_client.label_detection(image=vision_image)
         # print(vision_response)
-        print("7")
         vision_labels = vision_response.label_annotations
 
         for label in vision_labels:
@@ -190,13 +182,13 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
                 label_to_add = label_to_add.rstrip('"')
                 tags.append(label_to_add)
 
-        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s)"
+        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s) RETURNING image_id"
         # print(cmd, uploader, caption, title, price, tags)
         print(tags)
         cur.execute(cmd, (caption, uploader, image, title, price, tags))
         conn.commit()
 
-        return True
+        return cur.fetchone()[0]
     except Exception as e:
         print(e)
         return False
