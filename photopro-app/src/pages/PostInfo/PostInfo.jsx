@@ -1,23 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import './PostInfo.css';
 import Toolbar from '../../components/toolbar/toolbar';
 import Likes from '../../components/likes/Likes';
 import Comments from '../../components/comments/Comments';
 import axios from 'axios';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
+import BookmarkModal from '../../components/modal/BookmarkModal';
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
   const [tags, setTags] = useState([]);
   const [commentUpdated, updateComments] = useState('');
+  const [bookmarkModalIsOpen, setBookmarkModalIsOpen] = useState(false);
   const cancelAxiosRequest = useRef();
   const {
     location: {
       state: { id: imageID },
     },
   } = props;
-
-  console.log(`NUMBER OF LIKES IS ${props.location.state.num_likes}`);
+  const history = useHistory();
 
   useEffect(() => {
     let mounted = true;
@@ -67,27 +71,57 @@ const PostInfo = (props) => {
     };
   }, [commentUpdated, imageID]);
 
+  const apiAddPurchase = (imageID) => {
+    axios({
+      method: 'POST',
+      url: 'http://localhost:5000/add_purchase',
+      params: {
+        save_for_later: 0,
+        purchased: 0,
+        image_id: String(imageID),
+      },
+    }).then((response) => {
+      if (response.data.result !== false) {
+        console.log(response);
+      }
+    });
+  };
+
+  const handleBuyButton = () => {
+    apiAddPurchase(props.location.state.id);
+  };
+
+  const handleBookmarkClicked = () => {
+    setBookmarkModalIsOpen(true);
+  };
+
   return (
     <React.Fragment>
       <Toolbar />
       <div className="postWrapper">
         <div className="postInfo">
           <div className="username">
-            <p>@{props.location.state.uploader}</p>
+            <Button
+              varient="outlined"
+              onClick={() => {
+                history.push({
+                  pathname: `/profile/${props.location.state.uploader}`,
+                  state: { uploaderID: props.location.state.uploader },
+                });
+              }}
+            >
+              @{props.location.state.uploader}
+            </Button>
             <button className="btn">Follow</button>
             <Likes
               num_likes={props.location.state.num_likes}
               image_id={props.location.state.id}
+              uploader_id={props.location.state.uploader}
             />
-            <button className="btn bookmark-btn">
-              <svg width="25" height="25">
-                <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"></path>
-              </svg>
-            </button>
+            <IconButton variant="contained" onClick={handleBookmarkClicked}>
+              <BookmarkIcon />
+            </IconButton>
           </div>
-          {/* <div className="follow"></div>
-          <div className="like"></div>
-          <div className="bookmark"></div> */}
         </div>
         <div className="postImage">
           <img
@@ -102,26 +136,31 @@ const PostInfo = (props) => {
           </div>
         </div>
         <div className="postFeed-nested">
+          <h1>{props.location.state.title}</h1>
+          <h2 className="roboto">{props.location.state.caption}</h2>
           <div className="postTags">
             <h2 className="roboto">{props.location.state.caption}</h2>
-            <h3>Tags:</h3>
+            <h3>
+              Tags:{' '}
+              {tags.length < 1 ? 'this post has no tags to display' : null}
+            </h3>
             <div className="flexbox-tags">
-              {tags.length > 0 ? (
-                tags.map((tag, index) => {
-                  return (
-                    <Button key={index} variant="contained">
-                      #{tag}
-                    </Button>
-                  );
-                })
-              ) : (
-                <h2>This post has no tags to display</h2>
-              )}
+              {tags.length > 0
+                ? tags.map((tag, index) => {
+                    return (
+                      <Button key={index} variant="contained">
+                        #{tag}
+                      </Button>
+                    );
+                  })
+                : null}
             </div>
           </div>
           <div className="postPrice">
             <h2 className="roboto">Price: ${props.location.state.price}</h2>
-            <button>Add to Cart</button>
+            <Button variant="contained" onClick={handleBuyButton}>
+              Add to Cart
+            </Button>
           </div>
           <div className="postComments">
             <h2 className="roboto">Comments:</h2>
@@ -130,10 +169,18 @@ const PostInfo = (props) => {
               image_id={props.location.state.id}
               comments_list={comments}
               updateComments={updateComments}
+              uploader_id={props.location.state.uploader}
             />
           </div>
         </div>
       </div>
+      {bookmarkModalIsOpen ? (
+        <BookmarkModal
+          openModal={true}
+          setOpenModal={setBookmarkModalIsOpen}
+          photoId={props.location.state.id}
+        ></BookmarkModal>
+      ) : null}
     </React.Fragment>
   );
 };

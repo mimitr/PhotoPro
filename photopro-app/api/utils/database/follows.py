@@ -11,7 +11,7 @@ def follow(user_id, followee, conn, cur):
         )
         cur.execute(cmd)
         conn.commit()
-        return cur.fetchone()[0]
+        return True
     except psycopg2.Error as e:
         print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
@@ -48,9 +48,9 @@ def is_following(user_id, followee, conn, cur):
         )
         cur.execute(cmd)
         conn.commit()
-        result = cur.fetchall()[0]
-        print("is_following result: ", result)
-        return result
+        (result) = cur.fetchall()[0]
+        print("is_following result: ", bool(result[0]))
+        return bool(result)
     except psycopg2.Error as e:
         print(e)
         # cur.execute('ROLLBACK TO SAVEPOINT save_point')

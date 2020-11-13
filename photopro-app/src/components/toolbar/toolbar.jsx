@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './toolbar.css';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
@@ -6,6 +7,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Notifications from './notifications/notifications';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +43,12 @@ function Toolbar() {
   };
 
   const handleProfileClicked = function () {
-    history.push('/profile/1');
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/profile/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleLogoutClicked = () => {
@@ -63,11 +70,20 @@ function Toolbar() {
   };
 
   const handleCollectionsClicked = () => {
-    history.push('/collections');
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/collections/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleCartClicked = () => {
-    history.push("/shopping-cart");
+    history.push('/shopping-cart');
+  };
+
+  const handleMyPurchasesClicked = () => {
+    history.push('/my-purchases');
   };
 
   let buttons;
@@ -114,11 +130,13 @@ function Toolbar() {
             onClose={handleAccountClose}
           >
             <MenuItem onClick={handleProfileClicked}>Profile</MenuItem>
+            <MenuItem onClick={handleMyPurchasesClicked}>My Purchases</MenuItem>
             <MenuItem onClick={handleChangePassClicked}>
               Change Password
             </MenuItem>
             <MenuItem onClick={handleLogoutClicked}>Logout</MenuItem>
           </Menu>
+          <Notifications />
         </div>
         <div className="toolbar-left">
           <Button

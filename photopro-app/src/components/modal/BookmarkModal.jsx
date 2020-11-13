@@ -1,47 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import ReactDom from 'react-dom';
-import './BookmarkModal.css';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import React, { useState, useEffect } from "react";
+import ReactDom from "react-dom";
+import "./BookmarkModal.css";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
-import axios from 'axios';
+import axios from "axios";
 
-import CollectionFolder from './collectionFolder/CollectionFolder';
+import CollectionFolder from "./collectionFolder/CollectionFolder";
 
 export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
-  const [enteredCollection, setEnteredCollection] = useState('');
+  const [enteredCollection, setEnteredCollection] = useState("");
+  const [newCollectionEntered, setNewCollectionEntered] = useState("");
+
   const [usersCollections, setUsersCollections] = useState(null);
+
   const [showCreateCollectionButton, setShowCreateCollectionButton] = useState(
     true
   );
 
   const [privateCollection, setPrivateCollection] = useState(0);
 
-  console.log('TESTT');
+  console.log("TESTT");
 
   const getUsersCollections = () => {
+    const userID = localStorage.getItem('userID');
     axios({
-      method: 'GET',
-      url: 'http://localhost:5000/get_users_collection',
+      method: "GET",
+      url: "http://localhost:5000/get_users_collection",
       params: {
+        user_id: userID,
         batch_size: 20,
       },
     }).then((response) => {
       console.log(response);
       if (response.data.result !== false) {
-        console.log('not false');
+        console.log("not false");
         setUsersCollections(response.data.result);
       }
     });
   };
 
   useEffect(() => {
-    console.log('GETTING USERS COLLECTION');
+    console.log("GETTING USERS COLLECTION");
     getUsersCollections();
   }, []);
 
@@ -83,8 +86,8 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
 
   const createCollections = () => {
     axios({
-      method: 'POST',
-      url: 'http://localhost:5000/create_collection',
+      method: "POST",
+      url: "http://localhost:5000/create_collection",
       params: {
         collection_name: enteredCollection,
         private: privateCollection,
@@ -100,8 +103,8 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
 
   const addPhotoToCollections = (col_id) => {
     axios({
-      method: 'POST',
-      url: 'http://localhost:5000/add_photo_to_collection',
+      method: "POST",
+      url: "http://localhost:5000/add_photo_to_collection",
       params: {
         collection_id: col_id,
         image_id: photoId,
@@ -136,7 +139,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
             color="primary"
             onClick={() => {
               setShowCreateCollectionButton(false);
-              console.log('create collection button clicked');
+              console.log("create collection button clicked");
             }}
           >
             Create a new collection
@@ -165,7 +168,7 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
                 <Checkbox
                   checked={privateCollection}
                   onChange={() => {
-                    if (privateCollection === true) {
+                    if (privateCollection == true) {
                       setPrivateCollection(0);
                     } else {
                       setPrivateCollection(1);
@@ -191,6 +194,6 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
         ) : null}
       </div>
     </React.Fragment>,
-    document.getElementById('portal')
+    document.getElementById("portal")
   );
 }

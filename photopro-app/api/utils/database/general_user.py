@@ -10,6 +10,7 @@ import os
 import base64
 import binascii
 import io
+from pathlib import Path
 
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
@@ -52,7 +53,7 @@ def login_user(email, password, conn, cur):
             return False, None
         elif length == 1:
             (id, first, last, email, password, last_active, username) = data[0]
-            print(id, first, last, email, password, last_active)
+            print(id, first, last, email, password, last_active, username)
             # return "Welcome back {} {}".format(first, last), id
             return True, id
         else:
@@ -60,7 +61,10 @@ def login_user(email, password, conn, cur):
             return False, None
     except psycopg2.Error as e:
         error = e.pgcode
+        print("================ LOGIN ERROR ====================")
+        print(e)
         print(error)
+        print("=================================================")
         return False, None
 
 
@@ -89,7 +93,9 @@ def change_password(email, password, new_password, conn, cur):
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(recipient)
+        cmd = "SELECT id, first, last, email, password, last_active, username FROM users WHERE email='{}'".format(
+            recipient
+        )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -485,6 +491,51 @@ def set_user_timestamp(user_id, conn, cur):
         conn.commit()
         return True
     except Exception as e:
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
+def download_image(image_id, conn, cur):
+    try:
+        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(image_id)
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        dl_location = str(os.path.join(Path.home(), "Downloads"))
+        print(dl_location)
+        for row in query_result:
+            id, file = row
+            filename = dl_location + "\\{}.jpeg".format(id)
+            print(filename)
+            photo = open(filename, "wb")
+            photo.write(file)
+            photo.close()
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+
+def get_username_by_id(user_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "SELECT email, username from users where id={}".format(int(user_id))
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        (email, username) = query_result[0]
+        print(email, username)
+        if username is None:
+            username = email.split("@")[0]
+        print("get_username_by_id", username)
+        return True
+    except Exception as e:
+        print(e)
         return False
     except psycopg2.Error as e:
         error = e.pgcode
