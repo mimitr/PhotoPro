@@ -48,7 +48,7 @@ def is_following(user_id, followee, conn, cur):
         conn.commit()
         (result) = cur.fetchall()[0]
         print("is_following result: ", bool(result[0]))
-        return bool([0])
+        return bool(result[0])
     except psycopg2.Error as e:
         print(e)
         # cur.execute('ROLLBACK TO SAVEPOINT save_point')
