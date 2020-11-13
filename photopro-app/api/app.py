@@ -22,6 +22,7 @@ from utils.database.general_user import (
     add_tags,
     get_tags,
     get_username_by_id,
+    get_post_title_by_id,
     remove_tag,
     delete_image_post,
     set_user_timestamp,
@@ -502,15 +503,23 @@ def api_fetch_notification():
                 user = get_username_by_id(int(sender), conn, cur)
                 if user == False:
                     user = sender
+
+                title = image_id
+                if image_id != None:
+                    title = get_post_title_by_id(int(image_id), conn, cur)
+                if title == False:
+                    title = image_id
+
                 processed.append(
                     {
                         "uploader": uploader,
                         "sender": user,
                         "type": notification,
                         "timestamp": timestamp,
-                        "image_id": image_id,
+                        "image_id": title,
                     }
                 )
+            conn.close()
             return jsonify({"result": processed})
     return jsonify({"result": False})
 
