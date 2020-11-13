@@ -1,8 +1,8 @@
 import ReactDom from 'react-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
-import './PostInfo.css';
-import Toolbar from '../../toolbar/toolbar';
+import './PhotoModal.css';
+import '../../../pages/PostInfo/PostInfo.css';
 import Likes from '../../likes/Likes';
 import Comments from '../../comments/Comments';
 import axios from 'axios';
@@ -11,10 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import BookmarkModal from '../BookmarkModal/BookmarkModal';
 
-export default function PhotoModal(
-  { openModal, setOpenModal, photoId },
-  props
-) {
+export default function PhotoModal(props) {
   const [comments, setComments] = useState([]);
   const [tags, setTags] = useState([]);
   const [commentUpdated, updateComments] = useState('');
@@ -22,6 +19,9 @@ export default function PhotoModal(
   const cancelAxiosRequest = useRef();
   const { imageID } = props;
   const history = useHistory();
+
+  console.log(props);
+  console.log(`MODAL IMAGEID = ${imageID}`);
 
   useEffect(() => {
     let mounted = true;
@@ -54,6 +54,7 @@ export default function PhotoModal(
           (c) => (cancelAxiosRequest.current = c)
         ),
       }).then((res) => {
+        console.log(res);
         if (res.data.result !== false && mounted) {
           setComments(res.data.result);
         } else if (mounted) {
@@ -65,7 +66,6 @@ export default function PhotoModal(
     fetchComments(imageID);
 
     return () => {
-      console.log('CLEAN UP - PostInfo');
       cancelAxiosRequest.current();
       mounted = false;
     };
@@ -95,100 +95,107 @@ export default function PhotoModal(
     setBookmarkModalIsOpen(true);
   };
 
-  if (!openModal) {
+  if (!props.openModal) {
     return null;
   } else {
     return ReactDom.createPortal(
       <React.Fragment>
         <div className="photo-overlay-styles" />
-        <div className="photo-styles"></div>
-
-        <div className="postWrapper">
-          <div className="postInfo">
-            <div className="username">
-              <Button
-                varient="outlined"
-                onClick={() => {
-                  history.push({
-                    pathname: `/profile/${props.uploader}`,
-                    state: { uploaderID: props.uploader },
-                  });
-                }}
-              >
-                @{props.uploader}
-              </Button>
-              <button className="btn">Follow</button>
-              <Likes
-                num_likes={props.num_likes}
-                image_id={props.imageID}
-                uploader_id={props.uploader}
-              />
-              <IconButton variant="contained" onClick={handleBookmarkClicked}>
-                <BookmarkIcon />
-              </IconButton>
-            </div>
-          </div>
-          <div className="postImage">
-            <img
-              src={`data:image/jpg;base64,${props.url}`}
-              alt={props.caption}
-            />
-            <div className="recImages-nested">
-              <h1 className="roboto"> Related Photos:</h1>
-              <div className="recImage"></div>
-              <div className="recImage"></div>
-              <div className="recImage"></div>
-            </div>
-          </div>
-          <div className="postFeed-nested">
-            <h1>{props.title}</h1>
-            <h2 className="roboto">{props.caption}</h2>
-            <div className="postTags">
-              <h2 className="roboto">{props.caption}</h2>
-              <h3>
-                Tags:{' '}
-                {tags.length < 1 ? 'this post has no tags to display' : null}
-              </h3>
-              <div className="flexbox-tags">
-                {tags.length > 0
-                  ? tags.map((tag, index) => {
-                      return (
-                        <Button key={index} variant="contained">
-                          #{tag}
-                        </Button>
-                      );
-                    })
-                  : null}
+        <div
+          className="photo-styles"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          onScroll={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <div className="postWrapper">
+            <div className="postInfo">
+              <div className="username">
+                <Button
+                  varient="outlined"
+                  onClick={() => {
+                    history.push({
+                      pathname: `/profile/${props.uploader}`,
+                      state: { uploaderID: props.uploader },
+                    });
+                  }}
+                >
+                  @{props.uploader}
+                </Button>
+                <button className="btn">Follow</button>
+                <Likes
+                  num_likes={props.num_likes}
+                  image_id={props.imageID}
+                  uploader_id={props.uploader}
+                />
+                <IconButton variant="contained" onClick={handleBookmarkClicked}>
+                  <BookmarkIcon />
+                </IconButton>
               </div>
             </div>
-            <div className="postPrice">
-              <h2 className="roboto">Price: ${props.price}</h2>
-              <Button variant="contained" onClick={handleBuyButton}>
-                Add to Cart
-              </Button>
-            </div>
-            <div className="postComments">
-              <h2 className="roboto">Comments:</h2>
-              {/* <Comments className="comments" /> */}
-              <Comments
-                image_id={props.imageID}
-                comments_list={comments}
-                updateComments={updateComments}
-                uploader_id={props.uploader}
+            <div className="postImage">
+              <img
+                src={`data:image/jpg;base64,${props.url}`}
+                alt={props.caption}
               />
+              <div className="recImages-nested">
+                <h1 className="roboto"> Related Photos:</h1>
+                <div className="recImage"></div>
+                <div className="recImage"></div>
+                <div className="recImage"></div>
+              </div>
+            </div>
+            <div className="postFeed-nested">
+              <h1>{props.title}</h1>
+              <h2 className="roboto">{props.caption}</h2>
+              <div className="postTags">
+                <h3>
+                  Tags:{' '}
+                  {tags.length < 1 ? 'this post has no tags to display' : null}
+                </h3>
+                <div className="flexbox-tags">
+                  {tags.length > 0
+                    ? tags.map((tag, index) => {
+                        return (
+                          <Button key={index} variant="contained">
+                            #{tag}
+                          </Button>
+                        );
+                      })
+                    : null}
+                </div>
+              </div>
+              <div className="postPrice">
+                <h2 className="roboto">Price: ${props.price}</h2>
+                <Button variant="contained" onClick={handleBuyButton}>
+                  Add to Cart
+                </Button>
+              </div>
+              <div className="postComments">
+                <h2 className="roboto">Comments:</h2>
+                {/* <Comments className="comments" /> */}
+                <Comments
+                  image_id={props.imageID}
+                  comments_list={comments}
+                  updateComments={updateComments}
+                  uploader_id={props.uploader}
+                />
+              </div>
             </div>
           </div>
+          {bookmarkModalIsOpen ? (
+            <BookmarkModal
+              openModal={true}
+              setOpenModal={setBookmarkModalIsOpen}
+              photoId={props.imageID}
+            ></BookmarkModal>
+          ) : null}
         </div>
-        {bookmarkModalIsOpen ? (
-          <BookmarkModal
-            openModal={true}
-            setOpenModal={setBookmarkModalIsOpen}
-            photoId={props.imageID}
-          ></BookmarkModal>
-        ) : null}
       </React.Fragment>,
 
-      document.getElementById('portal')
+      document.getElementById('postPortal')
     );
   }
 }

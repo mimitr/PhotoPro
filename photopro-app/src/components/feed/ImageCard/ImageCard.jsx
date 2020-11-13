@@ -152,129 +152,122 @@ class ImageCard extends Component {
   };
 
   render() {
+    document.body.style.overflow = this.state.openPostModal
+      ? 'hidden'
+      : 'unset';
+
     let component;
 
-    if (this.state.redirect) {
-      component = (
-        <Redirect
-          push
-          to={{
-            pathname: `${this.state.redirect}`,
-            state: {
-              id: `${this.props.image.id}`,
-              url: `${this.props.image.img}`,
-              caption: `${this.props.image.caption}`,
-              price: `${this.props.image.price}`,
-              title: `${this.props.image.title}`,
-              uploader: `${this.props.image.uploader}`,
-              num_likes: `${this.props.image.num_likes}`,
-            },
+    let uploaderID = String(this.props.image.uploader);
+    let userID = localStorage.getItem('userID');
+    let deleteButton =
+      uploaderID === userID ? (
+        <IconButton
+          variant="contained"
+          classes={{
+            root: `${this.props.classes.root} ${this.props.classes.delete}`,
           }}
-        />
+          onClick={this.handleDeleteClicked}
+        >
+          <DeleteIcon />
+        </IconButton>
+      ) : (
+        <Button></Button>
       );
-    } else {
-      let uploaderID = String(this.props.image.uploader);
-      let userID = localStorage.getItem('userID');
-      let deleteButton =
-        uploaderID === userID ? (
-          <IconButton
-            variant="contained"
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.delete}`,
-            }}
-            onClick={this.handleDeleteClicked}
-          >
-            <DeleteIcon />
-          </IconButton>
-        ) : (
-          <Button></Button>
-        );
 
-      let editButton =
-        uploaderID === userID ? (
-          <IconButton
-            variant="contained"
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.edit}`,
-            }}
-            onClick={this.handleEditClicked}
-          >
-            <EditIcon />
-          </IconButton>
-        ) : (
-          <Button></Button>
-        );
+    let editButton =
+      uploaderID === userID ? (
+        <IconButton
+          variant="contained"
+          classes={{
+            root: `${this.props.classes.root} ${this.props.classes.edit}`,
+          }}
+          onClick={this.handleEditClicked}
+        >
+          <EditIcon />
+        </IconButton>
+      ) : (
+        <Button></Button>
+      );
 
-      component = (
-        <React.Fragment>
-          {/* // <div style={{ gridRowEnd: `span ${this.state.spans}` }}> */}
-          <div
-            className={`image-container ${this.state.animateImages}`}
-            onClick={this.handleImageClicked}
-          >
-            <div className="icon-bar"></div>
+    component = (
+      <React.Fragment>
+        {/* // <div style={{ gridRowEnd: `span ${this.state.spans}` }}> */}
+        <div
+          className={`image-container ${this.state.animateImages}`}
+          onClick={this.handleImageClicked}
+        >
+          <div className="icon-bar"></div>
 
-            <img
-              className="image-size"
-              ref={this.imageRef}
-              src={`data:image/jpg;base64,${this.props.image.img}`}
-              alt={this.props.caption}
-            />
-
-            <IconButton
-              classes={{
-                root: `${this.props.classes.root} ${this.props.classes.like}`,
-              }}
-              variant="contained"
-              onClick={this.handleLikeClicked}
-            >
-              <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
-              <div className="num-likes">{this.props.image.num_likes}</div>
-            </IconButton>
-
-            {this.props.userLoggedIn ? (
-              <React.Fragment>
-                <IconButton
-                  classes={{
-                    root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
-                  }}
-                  variant="contained"
-                  onClick={this.handleBookmarkClicked}
-                >
-                  <BookmarkIcon />
-                </IconButton>
-
-                <IconButton
-                  classes={{
-                    root: `${this.props.classes.root} ${this.props.classes.buy}`,
-                  }}
-                  variant="contained"
-                  onClick={this.handleBuyClicked}
-                >
-                  <ShoppingCartIcon />
-                </IconButton>
-
-                {deleteButton}
-                {editButton}
-              </React.Fragment>
-            ) : null}
-          </div>
-          {/* // </div> */}
-
-          <PostModal
-            openModal={this.state.openPostModal}
-            setOpenModal={this.setOpenPostModal}
-            imageID={this.props.image.id}
-            url={this.props.image.img}
-            caption={this.props.image.caption}
-            price={this.props.image.price}
-            title={this.props.image.title}
-            uploader={this.props.image.uploader}
-            num_likes={this.props.image.num_likes}
+          <img
+            className="image-size"
+            ref={this.imageRef}
+            src={`data:image/jpg;base64,${this.props.image.img}`}
+            alt={this.props.caption}
           />
-        </React.Fragment>
-      );
-    }
+
+          <IconButton
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.like}`,
+            }}
+            variant="contained"
+            onClick={this.handleLikeClicked}
+          >
+            <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
+            <div className="num-likes">{this.props.image.num_likes}</div>
+          </IconButton>
+
+          {this.props.userLoggedIn ? (
+            <React.Fragment>
+              <IconButton
+                classes={{
+                  root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
+                }}
+                variant="contained"
+                onClick={this.handleBookmarkClicked}
+              >
+                <BookmarkIcon />
+              </IconButton>
+
+              <IconButton
+                classes={{
+                  root: `${this.props.classes.root} ${this.props.classes.buy}`,
+                }}
+                variant="contained"
+                onClick={this.handleBuyClicked}
+              >
+                <ShoppingCartIcon />
+              </IconButton>
+
+              {deleteButton}
+              {editButton}
+            </React.Fragment>
+          ) : null}
+        </div>
+        {/* // </div> */}
+        {this.state.openPostModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openPostModal: false });
+            }}
+          >
+            <PostModal
+              openModal={this.state.openPostModal}
+              setOpenModal={this.setOpenPostModal}
+              imageID={this.props.image.id}
+              url={this.props.image.img}
+              caption={this.props.image.caption}
+              price={this.props.image.price}
+              title={this.props.image.title}
+              uploader={this.props.image.uploader}
+              num_likes={this.props.image.num_likes}
+            />
+          </div>
+        ) : null}
+      </React.Fragment>
+    );
+
     return <React.Fragment>{component}</React.Fragment>;
   }
 }
