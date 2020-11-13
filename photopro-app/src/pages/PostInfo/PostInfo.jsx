@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import './PostInfo.css';
 import Toolbar from '../../components/toolbar/toolbar';
+import FollowButton from './follow/followButton';
 import Likes from '../../components/likes/Likes';
 import Comments from '../../components/comments/Comments';
 import axios from 'axios';
@@ -62,6 +63,7 @@ const PostInfo = (props) => {
         fetchTags(id);
       });
     };
+
     fetchComments(imageID);
 
     return () => {
@@ -112,15 +114,19 @@ const PostInfo = (props) => {
             >
               @{props.location.state.uploader}
             </Button>
-            <button className="btn">Follow</button>
+            {localStorage.getItem('userLoggedIn') ? (
+              <React.Fragment>
+                <FollowButton uploader={props.location.state.uploader} />
+                <IconButton variant="contained" onClick={handleBookmarkClicked}>
+                  <BookmarkIcon />
+                </IconButton>
+              </React.Fragment>
+            ) : null}
             <Likes
               num_likes={props.location.state.num_likes}
               image_id={props.location.state.id}
               uploader_id={props.location.state.uploader}
             />
-            <IconButton variant="contained" onClick={handleBookmarkClicked}>
-              <BookmarkIcon />
-            </IconButton>
           </div>
         </div>
         <div className="postImage">
@@ -139,7 +145,6 @@ const PostInfo = (props) => {
           <h1>{props.location.state.title}</h1>
           <h2 className="roboto">{props.location.state.caption}</h2>
           <div className="postTags">
-            <h2 className="roboto">{props.location.state.caption}</h2>
             <h3>
               Tags:{' '}
               {tags.length < 1 ? 'this post has no tags to display' : null}
@@ -164,7 +169,6 @@ const PostInfo = (props) => {
           </div>
           <div className="postComments">
             <h2 className="roboto">Comments:</h2>
-            {/* <Comments className="comments" /> */}
             <Comments
               image_id={props.location.state.id}
               comments_list={comments}

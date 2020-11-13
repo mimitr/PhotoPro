@@ -930,6 +930,7 @@ def api_is_following():
     conn, cur = get_conn_and_cur()
     result = is_following(int(user_id), int(following), conn, cur)
     conn.close()
+    return jsonify({"result": result})
 
 
 @app.route("/add_purchase", methods=["GET", "POST"])
