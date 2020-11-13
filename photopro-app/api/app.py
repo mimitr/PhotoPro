@@ -495,13 +495,17 @@ def api_fetch_notification():
         conn.close()
         if result != False:
             processed = []
+            conn, cur = get_conn_and_cur()
             for tup in result:
                 print(tup)
                 uploader, sender, notification, timestamp, image_id = tup
+                user = get_username_by_id(int(sender), conn, cur)
+                if user == False:
+                    user = sender
                 processed.append(
                     {
                         "uploader": uploader,
-                        "sender": sender,
+                        "sender": user,
                         "type": notification,
                         "timestamp": timestamp,
                         "image_id": image_id,
@@ -1071,5 +1075,6 @@ def api_get_user_username():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = get_username_by_id(int(uid), conn, cur,)
+    conn.close()
     return jsonify({"result": result})
 

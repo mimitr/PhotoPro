@@ -5,7 +5,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 
-const ITEM_HEIGHT = 20;
+const ITEM_HEIGHT = 60;
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -78,16 +78,20 @@ export default function Notifications() {
           notifications.map((notification, index) => {
             let notifMessage = null;
             if (notification.type === 'like') {
-              notifMessage = `${notification.sender} liked your post - '${notification.image_id}'`;
+              notifMessage = `@${notification.sender} liked your post - '${notification.image_id}'`;
             } else if (notification.type === 'comment') {
-              notifMessage = `${notification.sender} commented on your post - '${notification.image_id}'`;
+              notifMessage = `@${notification.sender} commented on your post - '${notification.image_id}'`;
             } else {
-              notifMessage = `${notification.sender} started following you`;
+              notifMessage = `@${notification.sender} started following you`;
             }
             if (index === 0) {
               return (
                 <div key={index}>
-                  <MenuItem key={index} onClick={handleClearNotifications}>
+                  <MenuItem
+                    key={index}
+                    onClick={handleClearNotifications}
+                    style={{ fontWeight: 'bold' }}
+                  >
                     Clear Notifications
                   </MenuItem>
                   <MenuItem key={index + 1} onClick={handleClose}>

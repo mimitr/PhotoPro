@@ -533,7 +533,7 @@ def get_username_by_id(user_id, conn, cur):
         if username is None:
             username = email.split("@")[0]
         print("get_username_by_id", username)
-        return True
+        return username
     except Exception as e:
         print(e)
         return False
