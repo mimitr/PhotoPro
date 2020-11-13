@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import './PostInfo.css';
 import Toolbar from '../../components/toolbar/toolbar';
 import Likes from '../../components/likes/Likes';
@@ -7,7 +8,6 @@ import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-
 import BookmarkModal from '../../components/modal/BookmarkModal';
 
 const PostInfo = (props) => {
