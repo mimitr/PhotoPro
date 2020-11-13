@@ -472,7 +472,7 @@ def api_get_likers_of_image():
 @app.route("/send_notification")
 def api_send_notification():
     uploader_id = request.args.get("uploader_id")
-    notif_type = request.args.get("notification")  # I DUNNO WHAT TO PUT HERE
+    notif_type = request.args.get("notification")
     image_id = request.args.get("image_id")
     sender_id = app.user_id  # assumes that logged in user comments or likes image
 
