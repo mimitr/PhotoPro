@@ -1,26 +1,28 @@
-import React, { useState } from "react";
-import "./toolbar.css";
-import { useHistory } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { makeStyles } from "@material-ui/core/styles";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import React, { useState } from 'react';
+import axios from 'axios';
+import './toolbar.css';
+import { useHistory } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles } from '@material-ui/core/styles';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Notifications from './notifications/notifications';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
-    border: "3px solid red",
+    border: '3px solid red',
   },
   button: {
-    color: "white",
+    color: 'white',
   },
 }));
 
 function Toolbar() {
   const history = useHistory();
   const classes = useStyles();
-  const loggedIn = localStorage.getItem("userLoggedIn");
+  const loggedIn = localStorage.getItem('userLoggedIn');
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -33,52 +35,62 @@ function Toolbar() {
   };
 
   const handleSignInClicked = () => {
-    history.push("/login");
+    history.push('/login');
   };
 
   const handleSignUpClicked = () => {
-    history.push("/signup");
+    history.push('/signup');
   };
 
   const handleProfileClicked = function () {
-    history.push("/profile/1");
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/profile/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleLogoutClicked = () => {
     localStorage.clear();
-    history.push("/");
+    history.push('/');
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
   };
 
   const handleDiscoveryClicked = () => {
-    history.push("/");
+    history.push('/');
   };
 
   const handleUploadClicked = () => {
-    history.push("/uploadphoto");
+    history.push('/uploadphoto');
   };
 
   const handleChangePassClicked = () => {
-    history.push("/changepassword");
+    history.push('/changepassword');
   };
 
   const handleCollectionsClicked = () => {
-    history.push("/collections");
+    const userID = localStorage.getItem('userID');
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/collections/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleCartClicked = () => {
-    history.push("/shopping-cart");
+    history.push('/shopping-cart');
   };
 
   const handleMyPurchasesClicked = () => {
-    history.push("/my-purchases");
+    history.push('/my-purchases');
   };
 
   let buttons;
-  if (loggedIn === "true") {
+  if (loggedIn === 'true') {
     buttons = (
       <React.Fragment>
-        <div className={"flex-container-buttons-2"}>
+        <div className={'flex-container-buttons-2'}>
           <Button
             className={classes.button}
             size="small"
@@ -124,6 +136,7 @@ function Toolbar() {
             </MenuItem>
             <MenuItem onClick={handleLogoutClicked}>Logout</MenuItem>
           </Menu>
+          <Notifications />
         </div>
         <div className="toolbar-left">
           <Button
@@ -143,10 +156,10 @@ function Toolbar() {
       <React.Fragment>
         <div className="toolbar-left-placeholder"></div>
         <div className="flex-container-buttons-1">
-          <Button style={{ color: "white" }} onClick={handleSignInClicked}>
+          <Button style={{ color: 'white' }} onClick={handleSignInClicked}>
             Sign in
           </Button>
-          <Button style={{ color: "white" }} onClick={handleSignUpClicked}>
+          <Button style={{ color: 'white' }} onClick={handleSignUpClicked}>
             Getting Started
           </Button>
         </div>

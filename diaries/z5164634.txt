@@ -78,6 +78,7 @@ UPDATE
 I modified the discovery api call to now execute a search by tag first, then search by term if the first search doesn't return enough
 results.
 
+<<<<<<< HEAD
 ===== Week 9 =====
 
 10/11/2020
@@ -85,3 +86,19 @@ I created a function 'download_image', which should download an image direct fro
 and create an api call for this function.
 UPDATE
 Have tested and revised the function, now requires API call
+=======
+7/11/2020
+After the demo this week, I modified the api call a bit more, since some errors with the code occurred prior to the demo. Some of this
+code is messy and redundant however, and I need to refactor some of it.
+
+===== Week 9 =====
+
+12/11/2020
+I tweaked the comment notifications view and function to also return a reply_id, in order to check if the comment returned is a reply
+to another comment.
+UPDATE
+I improved and updated the watermark function to now use a custom font as well as scale the font size based on the image dimensions
+UPDATE
+At the suggestion of Christian, I did a complete overhaul of the notifications functions, which now pull from a table which stores
+tuples representing different types of notifications
+>>>>>>> master
