@@ -5,10 +5,16 @@ from datetime import datetime
 def send_notification(uploader, sender, notification, image, conn, cur):
     cur.execute("SAVEPOINT save_point")
     try:
-        cmd = (
-            "INSERT INTO notifications (uploader, sender, notification, image_id)"
-            "VALUES({}, {}, '{}', {})".format(uploader, sender, notification, image)
-        )
+        if image is not None:
+            cmd = (
+                "INSERT INTO notifications (uploader, sender, notification, image_id)"
+                "VALUES({}, {}, '{}', {})".format(uploader, sender, notification, image)
+            )
+        else:
+            cmd = (
+                "INSERT INTO notifications (uploader, sender, notification)"
+                "VALUES({}, {}, '{}')".format(uploader, sender, notification)
+            )
         cur.execute(cmd)
         conn.commit()
         return True
