@@ -525,7 +525,7 @@ def get_username_by_id(user_id, conn, cur):
         if username is None:
             username = email.split("@")[0]
         print("get_username_by_id", username)
-        return True
+        return username
     except Exception as e:
         print(e)
         return False
@@ -533,3 +533,27 @@ def get_username_by_id(user_id, conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+
+def get_post_title_by_id(image_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "SELECT title from images WHERE image_id={}".format(int(image_id))
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        title = query_result[0]
+        print(title)
+        if title is None:
+            title = "no title on this image"
+        print("get_post_title_by_id", title)
+        return title
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
