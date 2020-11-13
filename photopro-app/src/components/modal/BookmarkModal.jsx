@@ -26,10 +26,12 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
   console.log("TESTT");
 
   const getUsersCollections = () => {
+    const userID = localStorage.getItem('userID');
     axios({
       method: "GET",
       url: "http://localhost:5000/get_users_collection",
       params: {
+        user_id: userID,
         batch_size: 20,
       },
     }).then((response) => {

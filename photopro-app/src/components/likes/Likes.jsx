@@ -62,6 +62,19 @@ function Likes(props) {
     }
   };
 
+  const sendLikeNotification = () => {
+    axios({
+      url: 'http://localhost:5000/send_notification',
+      params: {
+        uploader_id: props.uploader_id,
+        notification: 'like',
+        image_id: props.image_id,
+      },
+    }).then((response) => {
+      console.log(response);
+    });
+  };
+
   const post_likes = (img_id) => {
     axios({
       method: 'GET',
@@ -74,6 +87,7 @@ function Likes(props) {
       if (response.data.result) {
         set_num_likes((prevState) => parseInt(prevState) + 1);
         setPostLiked(true);
+        sendLikeNotification();
       }
 
       return response.data.result;

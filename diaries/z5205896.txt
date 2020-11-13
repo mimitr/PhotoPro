@@ -30,3 +30,12 @@ Have been working on integrating the back-end functionality of post deletion and
 Week 7
 
 Currently working on the infinite scrolling feed so far with a few attempts that didn't work. The back-end needs to be modified in a way that allowed for frequent querying based on scroll activity while also ensuring it returns the NEXT batch of images rather than returning it from the start resulting in duplicates. 
+
+Week 8 
+
+Infinite scrolling has been successfully implemented but has unfortunately introduced some new bugs due to the frequent api requests occuring. There are multiple ways to crash the app if you try to do actions too quickly and there should be a stress testing session to find all of these. The paging for this infinite query system is done automatically on the back-end, and all that needs to be done is request the same api again. Additionally have updated the overlay on the images do something more readable by moving the icons to the bottom of the image and making sure only 4 images per row are displayed. 
+
+Week 9 
+
+A lot of bugs have been fixed this week. I did some stress testing on the search feed, image fetching and post detail fetching and found that the primary issue for alot of our bugs and crashes is due to api requests occuring to closely to each other. Normally this should not be an issue but I realised we use the same global conn variable to connect to the database for every single api request. This means if two api requests occur simultaneously and they both try to modify this conn variable at the same time it will cause incorrect results to be returned and often crashes. To resolve this we plan on making every connection unique by calling a function to establish it before the api request is made but for now I have just added additional connections such as connImages to be used by frequently accessed api calls. So far this has fixed
+alot of bugs and the website is alot more stable now as a result. Furthermore have implemented collections and the ability to visit user profile pages and being able to see their public collections as well as a simple notification system. Everything should be finalised this week but some time needs to be dedicated to styling and improving the UI over this weekend. 
