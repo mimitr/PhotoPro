@@ -1,18 +1,19 @@
-import React, { Component } from "react";
-import axios from "axios";
-import "./ImageCard.css";
-import { Redirect } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import { withStyles } from "@material-ui/core";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import BookmarkIcon from "@material-ui/icons/Bookmark";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import React, { Component } from 'react';
+import axios from 'axios';
+import './ImageCard.css';
+import { Redirect } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/core';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import PostModal from '../../Modals/PostModal/PhotoModal';
 
 const deletePostRequest = async function (imageID) {
-  const response = await axios.get("http://localhost:5000/delete_image_post", {
+  const response = await axios.get('http://localhost:5000/delete_image_post', {
     params: { image_id: String(imageID) }, //user_id: 1
   });
 
@@ -21,8 +22,8 @@ const deletePostRequest = async function (imageID) {
 
 const apiAddPurchase = (imageID) => {
   axios({
-    method: "POST",
-    url: "http://localhost:5000/add_purchase",
+    method: 'POST',
+    url: 'http://localhost:5000/add_purchase',
     params: {
       save_for_later: 0,
       purchased: 0,
@@ -38,46 +39,46 @@ const apiAddPurchase = (imageID) => {
 // matrial-ui component style override
 const styles = {
   root: {
-    position: "absolute",
-    bottom: "0%",
-    left: "50%",
-    color: "rgba(255, 255, 255,1)",
-    height: "15%",
-    width: "15%",
+    position: 'absolute',
+    bottom: '0%',
+    left: '50%',
+    color: 'rgba(255, 255, 255,1)',
+    height: '15%',
+    width: '15%',
   },
   iconSize: {
-    width: "60%",
-    height: "60%",
+    width: '60%',
+    height: '60%',
   },
   likeSize: {
-    width: "80%",
-    height: "80%",
+    width: '80%',
+    height: '80%',
   },
   like: {
-    left: "5%",
+    left: '5%',
   },
   bookmark: {
-    left: "60%",
+    left: '60%',
   },
   buy: {
-    left: "80%",
+    left: '80%',
   },
   delete: {
-    left: "4%",
-    top: "10%",
-    width: "16%",
-    height: "20%",
-    "&:hover": {
-      backgroundColor: "rgba(180, 65, 65, 0.82)",
+    left: '4%',
+    top: '10%',
+    width: '16%',
+    height: '20%',
+    '&:hover': {
+      backgroundColor: 'rgba(180, 65, 65, 0.82)',
     },
   },
   edit: {
-    left: "82%",
-    top: "10%",
-    width: "14%",
-    height: "18%",
-    "&:hover": {
-      backgroundColor: "rgba(6, 149, 193, 0.7)",
+    left: '82%',
+    top: '10%',
+    width: '14%',
+    height: '18%',
+    '&:hover': {
+      backgroundColor: 'rgba(6, 149, 193, 0.7)',
     },
   },
 };
@@ -89,18 +90,19 @@ class ImageCard extends Component {
     // CreateRef is used to access the DOM
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
+    this.setOpenPostModal = this.setOpenPostModal.bind(this);
     this.state = {
-      redirect: null,
+      openPostModal: false,
       spans: 0,
-      animateImages: "",
+      animateImages: '',
     };
   }
 
   componentDidMount() {
-    this.imageRef.current.addEventListener("load", this.setSpans);
+    this.imageRef.current.addEventListener('load', this.setSpans);
     setTimeout(() => {
       this.setState({
-        animateImages: "image-container-animate",
+        animateImages: 'image-container-animate',
       });
     }, 100);
   }
@@ -113,8 +115,13 @@ class ImageCard extends Component {
     }
   };
 
+  setOpenPostModal = (newState) => {
+    this.setState({ openPostModal: newState });
+  };
+
   handleImageClicked = (e) => {
-    this.setState({ redirect: `/post-${this.props.image.id}` });
+    // this.setState({ redirect: `/post-${this.props.image.id}` });
+    this.setState({ openPostModal: true });
   };
 
   handleLikeClicked = (e) => {
@@ -167,7 +174,7 @@ class ImageCard extends Component {
       );
     } else {
       let uploaderID = String(this.props.image.uploader);
-      let userID = localStorage.getItem("userID");
+      let userID = localStorage.getItem('userID');
       let deleteButton =
         uploaderID === userID ? (
           <IconButton
@@ -199,59 +206,73 @@ class ImageCard extends Component {
         );
 
       component = (
-        // <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
-        <div
-          className={`image-container ${this.state.animateImages}`}
-          onClick={this.handleImageClicked}
-        >
-          <div className="icon-bar"></div>
-
-          <img
-            className="image-size"
-            ref={this.imageRef}
-            src={`data:image/jpg;base64,${this.props.image.img}`}
-            alt={this.props.caption}
-          />
-
-          <IconButton
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.like}`,
-            }}
-            variant="contained"
-            onClick={this.handleLikeClicked}
+        <React.Fragment>
+          {/* // <div style={{ gridRowEnd: `span ${this.state.spans}` }}> */}
+          <div
+            className={`image-container ${this.state.animateImages}`}
+            onClick={this.handleImageClicked}
           >
-            <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
-            <div className="num-likes">{this.props.image.num_likes}</div>
-          </IconButton>
+            <div className="icon-bar"></div>
 
-          {this.props.userLoggedIn ? (
-            <React.Fragment>
-              <IconButton
-                classes={{
-                  root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
-                }}
-                variant="contained"
-                onClick={this.handleBookmarkClicked}
-              >
-                <BookmarkIcon />
-              </IconButton>
+            <img
+              className="image-size"
+              ref={this.imageRef}
+              src={`data:image/jpg;base64,${this.props.image.img}`}
+              alt={this.props.caption}
+            />
 
-              <IconButton
-                classes={{
-                  root: `${this.props.classes.root} ${this.props.classes.buy}`,
-                }}
-                variant="contained"
-                onClick={this.handleBuyClicked}
-              >
-                <ShoppingCartIcon />
-              </IconButton>
+            <IconButton
+              classes={{
+                root: `${this.props.classes.root} ${this.props.classes.like}`,
+              }}
+              variant="contained"
+              onClick={this.handleLikeClicked}
+            >
+              <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
+              <div className="num-likes">{this.props.image.num_likes}</div>
+            </IconButton>
 
-              {deleteButton}
-              {editButton}
-            </React.Fragment>
-          ) : null}
-        </div>
-        // </div>
+            {this.props.userLoggedIn ? (
+              <React.Fragment>
+                <IconButton
+                  classes={{
+                    root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
+                  }}
+                  variant="contained"
+                  onClick={this.handleBookmarkClicked}
+                >
+                  <BookmarkIcon />
+                </IconButton>
+
+                <IconButton
+                  classes={{
+                    root: `${this.props.classes.root} ${this.props.classes.buy}`,
+                  }}
+                  variant="contained"
+                  onClick={this.handleBuyClicked}
+                >
+                  <ShoppingCartIcon />
+                </IconButton>
+
+                {deleteButton}
+                {editButton}
+              </React.Fragment>
+            ) : null}
+          </div>
+          {/* // </div> */}
+
+          <PostModal
+            openModal={this.state.openPostModal}
+            setOpenModal={this.setOpenPostModal}
+            imageID={this.props.image.id}
+            url={this.props.image.img}
+            caption={this.props.image.caption}
+            price={this.props.image.price}
+            title={this.props.image.title}
+            uploader={this.props.image.uploader}
+            num_likes={this.props.image.num_likes}
+          />
+        </React.Fragment>
       );
     }
     return <React.Fragment>{component}</React.Fragment>;

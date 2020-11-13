@@ -8,7 +8,7 @@ import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import BookmarkModal from '../../components/modal/BookmarkModal';
+import BookmarkModal from '../../components/Modals/BookmarkModal/BookmarkModal';
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);

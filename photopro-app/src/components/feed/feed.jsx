@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import "./feed.css";
-import axios from "axios";
-import ImageCard from "./ImageCard/ImageCard";
-import BookmarkModal from "../modal/BookmarkModal";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import './feed.css';
+import axios from 'axios';
+import ImageCard from './ImageCard/ImageCard';
+import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
 
 const Feed = (props) => {
   const [imgs, setImgs] = useState([]);
@@ -11,7 +11,7 @@ const Feed = (props) => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const userLoggedIn = localStorage.getItem("userLoggedIn");
+  const userLoggedIn = localStorage.getItem('userLoggedIn');
   const fetchIsCancelled = useRef(false);
   const cancelAxiosRequest = useRef();
   const observer = useRef();
@@ -40,7 +40,7 @@ const Feed = (props) => {
     }, 150);
 
     return () => {
-      console.log("CLEAN UP - Feed");
+      console.log('CLEAN UP - Feed');
 
       if (cancelAxiosRequest.current != null) cancelAxiosRequest.current();
 
@@ -52,8 +52,8 @@ const Feed = (props) => {
 
   const fetchImages = (term) => {
     axios({
-      method: "GET",
-      url: "http://localhost:5000/discovery",
+      method: 'GET',
+      url: 'http://localhost:5000/discovery',
       params: { query: term, batch_size: 10 }, //user_id: 1
       cancelToken: new axios.CancelToken(
         (c) => (cancelAxiosRequest.current = c)
@@ -68,7 +68,7 @@ const Feed = (props) => {
             return [...prevImgs, ...res.data.result];
           });
         } else if (!fetchIsCancelled.current) {
-          console.log("no more images to return");
+          console.log('no more images to return');
           setLoading(false);
           setHasMore(false);
         }
@@ -109,10 +109,10 @@ const Feed = (props) => {
                   key={index}
                   ref={lastImageRef}
                   style={{
-                    position: "relative",
-                    bottom: "200px",
+                    position: 'relative',
+                    bottom: '200px',
                     // border: '3px solid red',
-                    height: "0%",
+                    height: '0%',
                   }}
                 ></div>
               </React.Fragment>
@@ -130,9 +130,9 @@ const Feed = (props) => {
           }
         })}
       </div>
-      <h2 style={{ textAlign: "center" }}>{loading && "Loading..."}</h2>
-      <h2 style={{ textAlign: "center" }}>
-        {!hasMore && "No more images to display"}
+      <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
+      <h2 style={{ textAlign: 'center' }}>
+        {!hasMore && 'No more images to display'}
       </h2>
 
       {modalIsOpen ? (
