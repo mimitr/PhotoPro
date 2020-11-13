@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./CheckoutPage.css";
 import ToolBar from "../../components/toolbar/toolbar";
 import TextField from "@material-ui/core/TextField";
@@ -6,6 +6,12 @@ import Button from "@material-ui/core/Button";
 import axios from "axios";
 import CheckoutItem from "./checkoutItem/CheckoutItem";
 import { useHistory } from "react-router-dom";
+
+import CardName from "./textfields/CardName";
+import CardNum from "./textfields/CardNum";
+import CardMonth from "./textfields/CardMonth";
+import CardYear from "./textfields/CardYear";
+import CardCvv from "./textfields/CardCvv";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -20,11 +26,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CheckoutPage(props) {
   const [shoppingCartItems, setShoppingCartItems] = useState([]);
-  const [detailsValidated, setDetailsValidated] = useState(true);
+
+  const [errorText, setErrorText] = useState("");
+  const [errorValue, setErrorValue] = useState(false);
 
   const classes = useStyles();
 
   const history = useHistory();
+  const cardNumRef = useRef(null);
 
   const getUserNotPurchasedItems = () => {
     axios({
@@ -63,13 +72,13 @@ export default function CheckoutPage(props) {
   };
 
   const handlePlaceOrderButton = () => {
-    if (detailsValidated) {
-      shoppingCartItems.map((item) => {
-        console.log(item.image_id);
+    console.log(cardNumRef.current.errorValue);
 
-        updatePurchase(item.image_id);
-      });
-    }
+    shoppingCartItems.map((item) => {
+      console.log(item.image_id);
+
+      updatePurchase(item.image_id);
+    });
   };
 
   const handleEditButton = () => {
@@ -99,51 +108,12 @@ export default function CheckoutPage(props) {
             <h2>Fill payment info:</h2>
             <form className={classes.root} noValidate autoComplete="off">
               <div className="cart-details-grid">
-                <h3>CARD NUMBER</h3>
-                <TextField
-                  required
-                  id="outlined-required"
-                  label="Required"
-                  defaultValue="1234567890"
-                  variant="outlined"
-                />
-                <h3>NAME ON CARD</h3>
-                <TextField
-                  required
-                  id="outlined-required"
-                  label="Required"
-                  defaultValue="Mushi Iroh"
-                  variant="outlined"
-                />
-                <h3>EXPIRY DATE</h3>
-                <TextField
-                  required
-                  id="outlined-number"
-                  label="Month"
-                  type="number"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  variant="outlined"
-                />
-                <TextField
-                  required
-                  id="outlined-number"
-                  label="Year"
-                  type="number"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  variant="outlined"
-                />
-                <h3>CVV</h3>
-                <TextField
-                  required
-                  id="outlined-required"
-                  label="Required"
-                  defaultValue="123"
-                  variant="outlined"
-                />
+                <CardNum ref={cardNumRef} />
+                <CardName />
+                <CardMonth />
+                <CardYear />
+                <CardCvv />
+
                 <Button
                   variant="contained"
                   color="primary"
