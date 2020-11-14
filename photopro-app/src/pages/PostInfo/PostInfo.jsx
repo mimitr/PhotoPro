@@ -1,19 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useHistory } from "react-router-dom";
-import "./PostInfo.css";
-import Toolbar from "../../components/toolbar/toolbar";
-import Likes from "../../components/likes/Likes";
-import Comments from "../../components/comments/Comments";
-import axios from "axios";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import BookmarkIcon from "@material-ui/icons/Bookmark";
-import BookmarkModal from "../../components/modal/BookmarkModal";
+import React, { useState, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
+import './PostInfo.css';
+import Toolbar from '../../components/toolbar/toolbar';
+import FollowButton from './follow/followButton';
+import Likes from '../../components/likes/Likes';
+import Comments from '../../components/comments/Comments';
+import axios from 'axios';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
+import BookmarkModal from '../../components/modal/BookmarkModal';
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
   const [tags, setTags] = useState([]);
-  const [commentUpdated, updateComments] = useState("");
+  const [commentUpdated, updateComments] = useState('');
   const [bookmarkModalIsOpen, setBookmarkModalIsOpen] = useState(false);
   const cancelAxiosRequest = useRef();
   const {
@@ -28,8 +29,8 @@ const PostInfo = (props) => {
 
     const fetchTags = (id) => {
       axios({
-        method: "GET",
-        url: "http://localhost:5000/get_tags",
+        method: 'GET',
+        url: 'http://localhost:5000/get_tags',
         params: { image_id: id },
         cancelToken: new axios.CancelToken(
           (c) => (cancelAxiosRequest.current = c)
@@ -47,8 +48,8 @@ const PostInfo = (props) => {
 
     const fetchComments = (id) => {
       axios({
-        method: "GET",
-        url: "http://localhost:5000/get_comments_to_image",
+        method: 'GET',
+        url: 'http://localhost:5000/get_comments_to_image',
         params: { image_id: id, batch_size: 20 },
         cancelToken: new axios.CancelToken(
           (c) => (cancelAxiosRequest.current = c)
@@ -62,10 +63,11 @@ const PostInfo = (props) => {
         fetchTags(id);
       });
     };
+
     fetchComments(imageID);
 
     return () => {
-      console.log("CLEAN UP - PostInfo");
+      console.log('CLEAN UP - PostInfo');
       cancelAxiosRequest.current();
       mounted = false;
     };
@@ -73,8 +75,8 @@ const PostInfo = (props) => {
 
   const apiAddPurchase = (imageID) => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/add_purchase",
+      method: 'POST',
+      url: 'http://localhost:5000/add_purchase',
       params: {
         save_for_later: 0,
         purchased: 0,
@@ -112,15 +114,22 @@ const PostInfo = (props) => {
             >
               @{props.location.state.uploader}
             </Button>
-            <button className="btn">Follow</button>
+            {localStorage.getItem('userLoggedIn') ? (
+              <React.Fragment>
+                {localStorage.getItem('userID') !==
+                props.location.state.uploader ? (
+                  <FollowButton uploader={props.location.state.uploader} />
+                ) : null}
+                <IconButton variant="contained" onClick={handleBookmarkClicked}>
+                  <BookmarkIcon />
+                </IconButton>
+              </React.Fragment>
+            ) : null}
             <Likes
               num_likes={props.location.state.num_likes}
               image_id={props.location.state.id}
               uploader_id={props.location.state.uploader}
             />
-            <IconButton variant="contained" onClick={handleBookmarkClicked}>
-              <BookmarkIcon />
-            </IconButton>
           </div>
         </div>
         <div className="postImage">
@@ -143,8 +152,8 @@ const PostInfo = (props) => {
           <h2 className="roboto">{props.location.state.caption}</h2>
           <div className="postTags">
             <h3>
-              Tags:{" "}
-              {tags.length < 1 ? "this post has no tags to display" : null}
+              Tags:{' '}
+              {tags.length < 1 ? 'this post has no tags to display' : null}
             </h3>
             <div className="flexbox-tags">
               {tags.length > 0
@@ -166,7 +175,6 @@ const PostInfo = (props) => {
           </div>
           <div className="postComments">
             <h2 className="roboto">Comments:</h2>
-            {/* <Comments className="comments" /> */}
             <Comments
               image_id={props.location.state.id}
               comments_list={comments}
