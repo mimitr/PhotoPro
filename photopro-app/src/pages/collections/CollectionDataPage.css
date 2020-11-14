@@ -2,3 +2,7 @@
   text-align: center;
   margin: 100px auto;
 }
+
+.collection-info {
+  border: #333 1px solid;
+}
