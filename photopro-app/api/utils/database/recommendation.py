@@ -66,20 +66,21 @@ def update_recommendation_term(user_id, term, value, coefficient, conn, cur):
         return False
 
 
-def get_recommendation_photos(user_id, conn, cur):
+def get_recommendation_photos(user_id, score, batch_size, conn, cur):
     try:
-        cmd = "select image_id, title FROM images WHERE \
-                lower(ARRAY['Ocean','panda']::text)::text[] && \
-                lower(tags::text)::text[] AND uploader!={}".format(int(user_id))
-        # "select image_id, count(*) from images, unnest(array['Ocean', 'Panda'])\
-        #  u where tags @> array[u] group by image_id ORDER BY 2 DESC, 1;"
-        # select images.image_id, AVG(recommendations.value) as score from images JOIN auto_tags ON images.image_i
-        # d=auto_tags.image_id JOIN recommendations ON auto_tags.term=recommendations.term WHERE recommendations.user_id=1 GR
-        # OUP BY images.image_id ORDER BY score DESC;
-
-        #select images.image_id,caption, uploader, title, price, created_at, tags,  num_likes, SUM(recommendation
-# s.value) as score from num_likes_per_image RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id JOIN a
-# commendations.user_id=1 GROUP BY images.image_id,num_likes ORDER BY score DESC,created_at DESC;at
+        # cmd = "select images.image_id,caption, uploader, file, title, price, created_at, tags,  num_likes,SUM(recommendations.value) as score\
+        #         from num_likes_per_image RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id \
+        #         JOIN auto_tags ON images.image_id=auto_tags.image_id \
+        #         JOIN recommendations ON auto_tags.term=recommendations.term WHERE recommendations.user_id=1 \
+        #         GROUP BY images.image_id,num_likes ORDER BY score DESC,created_at DESC".format(user_id)
+        if score is not None:
+            cmd = "select image_id, caption, uploader, file, title, price, created_at, tags, num_likes, score from \
+                    get_recommendation_scores WHERE user_id={} AND uploader!={} AND score < {} LIMIT {}"\
+                        .format(int(user_id), int(user_id), float(score), int(batch_size))
+        else:
+            cmd = "select image_id, caption, uploader, file, title, price, created_at, tags, num_likes, score from \
+                                get_recommendation_scores WHERE user_id={} AND uploader!={} LIMIT {}"\
+                        .format(int(user_id),int(user_id), int(batch_size))
 
         cur.execute(cmd)
         conn.commit()

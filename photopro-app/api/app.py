@@ -60,7 +60,8 @@ from utils.database.recommendation import (
     get_terms_and_values_for_image,
     update_recommendation_term,
     get_related,
-    get_related_images
+    get_related_images,
+    get_recommendation_photos
 )
 from utils.database.collections import (
     create_collection,
@@ -1119,6 +1120,7 @@ def api_update_search_recommendation():
         return jsonify({"result": True})
     return jsonify({"result": False})
 
+
 @app.route("/update_comment_recommendation", methods=["GET", "POST"])
 def api_update_comment_recommendation():
     user_id = app.user_id
@@ -1126,9 +1128,9 @@ def api_update_comment_recommendation():
     print('update_comment_recommendation: ', user_id, image_id)
     if image_id is not None and app.user_id is not None:
         conn, cur = get_conn_and_cur()
-        result_terms=get_terms_and_values_for_image(int(image_id), conn, cur)
+        result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
         if result_terms:
-            for term,value in result_terms:
+            for term, value in result_terms:
                 print("terms and value:")
                 print(term, value)
                 if term is not None:
@@ -1143,6 +1145,7 @@ def api_update_comment_recommendation():
             return jsonify({"result": False})
     return jsonify({"result": False})
 
+
 @app.route("/update_likes_recommendation", methods=["GET", "POST"])
 def api_update_likes_recommendation():
     user_id = app.user_id
@@ -1150,9 +1153,9 @@ def api_update_likes_recommendation():
     print('update_comment_recommendation: ', user_id, image_id)
     if image_id is not None and app.user_id is not None:
         conn, cur = get_conn_and_cur()
-        result_terms=get_terms_and_values_for_image(int(image_id), conn, cur)
+        result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
         if result_terms:
-            for term,value in result_terms:
+            for term, value in result_terms:
                 print("terms and value:")
                 print(term, value)
                 if term is not None:
@@ -1174,12 +1177,10 @@ def api_get_related_images():
     user_id = app.user_id
     image_id = request.args.get("image_id")
 
-
     if user_id is None:
-        #print("\n=================RELATED IMAGES: USER_ID is None=================\n")
-        #return jsonify({"result": False})
-        user_id=0;
-
+        # print("\n=================RELATED IMAGES: USER_ID is None=================\n")
+        # return jsonify({"result": False})
+        user_id = 0;
 
     conn, cur = get_conn_and_cur()
     result = get_related(user_id, image_id, conn, cur)
@@ -1199,6 +1200,7 @@ def api_get_related_images():
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            print(tup)
             processed_result.append(
                 {
                     "id": id,
@@ -1216,6 +1218,66 @@ def api_get_related_images():
         # print(imgarr[0])
 
         retval = jsonify({"result": processed_result})
+        print(retval)
+        return retval
+    else:
+        return jsonify({"result": False})
+
+
+@app.route("/get_recommended_images")
+def api_get_recommended_images():
+    print("\n=================RECOMMENDED IMAGES=================\n")
+    user_id = app.user_id
+    score = request.args.get("score")
+    batch_size = request.args.get("batch_size")
+    if batch_size is None:
+        batch_size = 10
+
+    if user_id is None:
+        return jsonify({"result": False})
+
+    conn, cur = get_conn_and_cur()
+    result = get_recommendation_photos(user_id, score, batch_size, conn, cur)
+    conn.close()
+
+    if result:
+
+        processed_result = []
+        min_score = None
+
+        for tup in result:
+            id, caption, uploader, img, title, price, created_at, tags, num_likes, score = tup
+            if not num_likes:
+                num_likes = 0
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            if min_score is None:
+                min_score = float(score)
+            elif float(score) < min_score:
+                min_score = float(score)
+
+            print(tup)
+            processed_result.append(
+                {
+                    "id": id,
+                    "caption": caption,
+                    "uploader": uploader,
+                    "img": img,
+                    "title": title,
+                    "price": str(price),
+                    "created_at": created_at,
+                    "num_likes": num_likes,
+                    "tags": tags,
+                }
+            )
+
+        # print(imgarr[0])
+
+        retval = jsonify({"result": processed_result, "score": float(min_score)})
         print(retval)
         return retval
     else:
