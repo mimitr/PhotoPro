@@ -184,6 +184,9 @@ def api_discovery():
     batch_size = request.args.get("batch_size")
     query = request.args.get("query")
 
+    if query is not None:
+        terms = query
+
     print(
         "++++++++++++++++++++++ DISCOVERY API CALLED - %s ++++++++++++++++++++++++++++++"
         % query
