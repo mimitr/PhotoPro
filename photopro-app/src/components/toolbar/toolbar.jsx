@@ -8,7 +8,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import Notifications from "./notifications/notifications";
-import logo from "../../logo/photoPro-logo.png";
+import logo from "../../logo/logo-new.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,6 +93,8 @@ function Toolbar() {
       <React.Fragment>
         <div className={"flex-container-buttons-2"}>
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             size="small"
             onClick={handleDiscoveryClicked}
@@ -100,6 +102,8 @@ function Toolbar() {
             Discovery
           </Button>
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             size="small"
             onClick={handleCollectionsClicked}
@@ -108,6 +112,8 @@ function Toolbar() {
           </Button>
 
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             size="small"
             onClick={handleCartClicked}
@@ -116,6 +122,8 @@ function Toolbar() {
           </Button>
 
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             aria-controls="simple-menu"
             aria-haspopup="true"
@@ -141,6 +149,8 @@ function Toolbar() {
         </div>
         <div className="toolbar-left">
           <Button
+            variant="outlined"
+            size="large"
             onClick={handleUploadClicked}
             // variant="outlined"
             color="primary"
@@ -157,10 +167,20 @@ function Toolbar() {
       <React.Fragment>
         <div className="toolbar-left-placeholder"></div>
         <div className="flex-container-buttons-1">
-          <Button className={classes.button} onClick={handleSignInClicked}>
+          <Button
+            variant="outlined"
+            size="large"
+            className={classes.button}
+            onClick={handleSignInClicked}
+          >
             Sign in
           </Button>
-          <Button className={classes.button} onClick={handleSignUpClicked}>
+          <Button
+            variant="outlined"
+            size="large"
+            className={classes.button}
+            onClick={handleSignUpClicked}
+          >
             Getting Started
           </Button>
         </div>
