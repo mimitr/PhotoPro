@@ -103,26 +103,33 @@ const PostInfo = (props) => {
       <div className="postWrapper">
         <div className="postInfo">
           <div className="username">
-            <Button
-              varient="outlined"
-              onClick={() => {
-                history.push({
-                  pathname: `/profile/${props.location.state.uploader}`,
-                  state: { uploaderID: props.location.state.uploader },
-                });
-              }}
-            >
-              @{props.location.state.uploader}
-            </Button>
+            <div className="username-wrapper">
+              <Button
+                varient="outlined"
+                onClick={() => {
+                  history.push({
+                    pathname: `/profile/${props.location.state.uploader}`,
+                    state: { uploaderID: props.location.state.uploader },
+                  });
+                }}
+              >
+                @{props.location.state.uploader}
+              </Button>
+            </div>
             {localStorage.getItem('userLoggedIn') ? (
               <React.Fragment>
                 {localStorage.getItem('userID') !==
                 props.location.state.uploader ? (
                   <FollowButton uploader={props.location.state.uploader} />
                 ) : null}
-                <IconButton variant="contained" onClick={handleBookmarkClicked}>
-                  <BookmarkIcon />
-                </IconButton>
+                <div className="bookmark-wrapper">
+                  <IconButton
+                    variant="contained"
+                    onClick={handleBookmarkClicked}
+                  >
+                    <BookmarkIcon />
+                  </IconButton>
+                </div>
               </React.Fragment>
             ) : null}
             <Likes

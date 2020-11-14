@@ -108,28 +108,32 @@ export default function PostModal(props) {
           <div className="postWrapper">
             <div className="postInfo">
               <div className="username">
-                <Button
-                  varient="outlined"
-                  onClick={() => {
-                    history.push({
-                      pathname: `/profile/${props.uploader}`,
-                      state: { uploaderID: props.uploader },
-                    });
-                  }}
-                >
-                  @{props.uploader}
-                </Button>
+                <div className="username-wrapper">
+                  <Button
+                    varient="outlined"
+                    onClick={() => {
+                      history.push({
+                        pathname: `/profile/${props.uploader}`,
+                        state: { uploaderID: props.uploader },
+                      });
+                    }}
+                  >
+                    @{props.uploader}
+                  </Button>
+                </div>
                 {localStorage.getItem('userLoggedIn') ? (
                   <React.Fragment>
                     {localStorage.getItem('userID') !== props.uploader ? (
                       <FollowButton uploader={props.uploader} />
                     ) : null}
-                    <IconButton
-                      variant="contained"
-                      onClick={handleBookmarkClicked}
-                    >
-                      <BookmarkIcon />
-                    </IconButton>
+                    <div className="bookmark-wrapper">
+                      <IconButton
+                        variant="contained"
+                        onClick={handleBookmarkClicked}
+                      >
+                        <BookmarkIcon />
+                      </IconButton>
+                    </div>
                   </React.Fragment>
                 ) : null}
                 <Likes

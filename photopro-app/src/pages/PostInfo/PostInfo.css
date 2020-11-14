@@ -1,12 +1,12 @@
 @font-face {
-  font-family: "Roboto";
+  font-family: 'Roboto';
   /* font-style: normal; */
   /* font-weight: 400; */
-  src: local("Lato"), url(../../fonts/Roboto/Roboto-Thin.ttf) format("truetype");
+  src: local('Lato'), url(../../fonts/Roboto/Roboto-Thin.ttf) format('truetype');
 }
 
 .roboto {
-  font-family: "Roboto";
+  font-family: 'Roboto';
   color: rgba(73, 69, 69, 1);
 }
 
@@ -41,19 +41,29 @@
 }
 
 .postInfo {
-  grid-row: auto / span 2;
+  position: sticky;
+  top: 0;
   display: grid;
-  grid-template-rows: 1fr 1fr 1.5fr 1fr 8fr;
+  justify-content: center;
+  align-items: center;
+  grid-row: auto / span 2;
+  max-height: 30vh;
 }
 
-.username > p {
-  text-align: center;
-}
-
-.btn {
+.username {
   margin: 0 auto;
-  display: block;
-  margin-bottom: 10px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.username-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.bookmark-wrapper {
+  display: flex;
+  justify-content: center;
 }
 
 .postFeed-nested {
@@ -62,19 +72,15 @@
 
 .postTags {
   padding: 15px;
-  /* background: rgb(255, 190, 190); */
   border-bottom: rgb(165, 165, 165) 1px solid;
 }
 
 .postPrice {
-  /* background: rgb(174, 200, 255); */
   padding: 15px;
   border-bottom: rgb(165, 165, 165) 1px solid;
 }
 
 .postComments {
-  /* background: rgb(233, 198, 145); */
-
   padding: 15px;
 }
 
