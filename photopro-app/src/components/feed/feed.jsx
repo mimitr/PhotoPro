@@ -87,7 +87,7 @@ const Feed = (props) => {
 
   return (
     <React.Fragment>
-      <h2>Found Images: {imgs.length}</h2>
+      {/* <h2>Found Images: {imgs.length}</h2> */}
 
       <div className="image-grid">
         {imgs.map((image, index) => {

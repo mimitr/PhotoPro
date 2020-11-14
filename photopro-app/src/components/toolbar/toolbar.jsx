@@ -14,9 +14,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
     border: "3px solid red",
+    margin: "auto",
   },
   button: {
-    color: "rgb(110, 110, 110)",
+    color: "rgb(83, 85, 89)",
   },
 }));
 

@@ -1,16 +1,43 @@
-import React, { useState } from 'react';
-import './searchbar.css';
-import Feed from '../feed/feed';
-import SearchBarInput from './searchBarInput';
+import React, { useState } from "react";
+import "./searchbar.css";
+import Feed from "../feed/feed";
+import SearchBarInput from "./searchBarInput";
+
+import img1 from "../../background/1.jpg";
+import img2 from "../../background/2.jpg";
+import img3 from "../../background/3.jpg";
+import img4 from "../../background/4.jpg";
+import img5 from "../../background/5.jpg";
+import img6 from "../../background/6.jpg";
+import img7 from "../../background/7.jpg";
 
 function SearchBar() {
   const [query, setQuery] = useState(null);
 
   console.log(`The query is - ${query}`);
 
+  let backgroundImages = [];
+  let index = 0;
+
+  backgroundImages[0] = img1;
+  backgroundImages[1] = img2;
+  backgroundImages[2] = img3;
+  backgroundImages[3] = img4;
+  backgroundImages[4] = img5;
+  backgroundImages[5] = img6;
+  backgroundImages[6] = img7;
+  index = Math.floor(Math.random() * backgroundImages.length);
+  console.log(index);
+
   return (
     <React.Fragment>
-      <SearchBarInput setQuery={setQuery} />
+      <div
+        className="bar"
+        style={{ backgroundImage: `url(${backgroundImages[index]})` }}
+      >
+        <SearchBarInput setQuery={setQuery} />
+      </div>
+
       <Feed query={query} />
     </React.Fragment>
   );
