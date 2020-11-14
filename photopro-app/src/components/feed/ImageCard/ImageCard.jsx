@@ -10,7 +10,7 @@ import BookmarkIcon from '@material-ui/icons/Bookmark';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import PostModal from '../../Modals/PostModal/PhotoModal';
+import PostModal from '../../Modals/PostModal/PostModal';
 
 const deletePostRequest = async function (imageID) {
   const response = await axios.get('http://localhost:5000/delete_image_post', {
@@ -91,10 +91,12 @@ class ImageCard extends Component {
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
     this.setOpenPostModal = this.setOpenPostModal.bind(this);
+    this.setNumLikes = this.setNumLikes.bind(this);
     this.state = {
       openPostModal: false,
       spans: 0,
       animateImages: '',
+      numLikes: this.props.image.num_likes,
     };
   }
 
@@ -117,6 +119,11 @@ class ImageCard extends Component {
 
   setOpenPostModal = (newState) => {
     this.setState({ openPostModal: newState });
+  };
+
+  setNumLikes = (newState) => {
+    console.log(`set num likes called with value ${newState}`);
+    this.setState({ numLikes: newState });
   };
 
   handleImageClicked = (e) => {
@@ -214,7 +221,7 @@ class ImageCard extends Component {
             onClick={this.handleLikeClicked}
           >
             <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
-            <div className="num-likes">{this.props.image.num_likes}</div>
+            <div className="num-likes">{this.state.numLikes}</div>
           </IconButton>
 
           {this.props.userLoggedIn ? (
@@ -261,7 +268,7 @@ class ImageCard extends Component {
               price={this.props.image.price}
               title={this.props.image.title}
               uploader={this.props.image.uploader}
-              num_likes={this.props.image.num_likes}
+              setNumLikes={this.setNumLikes}
             />
           </div>
         ) : null}

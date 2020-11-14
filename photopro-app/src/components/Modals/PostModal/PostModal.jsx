@@ -1,8 +1,9 @@
 import ReactDom from 'react-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
-import './PhotoModal.css';
+import './PostModal.css';
 import '../../../pages/PostInfo/PostInfo.css';
+import FollowButton from '../../follow/followButton';
 import Likes from '../../likes/Likes';
 import Comments from '../../comments/Comments';
 import axios from 'axios';
@@ -11,7 +12,7 @@ import IconButton from '@material-ui/core/IconButton';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import BookmarkModal from '../BookmarkModal/BookmarkModal';
 
-export default function PhotoModal(props) {
+export default function PostModal(props) {
   const [comments, setComments] = useState([]);
   const [tags, setTags] = useState([]);
   const [commentUpdated, updateComments] = useState('');
@@ -19,9 +20,6 @@ export default function PhotoModal(props) {
   const cancelAxiosRequest = useRef();
   const { imageID } = props;
   const history = useHistory();
-
-  console.log(props);
-  console.log(`MODAL IMAGEID = ${imageID}`);
 
   useEffect(() => {
     let mounted = true;
@@ -106,9 +104,6 @@ export default function PhotoModal(props) {
           onClick={(e) => {
             e.stopPropagation();
           }}
-          onScroll={(e) => {
-            e.stopPropagation();
-          }}
         >
           <div className="postWrapper">
             <div className="postInfo">
@@ -124,22 +119,34 @@ export default function PhotoModal(props) {
                 >
                   @{props.uploader}
                 </Button>
-                <button className="btn">Follow</button>
+                {localStorage.getItem('userLoggedIn') ? (
+                  <React.Fragment>
+                    {localStorage.getItem('userID') !== props.uploader ? (
+                      <FollowButton uploader={props.uploader} />
+                    ) : null}
+                    <IconButton
+                      variant="contained"
+                      onClick={handleBookmarkClicked}
+                    >
+                      <BookmarkIcon />
+                    </IconButton>
+                  </React.Fragment>
+                ) : null}
                 <Likes
-                  num_likes={props.num_likes}
+                  setNumLikes={props.setNumLikes}
                   image_id={props.imageID}
                   uploader_id={props.uploader}
                 />
-                <IconButton variant="contained" onClick={handleBookmarkClicked}>
-                  <BookmarkIcon />
-                </IconButton>
               </div>
             </div>
             <div className="postImage">
-              <img
-                src={`data:image/jpg;base64,${props.url}`}
-                alt={props.caption}
-              />
+              <div className="main-img">
+                <img
+                  src={`data:image/jpg;base64,${props.url}`}
+                  alt={props.caption}
+                />
+              </div>
+
               <div className="recImages-nested">
                 <h1 className="roboto"> Related Photos:</h1>
                 <div className="recImage"></div>
@@ -175,7 +182,6 @@ export default function PhotoModal(props) {
               </div>
               <div className="postComments">
                 <h2 className="roboto">Comments:</h2>
-                {/* <Comments className="comments" /> */}
                 <Comments
                   image_id={props.imageID}
                   comments_list={comments}

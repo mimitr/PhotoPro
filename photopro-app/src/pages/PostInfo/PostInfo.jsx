@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import './PostInfo.css';
 import Toolbar from '../../components/toolbar/toolbar';
-import FollowButton from './follow/followButton';
+import FollowButton from '../../components/follow/followButton';
 import Likes from '../../components/likes/Likes';
 import Comments from '../../components/comments/Comments';
 import axios from 'axios';
