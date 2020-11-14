@@ -103,12 +103,48 @@ def get_related_images(image_id,num_images,conn,cur):
         print("number of related images")
         print(num_img_found)
         print("")
-        for img_id,count in result:
-            print("related image id:")
-            print(img_id)
-            print("num of matching tags:")
-            print(count)
-            print("")
+        related_imgs=[]
+        if num_img_found > 0:
+            for img_id,count in result:
+                cmd = "select image_id,file from images where image_id={};".format(img_id)
+                conn.commit()
+                cur.execute(cmd)
+                data = cur.fetchall()
+                for tup in data:
+            	       #print(tup)
+                    (
+                        id,
+                    	img,
+                    ) = tup
+                    img=img.tobytes()
+                    related_imgs.append(img)
+                    print("related image id:")
+                    print(img_id)
+                    print("num of matching tags:")
+                    print(count)
+                    print("")
+
+        num_extra_needed=num_images-num_img_found
+        print("number of random images to pull from discovery")
+        print(num_extra_needed)
+
+
+        cmd = "select image_id,file from images LIMIT {};".format(num_extra_needed)
+        conn.commit()
+        cur.execute(cmd)
+        data = cur.fetchall()
+        for tup in data:
+    	       #print(tup)
+            (
+                id,
+            	img,
+            ) = tup
+            img=img.tobytes()
+            related_imgs.append(img)
+
+        return related_imgs
+
+
 
     except psycopg2.Error as e:
         print(e)
