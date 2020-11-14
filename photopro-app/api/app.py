@@ -827,7 +827,6 @@ def api_get_users_collection():
                 photo = open(file, "wb")
                 photo.write(img)
                 photo.close()
-                img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
             else:
                 img = ""

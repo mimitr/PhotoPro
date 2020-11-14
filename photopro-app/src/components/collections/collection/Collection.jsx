@@ -94,10 +94,14 @@ export default function Collection(props) {
   const classes = useStyles();
 
   const image = {
-    url: props.collection.url,
+    url: props.collection.img,
     title: props.collection.collection_name,
     width: "100%",
   };
+
+  let img = "data:image;base64," + image.url.replace(/(\r\n|\n|\r)/gm, "");
+
+  // console.log(img);
 
   return (
     <React.Fragment>
@@ -115,7 +119,7 @@ export default function Collection(props) {
             <span
               className={classes.imageSrc}
               style={{
-                backgroundImage: `url(${image.url})`,
+                backgroundImage: `url(${img})`,
               }}
             />
             <span className={classes.imageBackdrop} />

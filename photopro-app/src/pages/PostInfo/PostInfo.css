@@ -50,12 +50,6 @@
   text-align: center;
 }
 
-.btn {
-  margin: 0 auto;
-  display: block;
-  margin-bottom: 10px;
-}
-
 .postFeed-nested {
   display: grid;
 }

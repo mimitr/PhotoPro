@@ -97,48 +97,53 @@ export default function CollectionDataPage(props) {
     <React.Fragment>
       <Toolbar />
       <div className="collectionDataWrapper">
-        <div className="collection-info">
-          {privateCollection === "true" ? <LockIcon /> : null}
-          <h1>{props.location.state.collection_name}</h1>
-          <p>by @{props.location.state.creator_id}</p>
-          <p>Total photos: {collectionImages.length}</p>
+        <div className="circle-wrapper">
+          <div className="circleBase">
+            <div className="collection-info">
+              {privateCollection === "true" ? <LockIcon /> : null}
+              <h1>{props.location.state.collection_name}</h1>
+              <p>by @{props.location.state.creator_id}</p>
+              <p>Total photos: {collectionImages.length}</p>
 
-          {props.location.state.isMyCollection === "true" ? (
-            <Button
-              aria-controls="simple-menu"
-              aria-haspopup="true"
-              variant="outlined"
-              color="primary"
-              onClick={handleEditCollectionClicked}
-            >
-              Edit collection
-            </Button>
-          ) : null}
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleEditCollectionClose}
-          >
-            {privateCollection === "true" ? (
-              <MenuItem onClick={handleChangePrivateClicked}>
-                Make Public
-              </MenuItem>
-            ) : (
-              <MenuItem onClick={handleChangePrivateClicked}>
-                Make Private
-              </MenuItem>
-            )}
-            <MenuItem
-              onClick={() => {
-                deleteCollection();
-              }}
-            >
-              Delete collection
-            </MenuItem>
-          </Menu>
+              {props.location.state.isMyCollection === "true" ? (
+                <Button
+                  aria-controls="simple-menu"
+                  aria-haspopup="true"
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleEditCollectionClicked}
+                >
+                  Edit collection
+                </Button>
+              ) : null}
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleEditCollectionClose}
+              >
+                {privateCollection === "true" ? (
+                  <MenuItem onClick={handleChangePrivateClicked}>
+                    Make Public
+                  </MenuItem>
+                ) : (
+                  <MenuItem onClick={handleChangePrivateClicked}>
+                    Make Private
+                  </MenuItem>
+                )}
+                <MenuItem
+                  onClick={() => {
+                    deleteCollection();
+                  }}
+                >
+                  Delete collection
+                </MenuItem>
+              </Menu>
+            </div>
+          </div>
         </div>
+
         {/* <div class="bg-image">
           <img src={`data:image/jpg;base64,${collectionImages[0].img}`} />
         </div> */}

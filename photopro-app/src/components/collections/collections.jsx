@@ -86,9 +86,9 @@ export default function Collections(props) {
       <div className="collectionsPageWrapper">
         <div className="title">
           {props.displayMyProfile ? (
-            <h1>My collections</h1>
+            <h1 className="quicksand">My collections</h1>
           ) : (
-            <h1>Public Collections of @{userID}</h1>
+            <h1 className="quicksand">Public Collections of @{userID}</h1>
           )}
         </div>
         <div className="collectionsWrapper">{collectionsComponents}</div>
