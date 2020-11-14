@@ -25,6 +25,7 @@ async function attempt_login() {
   form_data.append('tags', tags);
 
   const response = await axios.post('http://localhost:5000/post', form_data);
+  console.log(response);
   return response;
 }
 
@@ -92,10 +93,7 @@ class CapturePhotoPage extends React.Component {
           </FormGroup>
           <FormGroup bsSize="large">
             <FormLabel>Tags: </FormLabel>
-            <FormControl
-              autoFocus
-              onChange={(e) => (tags = e.target.value)}
-            />
+            <FormControl autoFocus onChange={(e) => (tags = e.target.value)} />
           </FormGroup>
           <Button block bsSize="large" disabled={isValid()} type="submit">
             Post
