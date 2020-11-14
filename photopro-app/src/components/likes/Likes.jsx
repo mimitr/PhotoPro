@@ -117,7 +117,12 @@ function Likes(props) {
           <IconButton
             classes={{ root: `${classes.root} ${buttonClass}` }}
             onClick={handleLikeClicked}
-            disabled={localStorage.getItem('userLoggedIn') ? false : true}
+            disabled={
+              localStorage.getItem('userLoggedIn') &&
+              localStorage.getItem('userID') !== props.uploader_id
+                ? false
+                : true
+            }
           >
             <FavoriteIcon />
           </IconButton>

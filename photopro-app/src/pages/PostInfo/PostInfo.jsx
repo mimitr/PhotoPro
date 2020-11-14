@@ -116,7 +116,10 @@ const PostInfo = (props) => {
             </Button>
             {localStorage.getItem('userLoggedIn') ? (
               <React.Fragment>
-                <FollowButton uploader={props.location.state.uploader} />
+                {localStorage.getItem('userID') !==
+                props.location.state.uploader ? (
+                  <FollowButton uploader={props.location.state.uploader} />
+                ) : null}
                 <IconButton variant="contained" onClick={handleBookmarkClicked}>
                   <BookmarkIcon />
                 </IconButton>
