@@ -104,9 +104,11 @@ def get_related_images(image_id, num_images, conn, cur):
     try:
         cmd = "select img_id,count(tag) from images_with_common_tags({}) GROUP BY img_id ORDER BY count DESC LIMIT {}".format(
             image_id, num_images)
+        print(cmd)
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
+        print("get_related_images result: ", result)
         num_img_found = len(result)
         print("input image id")
         print(image_id)

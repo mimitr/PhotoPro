@@ -1171,10 +1171,11 @@ def api_update_likes_recommendation():
 @app.route("/get_related_images")
 def api_get_related_images():
     print("\n=================RELATED IMAGES=================\n")
-    user_id = request.args.get("user_id")
+    user_id = app.user_id
     image_id = request.args.get("image_id")
 
     if user_id is None:
+        print("\n=================RELATED IMAGES: USER_ID is None=================\n")
         return jsonify({"result": False})
 
     conn, cur = get_conn_and_cur()
