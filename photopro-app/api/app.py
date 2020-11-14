@@ -1140,3 +1140,27 @@ def api_update_comment_recommendation():
         else:
             return jsonify({"result": False})
     return jsonify({"result": False})
+
+@app.route("/update_likes_recommendation", methods=["GET", "POST"])
+def api_update_likes_recommendation():
+    user_id = app.user_id
+    image_id = request.args.get("image_id")
+    print('update_comment_recommendation: ', user_id, image_id)
+    if image_id is not None and app.user_id is not None:
+        conn, cur = get_conn_and_cur()
+        result_terms=get_terms_and_values_for_image(int(image_id), conn, cur)
+        if result_terms:
+            for term,value in result_terms:
+                print("terms and value:")
+                print(term, value)
+                if term is not None:
+                    print("eep")
+                    result = update_recommendation_term(int(user_id), term, float(value), 0.75, conn, cur)
+                    """if not result:
+                        print("floop")
+                        conn.close()
+                        return jsonify({"result": result})"""
+            return jsonify({"result": True})
+        else:
+            return jsonify({"result": False})
+    return jsonify({"result": False})

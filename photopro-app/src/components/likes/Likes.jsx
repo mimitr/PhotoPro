@@ -85,6 +85,15 @@ function Likes(props) {
 
       return response.data.result;
     });
+
+    axios({
+        method: 'GET',
+        url: 'http://localhost:5000/update_likes_recommendation',
+        params: {image_id: props.image_id}, //user_id: 1
+
+      }).then((res) => {
+        console.log(res);
+      });
   };
 
   const delete_likes = (img_id) => {
