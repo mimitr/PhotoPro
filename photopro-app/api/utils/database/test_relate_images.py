@@ -18,6 +18,6 @@ curr = conn.cursor()
 
 import time
 
-image_id=900
+image_id=1000
 num_related_images=3
 get_related_images(image_id,num_related_images,conn,curr)

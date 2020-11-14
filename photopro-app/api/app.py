@@ -1164,3 +1164,56 @@ def api_update_likes_recommendation():
         else:
             return jsonify({"result": False})
     return jsonify({"result": False})
+
+
+@app.route("/get_related_images")
+def api_get_related_images():
+    user_id = request.args.get("user_id")
+    image_id= request.args.get("image_id")
+    #batch_size = int(request.args.get("batch_size"))
+
+    if user_id is None:
+        return jsonify({"result": False})
+
+    if batch_size is None or batch_size <= 0:
+        batch_size = 32
+
+    conn, cur = get_conn_and_cur()
+    result = get_related(user_id, image_id, conn, cur)
+    conn.close()
+
+    if result:
+
+        processed_result = []
+
+        for tup in result:
+            id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
+            if not num_likes:
+                num_likes = 0
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            processed_result.append(
+                {
+                    "id": id,
+                    "caption": caption,
+                    "uploader": uploader,
+                    "img": img,
+                    "title": title,
+                    "price": str(price),
+                    "created_at": created_at,
+                    "num_likes": num_likes,
+                    "tags": tags,
+                }
+            )
+
+        # print(imgarr[0])
+
+        retval = jsonify({"result": processed_result})
+        print(retval)
+        return retval
+    else:
+        return jsonify({"result": False})
