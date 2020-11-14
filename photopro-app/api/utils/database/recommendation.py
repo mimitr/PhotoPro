@@ -1,9 +1,10 @@
 import psycopg2
 
+num_related_photos=3
 
 def get_terms_and_values_for_image(image_id, conn, cur):
     try:
-        cmd = "select term, value from auto_tags where image_id={}".format(int(image_id))
+        cmd = "select term, value from auto_tags where image_id={} ORDER by value DESC".format(int(image_id))
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
@@ -79,6 +80,35 @@ def get_recommendation_photos(user_id, conn, cur):
             return False
         else:
             return result
+
+    except psycopg2.Error as e:
+        print(e)
+        # cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except Exception as e:
+        print(e)
+        # cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+
+def get_related_images(image_id,num_images,conn,cur):
+    try:
+        cmd="select img_id,count(tag) from images_with_common_tags({}) GROUP BY img_id ORDER BY count DESC LIMIT {}".format(image_id,num_images)
+        cur.execute(cmd)
+        conn.commit()
+        result = cur.fetchall()
+        num_img_found=len(result)
+        print("input image id")
+        print(image_id)
+        print("")
+        print("number of related images")
+        print(num_img_found)
+        print("")
+        for img_id,count in result:
+            print("related image id:")
+            print(img_id)
+            print("num of matching tags:")
+            print(count)
+            print("")
 
     except psycopg2.Error as e:
         print(e)
