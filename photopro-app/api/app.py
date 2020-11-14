@@ -262,9 +262,7 @@ def api_discovery():
                 print("id - %d, start_point - %d" % (id, app.start_point))
                 if id > app.start_point:
                     app.start_point = id
-                    for x in ['', " "]:
-                        if x in tags:
-                            tags.remove(x)
+                    
                     processed_result.append(
                         {
                             "id": id,
@@ -328,9 +326,7 @@ def api_discovery():
                 img = base64.encodebytes(img).decode("utf-8")
                 if id > app.start_point:
                     app.start_point = id
-                    for x in ['', " "]:
-                        if x in tags:
-                            tags.remove(x)
+                    
                     processed_result.append(
                         {
                             "id": id,
@@ -386,9 +382,7 @@ def api_profile_photos():
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
-            for x in ['', " "]:
-                if x in tags:
-                    tags.remove(x)
+            
             processed_result.append(
                 {
                     "id": id,
@@ -911,9 +905,7 @@ def api_get_collection_data():
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
-            for x in ['', " "]:
-                if x in tags:
-                    tags.remove(x)
+            
             processed_result.append(
                 {
                     "collection_id": collection_id,
@@ -1217,9 +1209,7 @@ def api_get_related_images():
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
             print(tup)
-            for x in ['', " "]:
-                if x in tags:
-                    tags.remove(x)
+            
             processed_result.append(
                 {
                     "id": id,
@@ -1280,9 +1270,7 @@ def api_get_recommended_images():
                 min_score = float(score)
 
             print(tup)
-            for x in ['', " "]:
-                if x in tags:
-                    tags.remove(x)
+            
             processed_result.append(
                 {
                     "id": id,
