@@ -5,24 +5,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 
-const options = [
-  'None',
-  'Atria',
-  'Callisto',
-  'Dione',
-  'Ganymede',
-  'Hangouts Call',
-  'Luna',
-  'Oberon',
-  'Phobos',
-  'Pyxis',
-  'Sedna',
-  'Titania',
-  'Triton',
-  'Umbriel',
-];
-
-const ITEM_HEIGHT = 48;
+const ITEM_HEIGHT = 60;
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -93,33 +76,35 @@ export default function Notifications() {
       >
         {notifications.length > 0 ? (
           notifications.map((notification, index) => {
+            let notifMessage = null;
+            if (notification.type === 'like') {
+              notifMessage = `@${notification.sender} liked your post - '${notification.image_id}'`;
+            } else if (notification.type === 'comment') {
+              notifMessage = `@${notification.sender} commented on your post - '${notification.image_id}'`;
+            } else if (notification.type === 'posted') {
+              notifMessage = `@${notification.sender} has uploaded a new post - '${notification.image_id}'`;
+            } else {
+              notifMessage = `@${notification.sender} started following you`;
+            }
             if (index === 0) {
               return (
                 <div key={index}>
-                  <MenuItem key={index} onClick={handleClearNotifications}>
+                  <MenuItem
+                    key={index}
+                    onClick={handleClearNotifications}
+                    style={{ fontWeight: 'bold' }}
+                  >
                     Clear Notifications
                   </MenuItem>
                   <MenuItem key={index + 1} onClick={handleClose}>
-                    <div>
-                      User {notification.sender}{' '}
-                      {notification.type === 'like'
-                        ? 'liked your'
-                        : 'commented on your'}{' '}
-                      post - {`'${notification.image_id}'`}
-                    </div>
+                    <div>{notifMessage}</div>
                   </MenuItem>
                 </div>
               );
             }
             return (
               <MenuItem key={index + 1} onClick={handleClose}>
-                <div>
-                  User {notification.sender}{' '}
-                  {notification.type === 'like'
-                    ? 'liked your'
-                    : 'commented on your'}{' '}
-                  post - {`'${notification.image_id}'`}
-                </div>
+                <div>{notifMessage}</div>
               </MenuItem>
             );
           })

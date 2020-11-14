@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./CheckoutPage.css";
 import ToolBar from "../../components/toolbar/toolbar";
 import TextField from "@material-ui/core/TextField";
@@ -6,6 +6,13 @@ import Button from "@material-ui/core/Button";
 import axios from "axios";
 import CheckoutItem from "./checkoutItem/CheckoutItem";
 import { useHistory } from "react-router-dom";
+import ConfirmationModal from "./ConfirmationModal/ConfirmationModal";
+
+import CardName from "./textfields/CardName";
+import CardNum from "./textfields/CardNum";
+import CardMonth from "./textfields/CardMonth";
+import CardYear from "./textfields/CardYear";
+import CardCvv from "./textfields/CardCvv";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -20,56 +27,77 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CheckoutPage(props) {
   const [shoppingCartItems, setShoppingCartItems] = useState([]);
-  const [detailsValidated, setDetailsValidated] = useState(true);
+  const [placeOrderClicked, setPlaceOrderClicked] = useState(false);
+  const [cardNumValidated, setCardNumValidated] = useState(false);
+  const [cardNameValidated, setCardNameValidated] = useState(false);
+  const [cardMonthValidated, setCardMonthValidated] = useState(false);
+  const [cardYearValidated, setCardYearValidated] = useState(false);
+  const [cardCvvValidated, setCardCvvValidated] = useState(false);
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
   const classes = useStyles();
 
   const history = useHistory();
 
-  const getUserNotPurchasedItems = () => {
-    axios({
-      method: "GET",
-      url: "http://localhost:5000/get_user_purchases",
-      params: {
-        save_for_later: 0,
-        purchased: 0,
-      },
-    }).then((response) => {
-      if (response.data.result !== false) {
-        console.log(response);
-        setShoppingCartItems(response.data.result);
-      }
-    });
-  };
-
   useEffect(() => {
+    const getUserNotPurchasedItems = () => {
+      axios({
+        method: "GET",
+        url: "http://localhost:5000/get_user_purchases",
+        params: {
+          save_for_later: 0,
+          purchased: 0,
+        },
+      }).then((response) => {
+        if (response.data.result !== false) {
+          console.log(response);
+          setShoppingCartItems(response.data.result);
+        }
+      });
+    };
     getUserNotPurchasedItems();
   }, []);
 
-  const updatePurchase = (img_id) => {
-    axios({
-      method: "POST",
-      url: "http://localhost:5000/update_user_purchases_details",
-      params: {
-        save_for_later: 0,
-        purchased: 1,
-        image_id: img_id,
-      },
-    }).then((response) => {
-      console.log(response);
-      // if (response.data.result !== false) {
-      // }
-    });
-  };
+  useEffect(() => {
+    const updatePurchase = (img_id) => {
+      axios({
+        method: "POST",
+        url: "http://localhost:5000/update_user_purchases_details",
+        params: {
+          save_for_later: 0,
+          purchased: 1,
+          image_id: img_id,
+        },
+      }).then((response) => {
+        console.log(response);
+        setConfirmationModalOpen(true);
+      });
+    };
 
-  const handlePlaceOrderButton = () => {
-    if (detailsValidated) {
+    console.log("CALLED");
+    if (
+      cardNumValidated &&
+      cardYearValidated &&
+      cardMonthValidated &&
+      cardNameValidated &&
+      cardCvvValidated
+    ) {
+      console.log("APPROVED");
       shoppingCartItems.map((item) => {
         console.log(item.image_id);
-
         updatePurchase(item.image_id);
       });
     }
+  }, [
+    cardNumValidated,
+    cardNameValidated,
+    cardYearValidated,
+    cardMonthValidated,
+    cardCvvValidated,
+  ]);
+
+  const handlePlaceOrderButton = () => {
+    setPlaceOrderClicked(!placeOrderClicked);
   };
 
   const handleEditButton = () => {
@@ -99,51 +127,27 @@ export default function CheckoutPage(props) {
             <h2>Fill payment info:</h2>
             <form className={classes.root} noValidate autoComplete="off">
               <div className="cart-details-grid">
-                <h3>CARD NUMBER</h3>
-                <TextField
-                  required
-                  id="outlined-required"
-                  label="Required"
-                  defaultValue="1234567890"
-                  variant="outlined"
+                <CardNum
+                  placeOrderClicked={placeOrderClicked}
+                  setCardNumValidated={setCardNumValidated}
                 />
-                <h3>NAME ON CARD</h3>
-                <TextField
-                  required
-                  id="outlined-required"
-                  label="Required"
-                  defaultValue="Mushi Iroh"
-                  variant="outlined"
+                <CardName
+                  placeOrderClicked={placeOrderClicked}
+                  setCardNameValidated={setCardNameValidated}
                 />
-                <h3>EXPIRY DATE</h3>
-                <TextField
-                  required
-                  id="outlined-number"
-                  label="Month"
-                  type="number"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  variant="outlined"
+                <CardMonth
+                  placeOrderClicked={placeOrderClicked}
+                  setCardMonthValidated={setCardMonthValidated}
                 />
-                <TextField
-                  required
-                  id="outlined-number"
-                  label="Year"
-                  type="number"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  variant="outlined"
+                <CardYear
+                  placeOrderClicked={placeOrderClicked}
+                  setCardYearValidated={setCardYearValidated}
                 />
-                <h3>CVC</h3>
-                <TextField
-                  required
-                  id="outlined-required"
-                  label="Required"
-                  defaultValue="123"
-                  variant="outlined"
+                <CardCvv
+                  placeOrderClicked={placeOrderClicked}
+                  setCardCvvValidated={setCardCvvValidated}
                 />
+
                 <Button
                   variant="contained"
                   color="primary"
@@ -168,6 +172,8 @@ export default function CheckoutPage(props) {
           </div>
         </div>
       </div>
+
+      {confirmationModalOpen ? <ConfirmationModal isOpen={true} /> : null}
     </React.Fragment>
   );
 }
