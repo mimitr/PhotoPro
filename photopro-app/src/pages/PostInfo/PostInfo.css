@@ -1,12 +1,12 @@
 @font-face {
-  font-family: "Roboto";
+  font-family: 'Roboto';
   /* font-style: normal; */
   /* font-weight: 400; */
-  src: local("Lato"), url(../../fonts/Roboto/Roboto-Thin.ttf) format("truetype");
+  src: local('Lato'), url(../../fonts/Roboto/Roboto-Thin.ttf) format('truetype');
 }
 
 .roboto {
-  font-family: "Roboto";
+  font-family: 'Roboto';
   color: rgba(73, 69, 69, 1);
 }
 
@@ -22,16 +22,17 @@
   padding: 1em;
 }
 
-/* .postWrapper > div:nth-child(odd) {
-  background: #ddd;
-} */
-
 .postImage {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   position: sticky;
   top: 0;
+  max-width: 100%;
 }
 
-.main-img {
+.postImage > img {
+  justify-content: center;
   margin-top: 4%;
   max-width: 100%;
   max-height: 100%;
@@ -41,13 +42,31 @@
 }
 
 .postInfo {
-  grid-row: auto / span 2;
   display: grid;
-  grid-template-rows: 1fr 1fr 1.5fr 1fr 8fr;
+  grid-row: auto / span 2;
+
+  position: sticky;
+  top: 0;
+
+  justify-content: center;
+  align-items: center;
+  max-height: 30vh;
 }
 
-.username > p {
-  text-align: center;
+.username {
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.username-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.bookmark-wrapper {
+  display: flex;
+  justify-content: center;
 }
 
 .postFeed-nested {
@@ -56,19 +75,15 @@
 
 .postTags {
   padding: 15px;
-  /* background: rgb(255, 190, 190); */
   border-bottom: rgb(165, 165, 165) 1px solid;
 }
 
 .postPrice {
-  /* background: rgb(174, 200, 255); */
   padding: 15px;
   border-bottom: rgb(165, 165, 165) 1px solid;
 }
 
 .postComments {
-  /* background: rgb(233, 198, 145); */
-
   padding: 15px;
 }
 

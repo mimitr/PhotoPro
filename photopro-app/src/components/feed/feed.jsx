@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './feed.css';
 import axios from 'axios';
 import ImageCard from './ImageCard/ImageCard';
-import BookmarkModal from '../modal/BookmarkModal';
+import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
 
 const Feed = (props) => {
   const [imgs, setImgs] = useState([]);

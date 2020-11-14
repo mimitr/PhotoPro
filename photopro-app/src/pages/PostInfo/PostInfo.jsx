@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import './PostInfo.css';
 import Toolbar from '../../components/toolbar/toolbar';
-import FollowButton from './follow/followButton';
+import FollowButton from '../../components/follow/followButton';
 import Likes from '../../components/likes/Likes';
 import Comments from '../../components/comments/Comments';
 import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import BookmarkModal from '../../components/modal/BookmarkModal';
+import BookmarkModal from '../../components/Modals/BookmarkModal/BookmarkModal';
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
@@ -103,26 +103,33 @@ const PostInfo = (props) => {
       <div className="postWrapper">
         <div className="postInfo">
           <div className="username">
-            <Button
-              varient="outlined"
-              onClick={() => {
-                history.push({
-                  pathname: `/profile/${props.location.state.uploader}`,
-                  state: { uploaderID: props.location.state.uploader },
-                });
-              }}
-            >
-              @{props.location.state.uploader}
-            </Button>
+            <div className="username-wrapper">
+              <Button
+                varient="outlined"
+                onClick={() => {
+                  history.push({
+                    pathname: `/profile/${props.location.state.uploader}`,
+                    state: { uploaderID: props.location.state.uploader },
+                  });
+                }}
+              >
+                @{props.location.state.uploader}
+              </Button>
+            </div>
             {localStorage.getItem('userLoggedIn') ? (
               <React.Fragment>
                 {localStorage.getItem('userID') !==
                 props.location.state.uploader ? (
                   <FollowButton uploader={props.location.state.uploader} />
                 ) : null}
-                <IconButton variant="contained" onClick={handleBookmarkClicked}>
-                  <BookmarkIcon />
-                </IconButton>
+                <div className="bookmark-wrapper">
+                  <IconButton
+                    variant="contained"
+                    onClick={handleBookmarkClicked}
+                  >
+                    <BookmarkIcon />
+                  </IconButton>
+                </div>
               </React.Fragment>
             ) : null}
             <Likes
@@ -133,12 +140,10 @@ const PostInfo = (props) => {
           </div>
         </div>
         <div className="postImage">
-          <div className="main-img">
-            <img
-              src={`data:image/jpg;base64,${props.location.state.url}`}
-              alt={props.location.state.caption}
-            />
-          </div>
+          <img
+            src={`data:image/jpg;base64,${props.location.state.url}`}
+            alt={props.location.state.caption}
+          />
 
           <div className="recImages-nested">
             <h1 className="roboto"> Related Photos:</h1>
