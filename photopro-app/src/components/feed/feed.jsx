@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './feed.css';
 import axios from 'axios';
 import ImageCard from './ImageCard/ImageCard';
-import BookmarkModal from '../modal/BookmarkModal';
+import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
 
 const Feed = (props) => {
   const [imgs, setImgs] = useState([]);
@@ -102,7 +102,7 @@ const Feed = (props) => {
 
   return (
     <React.Fragment>
-      <h2>Found Images: {imgs.length}</h2>
+      {/* <h2>Found Images: {imgs.length}</h2> */}
 
       <div className="image-grid">
         {imgs.map((image, index) => {
@@ -118,6 +118,7 @@ const Feed = (props) => {
                   image={image}
                   setOpenBookmarkModal={setModalIsOpen}
                   setPhotoId={setPhotoIdBookmarked}
+                  userLoggedIn={userLoggedIn}
                 />
                 <div
                   key={index}
@@ -138,6 +139,7 @@ const Feed = (props) => {
                 image={image}
                 setOpenBookmarkModal={setModalIsOpen}
                 setPhotoId={setPhotoIdBookmarked}
+                userLoggedIn={userLoggedIn}
               />
             );
           }

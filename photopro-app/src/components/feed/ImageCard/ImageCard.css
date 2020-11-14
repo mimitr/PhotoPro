@@ -67,3 +67,9 @@
   margin: 5px;
   font-size: 0.6em;
 }
+
+.modal-wrapper {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+}

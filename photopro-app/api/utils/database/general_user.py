@@ -50,7 +50,11 @@ def login_user(email, password, conn, cur):
         length = len(data)
         if length == 0:
             # return "Incorrect email or password! Please try again.", None
+            print(
+                "======================= LENGTH = 0 FOR LOGIN_USER ======================"
+            )
             return False, None
+
         elif length == 1:
             (id, first, last, email, password, last_active, username) = data[0]
             print(id, first, last, email, password, last_active, username)
@@ -513,14 +517,17 @@ def download_image(image_id, conn, cur):
         print(dl_location)
         for row in query_result:
             id, file = row
-            filename = dl_location + "\\{}.jpeg".format(id)
+            filename = dl_location + "/{}.jpeg".format(id)
             print(filename)
             photo = open(filename, "wb")
             photo.write(file)
             photo.close()
         return True
     except Exception as e:
-        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
         return False
 
 

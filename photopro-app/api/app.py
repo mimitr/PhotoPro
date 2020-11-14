@@ -26,6 +26,7 @@ from utils.database.general_user import (
     remove_tag,
     delete_image_post,
     set_user_timestamp,
+    download_image,
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -261,6 +262,9 @@ def api_discovery():
                 print("id - %d, start_point - %d" % (id, app.start_point))
                 if id > app.start_point:
                     app.start_point = id
+                    for x in ['', " "]:
+                        if x in tags:
+                            tags.remove(x)
                     processed_result.append(
                         {
                             "id": id,
@@ -324,6 +328,9 @@ def api_discovery():
                 img = base64.encodebytes(img).decode("utf-8")
                 if id > app.start_point:
                     app.start_point = id
+                    for x in ['', " "]:
+                        if x in tags:
+                            tags.remove(x)
                     processed_result.append(
                         {
                             "id": id,
@@ -379,6 +386,9 @@ def api_profile_photos():
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            for x in ['', " "]:
+                if x in tags:
+                    tags.remove(x)
             processed_result.append(
                 {
                     "id": id,
@@ -443,7 +453,7 @@ def api_delete_like_from_image():
 @app.route("/get_num_likes_of_image")
 def api_get_num_likes_of_image():
     image_id = request.args.get("image_id")
-    if image_id is not None and app.user_id is not None:
+    if image_id is not None:
         conn, cur = get_conn_and_cur()
         result = get_num_likes(image_id, conn, cur)
         conn.close()
@@ -698,6 +708,9 @@ def api_get_tags():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = get_tags(image_id, conn, cur)
+    for x in ['', " "]:
+        if x in result:
+            result.remove(x)
     conn.close()
     return jsonify({"result": result})
 
@@ -833,7 +846,6 @@ def api_get_users_collection():
                 photo = open(file, "wb")
                 photo.write(img)
                 photo.close()
-                img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
             else:
                 img = ""
@@ -899,6 +911,9 @@ def api_get_collection_data():
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            for x in ['', " "]:
+                if x in tags:
+                    tags.remove(x)
             processed_result.append(
                 {
                     "collection_id": collection_id,
@@ -1089,6 +1104,7 @@ def api_download():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = download_image(image_id, conn, cur)
+    conn.close()
     return jsonify({"result": result})
 
 
@@ -1201,6 +1217,9 @@ def api_get_related_images():
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
             print(tup)
+            for x in ['', " "]:
+                if x in tags:
+                    tags.remove(x)
             processed_result.append(
                 {
                     "id": id,
@@ -1261,6 +1280,9 @@ def api_get_recommended_images():
                 min_score = float(score)
 
             print(tup)
+            for x in ['', " "]:
+                if x in tags:
+                    tags.remove(x)
             processed_result.append(
                 {
                     "id": id,
