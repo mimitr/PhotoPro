@@ -188,7 +188,10 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         cur.execute(cmd, (caption, uploader, image, title, price, tags))
         conn.commit()
 
-        return cur.fetchone()[0]
+        result = cur.fetchone()[0]
+        print(result)
+
+        return result
     except Exception as e:
         print(e)
         return False

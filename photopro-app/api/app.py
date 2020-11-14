@@ -28,7 +28,7 @@ from utils.database.general_user import (
     set_user_timestamp,
 )
 from utils.database.connect import get_conn_and_cur
-from utils.database.follows import follow, unfollow, is_following,get_followers
+from utils.database.follows import follow, unfollow, is_following, get_followers
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -167,7 +167,10 @@ def api_post_image():
             if followers:
                 for tup in followers:
                     (follower,) = tup
-                    send_notification(int(user_id), int(follower), "Posted", int(result), conn, cur)
+                    print("~~~~~~~~~~~ Post photo notification sent ~~~~~~~~~~~~~")
+                    send_notification(
+                        int(follower), int(user_id), "posted", int(result), conn, cur
+                    )
         conn.close()
         return jsonify({"result": result})
 

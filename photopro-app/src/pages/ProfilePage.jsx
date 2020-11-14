@@ -31,7 +31,10 @@ function ProfilePage(props) {
             displayMyProfile={displayMyProfile}
           />
         )}
-        <UserPhotos userID={props.location.state.uploaderID} />
+        <UserPhotos
+          userID={props.location.state.uploaderID}
+          userLoggedIn={displayMyProfile}
+        />
       </React.Fragment>
     );
   }
