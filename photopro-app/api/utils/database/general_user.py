@@ -162,6 +162,18 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         # array = array[:len(array) - 1] + "]"
 
         # classification code goes here
+
+
+        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s) RETURNING image_id"
+        # print(cmd, uploader, caption, title, price, tags)
+        print(tags)
+        cur.execute(cmd, (caption, uploader, image, title, price, tags))
+        conn.commit()
+
+        result = cur.fetchone()[0]
+        print(result)
+
+
         print(os.getcwd())
         vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
         vision_client = vision.ImageAnnotatorClient.from_service_account_file(
@@ -176,20 +188,17 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         vision_labels = vision_response.label_annotations
 
         for label in vision_labels:
-            if label.score > (image_classify_threshold_percent / 100):
+            #if label.score > (image_classify_threshold_percent / 100):
                 # print(label.description)
-                label_to_add = label.description.lstrip('"')
-                label_to_add = label_to_add.rstrip('"')
-                tags.append(label_to_add)
+            label_to_add = label.description.lstrip('"')
+            label_to_add = label_to_add.rstrip('"')
+            print(label_to_add)
 
-        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s) RETURNING image_id"
-        # print(cmd, uploader, caption, title, price, tags)
-        print(tags)
-        cur.execute(cmd, (caption, uploader, image, title, price, tags))
+            cmd = "INSERT INTO auto_tags (image_id, term, value) VALUES (%s, %s, %s)"
+            cur.execute(cmd, (result, label_to_add, label.score))
+
+
         conn.commit()
-
-        result = cur.fetchone()[0]
-        print(result)
 
         return result
     except Exception as e:
@@ -438,7 +447,7 @@ def add_tags(user_id, image_id, tags, conn, cur):
 def remove_tag(user_id, image_id, tag, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' = 
+        cmd = """UPDATE images SET tags = array_remove(tags, '%s') WHERE uploader = %s AND image_id = %d AND ('%s' =
             ANY(tags)) """ % (
             tag,
             user_id,
@@ -559,4 +568,3 @@ def get_post_title_by_id(image_id, conn, cur):
         error = e.pgcode
         print(error)
         return False
-
