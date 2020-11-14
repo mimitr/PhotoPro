@@ -76,6 +76,11 @@ def get_recommendation_photos(user_id, conn, cur):
         # select images.image_id, AVG(recommendations.value) as score from images JOIN auto_tags ON images.image_i
         # d=auto_tags.image_id JOIN recommendations ON auto_tags.term=recommendations.term WHERE recommendations.user_id=1 GR
         # OUP BY images.image_id ORDER BY score DESC;
+
+        #select images.image_id,caption, uploader, title, price, created_at, tags,  num_likes, SUM(recommendation
+# s.value) as score from num_likes_per_image RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id JOIN a
+# commendations.user_id=1 GROUP BY images.image_id,num_likes ORDER BY score DESC,created_at DESC;at
+
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
