@@ -50,7 +50,11 @@ def login_user(email, password, conn, cur):
         length = len(data)
         if length == 0:
             # return "Incorrect email or password! Please try again.", None
+            print(
+                "======================= LENGTH = 0 FOR LOGIN_USER ======================"
+            )
             return False, None
+
         elif length == 1:
             (id, first, last, email, password, last_active, username) = data[0]
             print(id, first, last, email, password, last_active, username)
@@ -462,8 +466,7 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (
-            int(image_id))
+        cmd = """select tags from images where image_id=%d """ % (int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -496,8 +499,7 @@ def set_user_timestamp(user_id, conn, cur):
 
 def download_image(image_id, conn, cur):
     try:
-        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(
-            image_id)
+        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(image_id)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -523,8 +525,7 @@ def download_image(image_id, conn, cur):
 def get_username_by_id(user_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT email, username from users where id={}".format(
-            int(user_id))
+        cmd = "SELECT email, username from users where id={}".format(int(user_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
