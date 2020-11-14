@@ -56,7 +56,10 @@ from utils.database.comments import (
     get_comments_to_image,
     get_comments_to_comment,
 )
-
+from utils.database.recommendation import (
+    get_terms_and_values_for_image,
+    update_recommendation_term
+)
 from utils.database.collections import (
     create_collection,
     add_photo_to_collection,
@@ -73,7 +76,6 @@ from utils.database.user_purchases import (
     get_user_purchases,
     update_user_purchases_details,
 )
-
 
 app = Flask(__name__)
 app.user_id = None
@@ -177,7 +179,6 @@ def api_post_image():
 
 @app.route("/discovery")
 def api_discovery():
-
     user_id = request.args.get("user_id")
     if user_id == None:
         user_id = 0
@@ -348,7 +349,6 @@ def api_discovery():
 
 @app.route("/profile_photos")
 def api_profile_photos():
-
     user_id = request.args.get("user_id")
     batch_size = int(request.args.get("batch_size"))
 
@@ -969,10 +969,10 @@ def api_add_purchase():
     user_id = app.user_id
 
     if (
-        user_id is None
-        or purchased is None
-        or image_id is None
-        or save_for_later is None
+            user_id is None
+            or purchased is None
+            or image_id is None
+            or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1060,10 +1060,10 @@ def api_update_user_purchases_details():
     user_id = app.user_id
 
     if (
-        user_id is None
-        or purchased is None
-        or image_id is None
-        or save_for_later is None
+            user_id is None
+            or purchased is None
+            or image_id is None
+            or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1096,7 +1096,23 @@ def api_get_user_username():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_username_by_id(int(uid), conn, cur,)
+    result = get_username_by_id(int(uid), conn, cur, )
     conn.close()
     return jsonify({"result": result})
 
+
+@app.route("/update_search_recommendation", methods=["GET", "POST"])
+def api_update_search_recommendation():
+    user_id = app.user_id
+    query = request.args.get("query")
+    if query is not None and app.user_id is not None:
+        terms = query.split(' ')
+        conn, cur = get_conn_and_cur()
+        for term in terms:
+            if term is not None:
+                result = update_recommendation_term(int(user_id), term, 0.5, 0.5, conn, cur)
+                if not result:
+                    conn.close()
+                    return jsonify({"result": result})
+        return jsonify({"result": True})
+    return jsonify({"result": False})

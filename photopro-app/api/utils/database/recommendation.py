@@ -25,24 +25,31 @@ def get_terms_and_values_for_image(image_id, conn, cur):
 
 def update_recommendation_term(user_id, term, value, coefficient, conn, cur):
     try:
-        cmd = "select value from auto_tags where user_id={} AND term ILIKE '{}'".format(int(user_id, term))
+        cmd = "select value from recommendations where user_id={} AND term ILIKE '{}'".format(int(user_id), term)
         cur.execute(cmd)
-        conn.commit()
+        print(cmd)
         conn.commit()
 
-        result = cur.fetchone()[0]
+        result = cur.fetchone()
         print(result)
         if result is not None:
-            new_value = int(result) + value*coefficient
+            new_value = float(result[0]) + value * coefficient
+            cmd = (
+                "UPDATE recommendations SET value={} WHERE user_id={} AND term='{}'".format(
+                    new_value, int(user_id), term
+                )
+            )
         else:
             new_value = value
+            cmd = (
+                "INSERT INTO RECOMMENDATIONS (user_id, term, value) VALUES ({}, '{}', {})".format(
+                    int(user_id), term, new_value
+                )
+            )
+
 
         cur.execute("SAVEPOINT save_point")
-        cmd = (
-            "INSERT INTO RECOMMENDATIONS (user_id, term, value) VALUES ({}, '{}', {})".format(
-                int(user_id), term, new_value
-            )
-        )
+        print(cmd)
         cur.execute(cmd)
         conn.commit()
 
