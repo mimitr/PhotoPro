@@ -11,6 +11,8 @@ import base64
 import binascii
 import io
 from pathlib import Path
+from recommendation import get_related_images
+
 
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
@@ -574,7 +576,7 @@ def get_related(user_id,image_id, conn, cur):
     cur.execute("SAVEPOINT save_point")
     try:
         num_related_images_get=3
-        relate_img_ids=get_related_images(image_id,num_images,conn,cur)
+        relate_img_ids=get_related_images(image_id,num_related_images_get,conn,cur)
 
         cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
