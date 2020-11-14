@@ -1,21 +1,34 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
 
-export default function CardMonth() {
-  const [errorText, setErrorText] = useState("");
+export default function CardMonth(props) {
+  const [text, setText] = useState('');
+  const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
+  const [firstRender, setFirstRender] = useState(true);
 
-  const handleMonthInput = (event) => {
-    event.stopPropagation();
-    if (
-      parseInt(event.target.value) > 0 &&
-      parseInt(event.target.value) <= 12
-    ) {
+  const { placeOrderClicked } = props;
+
+  useEffect(() => {
+    setFirstRender(false);
+  }, []);
+
+  useEffect(() => {
+    if (firstRender === false) {
+      const result = handleMonthInput(text);
+      props.setCardMonthValidated(result);
+    }
+  }, [placeOrderClicked]);
+
+  const handleMonthInput = (text) => {
+    if (parseInt(text) > 0 && parseInt(text) <= 12) {
       setErrorValue(false);
-      setErrorText("");
+      setErrorText('');
+      return true;
     } else {
-      setErrorText("Input the correct month [1-12]");
+      setErrorText('Input the correct month [1-12]');
       setErrorValue(true);
+      return false;
     }
   };
   return (
@@ -25,7 +38,10 @@ export default function CardMonth() {
         required
         error={errorValue}
         helperText={errorText}
-        onChange={handleMonthInput}
+        onChange={(e) => {
+          setText(e.target.value);
+          handleMonthInput(e.target.value);
+        }}
         id="outlined-number"
         label="Month"
         type="number"

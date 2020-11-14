@@ -1,19 +1,35 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
 
-export default function CardName() {
-  const [errorText, setErrorText] = useState("");
+export default function CardName(props) {
+  const [text, setText] = useState('');
+  const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
+  const [firstRender, setFirstRender] = useState(true);
 
-  const handleNameCardInput = (event) => {
-    event.stopPropagation();
+  const { placeOrderClicked } = props;
+
+  useEffect(() => {
+    setFirstRender(false);
+  }, []);
+
+  useEffect(() => {
+    if (firstRender === false) {
+      const result = handleNameCardInput(text);
+      props.setCardNameValidated(result);
+    }
+  }, [placeOrderClicked]);
+
+  const handleNameCardInput = (text) => {
     let patt = /\w+\s\w+/;
-    if (event.target.value.length > 0 && patt.test(event.target.value)) {
+    if (text.length > 0 && patt.test(text)) {
       setErrorValue(false);
-      setErrorText("");
+      setErrorText('');
+      return true;
     } else {
-      setErrorText("Enter your card name [first name + last name]");
+      setErrorText('Enter your card name [first name + last name]');
       setErrorValue(true);
+      return false;
     }
   };
   return (
@@ -23,7 +39,10 @@ export default function CardName() {
         required
         error={errorValue}
         helperText={errorText}
-        onChange={handleNameCardInput}
+        onChange={(e) => {
+          setText(e.target.value);
+          handleNameCardInput(e.target.value);
+        }}
         id="outlined-required"
         label="Required"
         variant="outlined"
