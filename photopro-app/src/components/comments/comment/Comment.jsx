@@ -78,6 +78,14 @@ export default function Comment(props) {
         console.log('reply submitted');
       }
     });
+    axios({
+        method: 'GET',
+        url: 'http://localhost:5000/update_comment_recommendation',
+        params: { image_id: props.comment_info.image_id}, //user_id: 1
+
+      }).then((res) => {
+        console.log(res);
+      });
   };
 
   const handleViewRepliesClicked = () => {
