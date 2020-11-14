@@ -92,7 +92,7 @@ export default function CheckoutPage(props) {
   return (
     <React.Fragment>
       <ToolBar />
-      <div className="checkout-wrapper">
+      <div className="checkout-wrapper" style={{ marginTop: "15%" }}>
         <h1>Checkout</h1>
         <div className="checkout-grid">
           <div className="payment-info">
@@ -136,7 +136,7 @@ export default function CheckoutPage(props) {
                   }}
                   variant="outlined"
                 />
-                <h3>CVV</h3>
+                <h3>CVC</h3>
                 <TextField
                   required
                   id="outlined-required"

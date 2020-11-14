@@ -88,6 +88,10 @@ function Toolbar() {
     history.push("/my-purchases");
   };
 
+  const handleLogoClicked = () => {
+    history.push("/");
+  };
+
   let buttons;
   if (loggedIn === "true") {
     buttons = (
@@ -192,7 +196,10 @@ function Toolbar() {
   return (
     <React.Fragment>
       <div className="flex-container-toolbar">
-        <img className="logo" src={logo} alt="Logo" />
+        <div className="logo" onClick={handleLogoClicked}>
+          <img className="logo" src={logo} alt="Logo" />
+        </div>
+        {/* <img src={logo} alt="Logo" /> */}
         {buttons}
       </div>
     </React.Fragment>

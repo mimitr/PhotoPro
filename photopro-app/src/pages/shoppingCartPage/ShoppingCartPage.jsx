@@ -170,7 +170,7 @@ export default function ShoppingCart() {
   return (
     <React.Fragment>
       <ToolBar />
-      {componentsRender}
+      <div className="shopping-cart-wrapper">{componentsRender}</div>
     </React.Fragment>
   );
 }
