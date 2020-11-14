@@ -73,6 +73,7 @@ const UserPhotos = (props) => {
               openBookmarkModal={modalIsOpen}
               setOpenBookmarkModal={setModalIsOpen}
               setPhotoId={setPhotoIdBookmarked}
+              userLoggedIn={props.userLoggedIn}
             />
           );
         })}

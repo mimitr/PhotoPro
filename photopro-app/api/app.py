@@ -22,12 +22,14 @@ from utils.database.general_user import (
     add_tags,
     get_tags,
     get_username_by_id,
+    get_post_title_by_id,
     remove_tag,
     delete_image_post,
     set_user_timestamp,
+    download_image,
 )
 from utils.database.connect import get_conn_and_cur
-from utils.database.follows import follow, unfollow, is_following
+from utils.database.follows import follow, unfollow, is_following, get_followers
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -161,6 +163,15 @@ def api_post_image():
         image = base64.b64decode(image)
         conn, cur = get_conn_and_cur()
         result = post_image(user_id, caption, image, title, price, tags, conn, cur)
+        if result:
+            followers = get_followers(int(user_id), conn, cur)
+            if followers:
+                for tup in followers:
+                    (follower,) = tup
+                    print("~~~~~~~~~~~ Post photo notification sent ~~~~~~~~~~~~~")
+                    send_notification(
+                        int(follower), int(user_id), "posted", int(result), conn, cur
+                    )
         conn.close()
         return jsonify({"result": result})
 
@@ -472,7 +483,7 @@ def api_get_likers_of_image():
 @app.route("/send_notification")
 def api_send_notification():
     uploader_id = request.args.get("uploader_id")
-    notif_type = request.args.get("notification")  # I DUNNO WHAT TO PUT HERE
+    notif_type = request.args.get("notification")
     image_id = request.args.get("image_id")
     sender_id = app.user_id  # assumes that logged in user comments or likes image
 
@@ -495,18 +506,30 @@ def api_fetch_notification():
         conn.close()
         if result != False:
             processed = []
+            conn, cur = get_conn_and_cur()
             for tup in result:
                 print(tup)
                 uploader, sender, notification, timestamp, image_id = tup
+                user = get_username_by_id(int(sender), conn, cur)
+                if user == False:
+                    user = sender
+
+                title = image_id
+                if image_id != None:
+                    title = get_post_title_by_id(int(image_id), conn, cur)
+                if title == False:
+                    title = image_id
+
                 processed.append(
                     {
                         "uploader": uploader,
-                        "sender": sender,
+                        "sender": user,
                         "type": notification,
                         "timestamp": timestamp,
-                        "image_id": image_id,
+                        "image_id": title,
                     }
                 )
+            conn.close()
             return jsonify({"result": processed})
     return jsonify({"result": False})
 
@@ -527,7 +550,7 @@ def api_set_last_active():
     user_id = app.user_id
     conn, cur = get_conn_and_cur()
     result = set_user_timestamp(user_id, conn, cur)
-    connc.lose()
+    conn.close()
     print("~~~~~~~~~~~~~~~~~~ set_user_timestamp returned - %s" % result)
     return jsonify({"result": result})
 
@@ -903,6 +926,8 @@ def api_follow():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = follow(int(user_id), int(to_follow), conn, cur)
+    if result:
+        send_notification(int(to_follow), int(user_id), "follow", None, conn, cur)
     conn.close()
     return jsonify({"result": result})
 
@@ -930,6 +955,7 @@ def api_is_following():
     conn, cur = get_conn_and_cur()
     result = is_following(int(user_id), int(following), conn, cur)
     conn.close()
+    return jsonify({"result": result})
 
 
 @app.route("/add_purchase", methods=["GET", "POST"])
@@ -1055,7 +1081,9 @@ def api_download():
     image_id = request.args.get("image_id")
     if not image_id:
         return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
     result = download_image(image_id, conn, cur)
+    conn.close()
     return jsonify({"result": result})
 
 
@@ -1067,5 +1095,6 @@ def api_get_user_username():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = get_username_by_id(int(uid), conn, cur,)
+    conn.close()
     return jsonify({"result": result})
 

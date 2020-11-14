@@ -27,7 +27,6 @@ function Likes(props) {
   let userID = localStorage.getItem('userID');
 
   useEffect(() => {
-    console.log('check if liked called');
     const checkIfLiked = () => {
       axios({
         method: 'GET',
@@ -39,11 +38,8 @@ function Likes(props) {
           for (let i = 0; i < response.data.result.length; i++) {
             if (parseInt(userID) === response.data.result[i].user_id) {
               setPostLiked(true);
-              console.log('This image has been liked before :o');
             }
           }
-        } else {
-          console.log('no likers found');
         }
       });
     };
@@ -57,8 +53,6 @@ function Likes(props) {
       } else {
         delete_likes(props.image_id);
       }
-    } else {
-      console.log('user is not logged in yet');
     }
   };
 
@@ -81,7 +75,6 @@ function Likes(props) {
       url: 'http://localhost:5000/post_like_to_image',
       params: { image_id: img_id },
     }).then((response) => {
-      console.log(`post_like api response is ${response.data.result}`);
       console.log(response);
 
       if (response.data.result) {
@@ -124,7 +117,12 @@ function Likes(props) {
           <IconButton
             classes={{ root: `${classes.root} ${buttonClass}` }}
             onClick={handleLikeClicked}
-            disabled={localStorage.getItem('userLoggedIn') ? false : true}
+            disabled={
+              localStorage.getItem('userLoggedIn') &&
+              localStorage.getItem('userID') !== props.uploader_id
+                ? false
+                : true
+            }
           >
             <FavoriteIcon />
           </IconButton>

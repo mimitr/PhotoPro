@@ -50,7 +50,11 @@ def login_user(email, password, conn, cur):
         length = len(data)
         if length == 0:
             # return "Incorrect email or password! Please try again.", None
+            print(
+                "======================= LENGTH = 0 FOR LOGIN_USER ======================"
+            )
             return False, None
+
         elif length == 1:
             (id, first, last, email, password, last_active, username) = data[0]
             print(id, first, last, email, password, last_active, username)
@@ -162,25 +166,17 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
         # array = array[:len(array) - 1] + "]"
 
         # classification code goes here
-        print("1")
         print(os.getcwd())
         vision_key_filepath = os.path.abspath(vision_api_credentials_file_name)
-        print("2", os.getcwd())
         vision_client = vision.ImageAnnotatorClient.from_service_account_file(
             vision_key_filepath
         )
-        print("3")
 
         content = image
-        print("4")
-        print(content)
-        print("5")
         vision_image = vision.Image(content=content)
         # vision_image = types.Image(content=content)
-        print("6")
         vision_response = vision_client.label_detection(image=vision_image)
         # print(vision_response)
-        print("7")
         vision_labels = vision_response.label_annotations
 
         for label in vision_labels:
@@ -190,13 +186,16 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
                 label_to_add = label_to_add.rstrip('"')
                 tags.append(label_to_add)
 
-        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s)"
+        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s) RETURNING image_id"
         # print(cmd, uploader, caption, title, price, tags)
         print(tags)
         cur.execute(cmd, (caption, uploader, image, title, price, tags))
         conn.commit()
 
-        return True
+        result = cur.fetchone()[0]
+        print(result)
+
+        return result
     except Exception as e:
         print(e)
         return False
@@ -509,14 +508,17 @@ def download_image(image_id, conn, cur):
         print(dl_location)
         for row in query_result:
             id, file = row
-            filename = dl_location + "\\{}.jpeg".format(id)
+            filename = dl_location + "/{}.jpeg".format(id)
             print(filename)
             photo = open(filename, "wb")
             photo.write(file)
             photo.close()
         return True
     except Exception as e:
-        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
         return False
 
 
@@ -533,7 +535,7 @@ def get_username_by_id(user_id, conn, cur):
         if username is None:
             username = email.split("@")[0]
         print("get_username_by_id", username)
-        return True
+        return username
     except Exception as e:
         print(e)
         return False
@@ -541,3 +543,27 @@ def get_username_by_id(user_id, conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+
+def get_post_title_by_id(image_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "SELECT title from images WHERE image_id={}".format(int(image_id))
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        title = query_result[0]
+        print(title)
+        if title is None:
+            title = "no title on this image"
+        print("get_post_title_by_id", title)
+        return title
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
