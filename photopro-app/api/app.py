@@ -1116,3 +1116,23 @@ def api_update_search_recommendation():
                     return jsonify({"result": result})
         return jsonify({"result": True})
     return jsonify({"result": False})
+
+@app.route("/update_comment_recommendation", methods=["GET", "POST"])
+def api_update_comment_recommendation():
+    user_id = app.user_id
+    image_id = request.args.get("image_id")
+    print('update_comment_recommendation: ', user_id, image_id)
+    if image_id is not None and app.user_id is not None:
+        conn, cur = get_conn_and_cur()
+        result_terms=get_terms_and_values_for_image(int(image_id), conn, cur)
+        if result_terms:
+            for term,value in result_terms:
+                if term is not None:
+                    result = update_recommendation_term(int(user_id), term, value, 0.75, conn, cur)
+                    if not result:
+                        conn.close()
+                        return jsonify({"result": result})
+            return jsonify({"result": True})
+        else:
+            return jsonify({"result": False})
+    return jsonify({"result": False})

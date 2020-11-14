@@ -62,6 +62,14 @@ export default function Comments(props) {
         sendCommentNotification();
       }
     });
+    axios({
+        method: 'GET',
+        url: 'http://localhost:5000/update_comment_recommendation',
+        params: { image_id: props.image_id}, //user_id: 1
+        
+      }).then((res) => {
+        console.log(res);
+      });
   };
 
   return (
