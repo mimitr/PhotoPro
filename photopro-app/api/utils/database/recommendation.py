@@ -106,7 +106,7 @@ def get_related_images(image_id,num_images,conn,cur):
         related_imgs=[]
         if num_img_found > 0:
             for img_id,count in result:
-                cmd = "select image_id,file from images where image_id={};".format(img_id)
+                cmd = "select image_id,uploader from images where image_id={};".format(img_id)
                 conn.commit()
                 cur.execute(cmd)
                 data = cur.fetchall()
@@ -114,10 +114,9 @@ def get_related_images(image_id,num_images,conn,cur):
             	       #print(tup)
                     (
                         id,
-                    	img,
+                    	uploader,
                     ) = tup
-                    img=img.tobytes()
-                    related_imgs.append(img)
+                    related_imgs.append(id)
                     print("related image id:")
                     print(img_id)
                     print("num of matching tags:")
@@ -129,7 +128,7 @@ def get_related_images(image_id,num_images,conn,cur):
         print(num_extra_needed)
 
 
-        cmd = "select image_id,file from images LIMIT {};".format(num_extra_needed)
+        cmd = "select image_id,uploader from images LIMIT {};".format(num_extra_needed)
         conn.commit()
         cur.execute(cmd)
         data = cur.fetchall()
@@ -137,10 +136,12 @@ def get_related_images(image_id,num_images,conn,cur):
     	       #print(tup)
             (
                 id,
-            	img,
+            	uploader,
             ) = tup
-            img=img.tobytes()
-            related_imgs.append(img)
+            related_imgs.append(id)
+
+        print("related")
+        print(related_imgs)
 
         return related_imgs
 
