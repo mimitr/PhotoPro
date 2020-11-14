@@ -10,6 +10,8 @@ import os
 import base64
 import binascii
 import io
+import string
+import random
 from pathlib import Path
 
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
@@ -95,44 +97,41 @@ def change_password(email, password, new_password, conn, cur):
 
 
 def verification_email(recipient):
-    try:
-        ssl_port = 587
-        email_server_password = "WeCodeNotSleep3900"
-        context = ssl.create_default_context()
-        with smtplib.SMTP("smtp.gmail.com", ssl_port) as server:
-            server.ehlo()
-            server.starttls(context=context)
-            sender = "2mjec390@gmail.com"
+    ssl_port = 587
+    email_server_password = "WeCodeNotSleep3900"
+    context = ssl.create_default_context()
+    with smtplib.SMTP("smtp.gmail.com", ssl_port) as server:
+        server.ehlo()
+        server.starttls(context=context)
+        sender = "2mjec390@gmail.com"
 
-            message = MIMEMultipart("alternative")
-            message["Subject"] = "PhotoPro: Verify Your Account"
-            message["From"] = sender
-            message["To"] = recipient
-            reset_url = "http://localhost:3000/" + str(binascii.hexlify(os.urandom(16)))
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "PhotoPro: Verify Your Account"
+        message["From"] = sender
+        message["To"] = recipient
+        reset_url = "http://localhost:3000/" + str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
 
-            html = "\
-                            <html>\
-                                <body>\
-                                    <p> Verify You PhotoPro <br>\
-                                    You can do this easily using the link below: <br>\
-                                            <center>{}</center> <br>\
-                                    If you didn't ask to create an account, please get in touch at support@photopro.com. <br>\
-                                    </p>\
-                                </body>\
-                            </html>".format(
-                reset_url
-            )
-            html = MIMEText(html, "html")
-            message.attach(html)
 
-            server.login("2mjec390@gmail.com", email_server_password)
-            server.sendmail(sender, recipient, message.as_string())
+        html = "\
+                        <html>\
+                            <body>\
+                                <p> Verify You PhotoPro <br>\
+                                You can do this easily using the link below: <br>\
+                                        <center>{}</center> <br>\
+                                If you didn't ask to create an account, please get in touch at support@photopro.com. <br>\
+                                </p>\
+                            </body>\
+                        </html>".format(
+            reset_url
+        )
+        html = MIMEText(html, "html")
+        message.attach(html)
 
-            # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
-            return reset_url
-    except Exception as e:
-        print(e)
-        return False
+        server.login("2mjec390@gmail.com", email_server_password)
+        server.sendmail(sender, recipient, message.as_string())
+
+        # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
+        return reset_url
 
 
 def forgot_password_get_change_password_link(recipient, conn, cur):
@@ -665,3 +664,6 @@ def get_post_title_by_id(image_id, conn, cur):
         error = e.pgcode
         print(error)
         return False
+
+if __name__ == '__main__':
+    verification_email('olsenmatthew780@gmail.com')
