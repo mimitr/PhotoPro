@@ -29,7 +29,8 @@ from utils.database.general_user import (
     download_image,
     post_profile_image,
     get_profile_image,
-    delete_profile_image
+    delete_profile_image,
+    verification_email
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -106,6 +107,13 @@ def api_login():
     conn.close()
 
     return jsonify({"result": result, "user_id": user_id})
+
+
+@app.route("/verify_email", methods=["GET", "POST"])
+def api_verify_email():
+    email = request.args.get("email")
+    result = verification_email(email)
+    return jsonify({"result": result})
 
 
 @app.route("/create_user", methods=["GET", "POST"])

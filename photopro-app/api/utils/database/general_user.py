@@ -94,6 +94,47 @@ def change_password(email, password, new_password, conn, cur):
         return False
 
 
+def verification_email(recipient):
+    try:
+        ssl_port = 587
+        email_server_password = "WeCodeNotSleep3900"
+        context = ssl.create_default_context()
+        with smtplib.SMTP("smtp.gmail.com", ssl_port) as server:
+            server.ehlo()
+            server.starttls(context=context)
+            sender = "2mjec390@gmail.com"
+
+            message = MIMEMultipart("alternative")
+            message["Subject"] = "PhotoPro: Verify Your Account"
+            message["From"] = sender
+            message["To"] = recipient
+            reset_url = "http://localhost:3000/" + str(binascii.hexlify(os.urandom(16)))
+
+            html = "\
+                            <html>\
+                                <body>\
+                                    <p> Verify You PhotoPro <br>\
+                                    You can do this easily using the link below: <br>\
+                                            <center>{}</center> <br>\
+                                    If you didn't ask to create an account, please get in touch at support@photopro.com. <br>\
+                                    </p>\
+                                </body>\
+                            </html>".format(
+                reset_url
+            )
+            html = MIMEText(html, "html")
+            message.attach(html)
+
+            server.login("2mjec390@gmail.com", email_server_password)
+            server.sendmail(sender, recipient, message.as_string())
+
+            # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
+            return reset_url
+    except Exception as e:
+        print(e)
+        return False
+
+
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
@@ -227,6 +268,7 @@ def post_profile_image(uploader, image, conn, cur):
         print(error)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
+
 
 def get_profile_image(uploader, conn, cur):
     try:
