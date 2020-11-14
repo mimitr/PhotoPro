@@ -115,7 +115,7 @@ def verification_email(recipient):
         html = "\
                         <html>\
                             <body>\
-                                <p> Verify You PhotoPro <br>\
+                                <p> Verify Your PhotoPro Account <br>\
                                 You can do this easily using the link below: <br>\
                                         <center>{}</center> <br>\
                                 If you didn't ask to create an account, please get in touch at support@photopro.com. <br>\
