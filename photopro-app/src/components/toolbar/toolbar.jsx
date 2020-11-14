@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './toolbar.css';
-import { useHistory } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import Notifications from './notifications/notifications';
+import React, { useState } from "react";
+import axios from "axios";
+import "./toolbar.css";
+import { useHistory } from "react-router-dom";
+import Button from "@material-ui/core/Button";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import { makeStyles } from "@material-ui/core/styles";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import Notifications from "./notifications/notifications";
+import logo from "../../logo/logo-new.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
-    border: '3px solid red',
+    border: "3px solid red",
+    margin: "auto",
   },
   button: {
-    color: 'white',
+    color: "rgb(83, 85, 89)",
   },
 }));
 
 function Toolbar() {
   const history = useHistory();
   const classes = useStyles();
-  const loggedIn = localStorage.getItem('userLoggedIn');
+  const loggedIn = localStorage.getItem("userLoggedIn");
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -35,15 +37,15 @@ function Toolbar() {
   };
 
   const handleSignInClicked = () => {
-    history.push('/login');
+    history.push("/login");
   };
 
   const handleSignUpClicked = () => {
-    history.push('/signup');
+    history.push("/signup");
   };
 
   const handleProfileClicked = function () {
-    const userID = localStorage.getItem('userID');
+    const userID = localStorage.getItem("userID");
     console.log(`In toolbar the userID = ${userID}`);
     history.push({
       pathname: `/profile/${userID}`,
@@ -53,24 +55,24 @@ function Toolbar() {
 
   const handleLogoutClicked = () => {
     localStorage.clear();
-    history.push('/');
+    history.push("/");
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
   };
 
   const handleDiscoveryClicked = () => {
-    history.push('/');
+    history.push("/");
   };
 
   const handleUploadClicked = () => {
-    history.push('/uploadphoto');
+    history.push("/uploadphoto");
   };
 
   const handleChangePassClicked = () => {
-    history.push('/changepassword');
+    history.push("/changepassword");
   };
 
   const handleCollectionsClicked = () => {
-    const userID = localStorage.getItem('userID');
+    const userID = localStorage.getItem("userID");
     console.log(`In toolbar the userID = ${userID}`);
     history.push({
       pathname: `/collections/${userID}`,
@@ -79,15 +81,25 @@ function Toolbar() {
   };
 
   const handleCartClicked = () => {
-    history.push('/shopping-cart');
+    history.push("/shopping-cart");
+  };
+
+  const handleMyPurchasesClicked = () => {
+    history.push("/my-purchases");
+  };
+
+  const handleLogoClicked = () => {
+    history.push("/");
   };
 
   let buttons;
-  if (loggedIn === 'true') {
+  if (loggedIn === "true") {
     buttons = (
       <React.Fragment>
-        <div className={'flex-container-buttons-2'}>
+        <div className={"flex-container-buttons-2"}>
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             size="small"
             onClick={handleDiscoveryClicked}
@@ -95,6 +107,8 @@ function Toolbar() {
             Discovery
           </Button>
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             size="small"
             onClick={handleCollectionsClicked}
@@ -103,6 +117,8 @@ function Toolbar() {
           </Button>
 
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             size="small"
             onClick={handleCartClicked}
@@ -111,6 +127,8 @@ function Toolbar() {
           </Button>
 
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             aria-controls="simple-menu"
             aria-haspopup="true"
@@ -126,6 +144,7 @@ function Toolbar() {
             onClose={handleAccountClose}
           >
             <MenuItem onClick={handleProfileClicked}>Profile</MenuItem>
+            <MenuItem onClick={handleMyPurchasesClicked}>My Purchases</MenuItem>
             <MenuItem onClick={handleChangePassClicked}>
               Change Password
             </MenuItem>
@@ -135,6 +154,8 @@ function Toolbar() {
         </div>
         <div className="toolbar-left">
           <Button
+            variant="outlined"
+            size="large"
             onClick={handleUploadClicked}
             // variant="outlined"
             color="primary"
@@ -151,10 +172,20 @@ function Toolbar() {
       <React.Fragment>
         <div className="toolbar-left-placeholder"></div>
         <div className="flex-container-buttons-1">
-          <Button style={{ color: 'white' }} onClick={handleSignInClicked}>
+          <Button
+            variant="outlined"
+            size="large"
+            className={classes.button}
+            onClick={handleSignInClicked}
+          >
             Sign in
           </Button>
-          <Button style={{ color: 'white' }} onClick={handleSignUpClicked}>
+          <Button
+            variant="outlined"
+            size="large"
+            className={classes.button}
+            onClick={handleSignUpClicked}
+          >
             Getting Started
           </Button>
         </div>
@@ -165,7 +196,10 @@ function Toolbar() {
   return (
     <React.Fragment>
       <div className="flex-container-toolbar">
-        <h1 className="toolbar-text">PhotoPro</h1>
+        <div className="logo" onClick={handleLogoClicked}>
+          <img className="logo" src={logo} alt="Logo" />
+        </div>
+        {/* <img src={logo} alt="Logo" /> */}
         {buttons}
       </div>
     </React.Fragment>

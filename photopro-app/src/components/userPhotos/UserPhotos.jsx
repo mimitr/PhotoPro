@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './UserPhotos.css';
 import axios from 'axios';
 import ImageCard from '../feed/ImageCard/ImageCard';
-import BookmarkModal from '../modal/BookmarkModal';
+import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
 
 const UserPhotos = (props) => {
   const [profileImgs, setProfileImgs] = useState([]);
@@ -73,6 +73,7 @@ const UserPhotos = (props) => {
               openBookmarkModal={modalIsOpen}
               setOpenBookmarkModal={setModalIsOpen}
               setPhotoId={setPhotoIdBookmarked}
+              userLoggedIn={props.userLoggedIn}
             />
           );
         })}

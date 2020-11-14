@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './collections.css';
-import { Redirect } from 'react-router-dom';
-import Collection from './collection/Collection';
-import { CropPortrait } from '@material-ui/icons';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./collections.css";
+import { Redirect } from "react-router-dom";
+import Collection from "./collection/Collection";
+import { CropPortrait } from "@material-ui/icons";
 
 export default function Collections(props) {
   const [allCollections, setAllCollections] = useState([]);
@@ -26,8 +26,8 @@ export default function Collections(props) {
   useEffect(() => {
     const getUsersCollections = () => {
       axios({
-        method: 'GET',
-        url: 'http://localhost:5000/get_users_collection',
+        method: "GET",
+        url: "http://localhost:5000/get_users_collection",
         params: {
           user_id: userID,
           batch_size: 20,
@@ -44,6 +44,7 @@ export default function Collections(props) {
   }, [userID]);
 
   const collectionsComponents = allCollections.map((collection) => {
+    console.log(collection);
     if (displayMyProfile === true || collection.private === false) {
       return (
         <Collection
@@ -85,9 +86,9 @@ export default function Collections(props) {
       <div className="collectionsPageWrapper">
         <div className="title">
           {props.displayMyProfile ? (
-            <h1>My collections</h1>
+            <h1 className="quicksand">My collections</h1>
           ) : (
-            <h1>Public Collections of @{userID}</h1>
+            <h1 className="quicksand">Public Collections of @{userID}</h1>
           )}
         </div>
         <div className="collectionsWrapper">{collectionsComponents}</div>

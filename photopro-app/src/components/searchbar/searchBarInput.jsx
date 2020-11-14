@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import './searchbar.css';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import React, { useState } from "react";
+import "./searchbar.css";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
-    width: '100ch',
+    width: "100ch",
+    backgroundColor: "white",
   },
 }));
 
 function SearchBarInput(props) {
-  const [searchVal, setSearchVal] = useState('');
+  const [searchVal, setSearchVal] = useState("");
   const classes = useStyles();
 
   const handleSubmit = (e) => {

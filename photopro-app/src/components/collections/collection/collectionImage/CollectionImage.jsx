@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './CollectionImage.css';
-import { Redirect } from 'react-router-dom';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import PostModal from '../../../Modals/PostModal/PostModal';
 
 // matrial-ui component style override
 const styles = {
@@ -52,10 +52,13 @@ class CollectionImage extends Component {
     // CreateRef is used to access the DOM
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
+    this.setOpenPostModal = this.setOpenPostModal.bind(this);
+    this.setNumLikes = this.setNumLikes.bind(this);
     this.state = {
-      redirect: null,
+      openPostModal: false,
       spans: 0,
       animateImages: '',
+      numLikes: this.props.image.num_likes,
     };
 
     this.collection_id = props.image.collection_id;
@@ -81,8 +84,16 @@ class CollectionImage extends Component {
     }
   };
 
-  handleImageClicked = (e) => {
-    this.setState({ redirect: `/post-${this.props.image.id}` });
+  setOpenPostModal = (newState) => {
+    this.setState({ openPostModal: newState });
+  };
+
+  setNumLikes = (newState) => {
+    this.setState({ numLikes: newState });
+  };
+
+  handleImageClicked = () => {
+    this.setState({ openPostModal: true });
   };
 
   handleLikeClicked = (e) => {
@@ -112,27 +123,9 @@ class CollectionImage extends Component {
   render() {
     let component;
 
-    if (this.state.redirect) {
-      component = (
-        <Redirect
-          push
-          to={{
-            pathname: `${this.state.redirect}`,
-            state: {
-              id: `${this.props.image.id}`,
-              url: `${this.props.image.img}`,
-              caption: `${this.props.image.caption}`,
-              price: `${this.props.image.price}`,
-              title: `${this.props.image.title}`,
-              uploader: `${this.props.image.uploader}`,
-              num_likes: `${this.props.image.num_likes}`,
-            },
-          }}
-        />
-      );
-    } else {
-      component = (
-        // <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
+    component = (
+      <React.Fragment>
+        {/* // <div style={{ gridRowEnd: `span ${this.state.spans}` }}> */}
         <div
           className={`image-container ${this.state.animateImages}`}
           onClick={this.handleImageClicked}
@@ -153,39 +146,56 @@ class CollectionImage extends Component {
             variant="contained"
             onClick={this.handleLikeClicked}
           >
-            <FavoriteIcon classes={{ root: this.props.classes.likeIcon }} />
-            <div className="num-likes">{this.props.image.num_likes}</div>
+            <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
+            <div className="num-likes">{this.state.numLikes}</div>
           </IconButton>
 
-          <React.Fragment>
+          <IconButton
+            classes={{
+              root: `${this.props.classes.root} ${this.props.classes.buy}`,
+            }}
+            variant="contained"
+            onClick={this.handleBuyClicked}
+          >
+            <ShoppingCartIcon />
+          </IconButton>
+          {this.props.isMyCollection === 'true' ? (
             <IconButton
-              classes={{
-                root: `${this.props.classes.root} ${this.props.classes.buy}`,
-              }}
               variant="contained"
-              onClick={this.handleBuyClicked}
+              classes={{
+                root: `${this.props.classes.root} ${this.props.classes.remove}`,
+              }}
+              onClick={this.handleDeleteClicked}
             >
-              <ShoppingCartIcon />
+              <HighlightOffIcon
+                classes={{ root: `${this.props.classes.removeIcon}` }}
+              />
             </IconButton>
-
-            {this.props.isMyCollection === 'true' ? (
-              <IconButton
-                variant="contained"
-                classes={{
-                  root: `${this.props.classes.root} ${this.props.classes.remove}`,
-                }}
-                onClick={this.handleDeleteClicked}
-              >
-                <HighlightOffIcon
-                  classes={{ root: `${this.props.classes.removeIcon}` }}
-                />
-              </IconButton>
-            ) : null}
-          </React.Fragment>
+          ) : null}
         </div>
-        // </div>
-      );
-    }
+        {this.state.openPostModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openPostModal: false });
+            }}
+          >
+            <PostModal
+              openModal={this.state.openPostModal}
+              setOpenModal={this.setOpenPostModal}
+              imageID={this.props.image.id}
+              url={this.props.image.img}
+              caption={this.props.image.caption}
+              price={this.props.image.price}
+              title={this.props.image.title}
+              uploader={this.props.image.uploader}
+              setNumLikes={this.setNumLikes}
+            />
+          </div>
+        ) : null}
+      </React.Fragment>
+    );
+
     return <React.Fragment>{component}</React.Fragment>;
   }
 }

@@ -24,13 +24,14 @@
 }
 
 .purchase-info {
+  display: flex;
+  flex-direction: column;
   border: #333 1px solid;
-  height: 500px;
   margin: 30px;
   padding: 20px;
 }
 
-.card-details-grid {
+.cart-details-grid {
   display: grid;
   grid-template-columns: 1fr;
   grid-column-gap: 1em;
