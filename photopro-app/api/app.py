@@ -1127,11 +1127,15 @@ def api_update_comment_recommendation():
         result_terms=get_terms_and_values_for_image(int(image_id), conn, cur)
         if result_terms:
             for term,value in result_terms:
+                print("terms and value:")
+                print(term, value)
                 if term is not None:
-                    result = update_recommendation_term(int(user_id), term, value, 0.75, conn, cur)
-                    if not result:
+                    print("eep")
+                    result = update_recommendation_term(int(user_id), term, float(value), 0.75, conn, cur)
+                    """if not result:
+                        print("floop")
                         conn.close()
-                        return jsonify({"result": result})
+                        return jsonify({"result": result})"""
             return jsonify({"result": True})
         else:
             return jsonify({"result": False})
