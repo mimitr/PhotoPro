@@ -13,6 +13,7 @@ import io
 from pathlib import Path
 from recommendation import get_related_images
 
+
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
 
