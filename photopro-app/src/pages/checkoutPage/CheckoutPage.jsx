@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import CheckoutItem from './checkoutItem/CheckoutItem';
 import { useHistory } from 'react-router-dom';
+import ConfirmationModal from './ConfirmationModal/ConfirmationModal';
 
 import CardName from './textfields/CardName';
 import CardNum from './textfields/CardNum';
@@ -32,6 +33,7 @@ export default function CheckoutPage(props) {
   const [cardMonthValidated, setCardMonthValidated] = useState(false);
   const [cardYearValidated, setCardYearValidated] = useState(false);
   const [cardCvvValidated, setCardCvvValidated] = useState(false);
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
   const classes = useStyles();
 
@@ -68,7 +70,7 @@ export default function CheckoutPage(props) {
         },
       }).then((response) => {
         console.log(response);
-        history.replace('/');
+        setConfirmationModalOpen(true);
       });
     };
 
@@ -170,6 +172,8 @@ export default function CheckoutPage(props) {
           </div>
         </div>
       </div>
+
+      {confirmationModalOpen ? <ConfirmationModal isOpen={true} /> : null}
     </React.Fragment>
   );
 }
