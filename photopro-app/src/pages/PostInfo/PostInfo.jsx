@@ -133,10 +133,13 @@ const PostInfo = (props) => {
           </div>
         </div>
         <div className="postImage">
-          <img
-            src={`data:image/jpg;base64,${props.location.state.url}`}
-            alt={props.location.state.caption}
-          />
+          <div className="main-img">
+            <img
+              src={`data:image/jpg;base64,${props.location.state.url}`}
+              alt={props.location.state.caption}
+            />
+          </div>
+
           <div className="recImages-nested">
             <h1 className="roboto"> Related Photos:</h1>
             <div className="recImage"></div>

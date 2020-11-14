@@ -462,7 +462,8 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (int(image_id))
+        cmd = """select tags from images where image_id=%d """ % (
+            int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -495,7 +496,8 @@ def set_user_timestamp(user_id, conn, cur):
 
 def download_image(image_id, conn, cur):
     try:
-        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(image_id)
+        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(
+            image_id)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -504,21 +506,25 @@ def download_image(image_id, conn, cur):
         print(dl_location)
         for row in query_result:
             id, file = row
-            filename = dl_location + "\\{}.jpeg".format(id)
+            filename = dl_location + "/{}.jpeg".format(id)
             print(filename)
             photo = open(filename, "wb")
             photo.write(file)
             photo.close()
         return True
     except Exception as e:
-        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
         return False
 
 
 def get_username_by_id(user_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT email, username from users where id={}".format(int(user_id))
+        cmd = "SELECT email, username from users where id={}".format(
+            int(user_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()

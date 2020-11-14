@@ -26,6 +26,7 @@ from utils.database.general_user import (
     remove_tag,
     delete_image_post,
     set_user_timestamp,
+    download_image,
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -1082,6 +1083,7 @@ def api_download():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = download_image(image_id, conn, cur)
+    conn.close()
     return jsonify({"result": result})
 
 

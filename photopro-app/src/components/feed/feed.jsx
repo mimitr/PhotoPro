@@ -123,6 +123,7 @@ const Feed = (props) => {
                 image={image}
                 setOpenBookmarkModal={setModalIsOpen}
                 setPhotoId={setPhotoIdBookmarked}
+                userLoggedIn={userLoggedIn}
               />
             );
           }
