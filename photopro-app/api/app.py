@@ -185,7 +185,8 @@ def api_discovery():
     query = request.args.get("query")
 
     if query is not None:
-        terms = query
+        terms = query.split(' ')
+        print(terms)
 
     print(
         "++++++++++++++++++++++ DISCOVERY API CALLED - %s ++++++++++++++++++++++++++++++"
