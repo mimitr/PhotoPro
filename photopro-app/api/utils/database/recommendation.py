@@ -1,6 +1,7 @@
 import psycopg2
 
-num_related_photos=3
+num_related_photos = 3
+
 
 def get_terms_and_values_for_image(image_id, conn, cur):
     try:
@@ -48,7 +49,6 @@ def update_recommendation_term(user_id, term, value, coefficient, conn, cur):
                 )
             )
 
-
         cur.execute("SAVEPOINT save_point")
         print(cmd)
         cur.execute(cmd)
@@ -64,6 +64,7 @@ def update_recommendation_term(user_id, term, value, coefficient, conn, cur):
         print(e)
         # cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
+
 
 def get_recommendation_photos(user_id, conn, cur):
     try:
@@ -93,31 +94,33 @@ def get_recommendation_photos(user_id, conn, cur):
         # cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
 
-def get_related_images(image_id,num_images,conn,cur):
+
+def get_related_images(image_id, num_images, conn, cur):
     try:
-        cmd="select img_id,count(tag) from images_with_common_tags({}) GROUP BY img_id ORDER BY count DESC LIMIT {}".format(image_id,num_images)
+        cmd = "select img_id,count(tag) from images_with_common_tags({}) GROUP BY img_id ORDER BY count DESC LIMIT {}".format(
+            image_id, num_images)
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
-        num_img_found=len(result)
+        num_img_found = len(result)
         print("input image id")
         print(image_id)
         print("")
         print("number of related images")
         print(num_img_found)
         print("")
-        related_imgs=[]
+        related_imgs = []
         if num_img_found > 0:
-            for img_id,count in result:
+            for img_id, count in result:
                 cmd = "select image_id,uploader from images where image_id={};".format(img_id)
                 conn.commit()
                 cur.execute(cmd)
                 data = cur.fetchall()
                 for tup in data:
-            	       #print(tup)
+                    # print(tup)
                     (
                         id,
-                    	uploader,
+                        uploader,
                     ) = tup
                     related_imgs.append(id)
                     print("related image id:")
@@ -126,20 +129,19 @@ def get_related_images(image_id,num_images,conn,cur):
                     print(count)
                     print("")
 
-        num_extra_needed=num_images-num_img_found
+        num_extra_needed = num_images - num_img_found
         print("number of random images to pull from discovery")
         print(num_extra_needed)
-
 
         cmd = "select image_id,uploader from images LIMIT {};".format(num_extra_needed)
         conn.commit()
         cur.execute(cmd)
         data = cur.fetchall()
         for tup in data:
-    	       #print(tup)
+            # print(tup)
             (
                 id,
-            	uploader,
+                uploader,
             ) = tup
             related_imgs.append(id)
 
@@ -157,4 +159,40 @@ def get_related_images(image_id,num_images,conn,cur):
     except Exception as e:
         print(e)
         # cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+
+
+def get_related(user_id, image_id, conn, cur):
+    cur.execute("SAVEPOINT save_point")
+    try:
+        num_related_images_get = 3
+        relate_img_ids = get_related_images(image_id, num_related_images_get, conn, cur)
+
+        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                    WHERE (images.image_id= {} AND uploader!={}) \
+                    OR (images.image_id= {} AND uploader!={})\
+                    OR (images.image_id= {} AND uploader!={})\
+                     ORDER BY created_at DESC LIMIT {}".format(
+            int(relate_img_ids[0]), user_id, int(relate_img_ids[1]), user_id, int(relate_img_ids[2]), user_id,
+            num_related_images_get
+        )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        data = cur.fetchall()
+
+        length = len(data)
+        if length == 0:
+            return False
+        else:
+            return data
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+    except psycopg2.ProgrammingError as e:
+        print(e)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False

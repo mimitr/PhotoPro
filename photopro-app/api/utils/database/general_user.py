@@ -11,8 +11,6 @@ import base64
 import binascii
 import io
 from pathlib import Path
-from recommendation import get_related_images
-
 
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
 image_classify_threshold_percent = 50.0
@@ -569,39 +567,4 @@ def get_post_title_by_id(image_id, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
-        return False
-
-
-def get_related(user_id,image_id, conn, cur):
-    cur.execute("SAVEPOINT save_point")
-    try:
-        num_related_images_get=3
-        relate_img_ids=get_related_images(image_id,num_related_images_get,conn,cur)
-
-        cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
-                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE (images.image_id= {} AND uploader!={}) \
-                    OR (images.image_id= {} AND uploader!={})\
-                    OR (images.image_id= {} AND uploader!={})\
-                     ORDER BY created_at DESC LIMIT {}".format(
-            int(relate_img_ids[0]),user_id, int(relate_img_ids[1]),user_id, int(relate_img_ids[2]),user_id,num_related_images_get
-        )
-        print(cmd)
-        cur.execute(cmd)
-        conn.commit()
-        data = cur.fetchall()
-
-        length = len(data)
-        if length == 0:
-            return False
-        else:
-            return data
-    except psycopg2.Error as e:
-        error = e.pgcode
-        print(error)
-        cur.execute("ROLLBACK TO SAVEPOINT save_point")
-        return False
-    except psycopg2.ProgrammingError as e:
-        print(e)
-        cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False

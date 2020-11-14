@@ -58,7 +58,9 @@ from utils.database.comments import (
 )
 from utils.database.recommendation import (
     get_terms_and_values_for_image,
-    update_recommendation_term
+    update_recommendation_term,
+    get_related,
+    get_related_images
 )
 from utils.database.collections import (
     create_collection,
@@ -1170,13 +1172,9 @@ def api_update_likes_recommendation():
 def api_get_related_images():
     user_id = request.args.get("user_id")
     image_id= request.args.get("image_id")
-    #batch_size = int(request.args.get("batch_size"))
 
     if user_id is None:
         return jsonify({"result": False})
-
-    if batch_size is None or batch_size <= 0:
-        batch_size = 32
 
     conn, cur = get_conn_and_cur()
     result = get_related(user_id, image_id, conn, cur)
