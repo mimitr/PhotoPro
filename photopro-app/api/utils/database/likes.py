@@ -11,14 +11,19 @@ def post_like(image_id, user_id, conn, cur):
         conn.commit()
         return True
     except psycopg2.errors.UniqueViolation as e:
+        print("~~~~error with likes~~~~~")
         print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except psycopg2.Error as e:
+        print("~~~~error with likes2~~~~~")
+
         print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except Exception as e:
+        print("~~~~error with likes3~~~~~")
+
         print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
@@ -59,10 +64,12 @@ def get_num_likes(image_id, conn, cur):
         print(result)
         return result
     except psycopg2.Error as e:
+        print("~~~~~~~~Error in get_num_likes~~~~~~~~~~")
         print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
     except Exception as e:
+        print("~~~~~~~~Error in get_num_likes2~~~~~~~~~~")
         print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False

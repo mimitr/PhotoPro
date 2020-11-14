@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import './PostInfo.css';
 import Toolbar from '../../components/toolbar/toolbar';
-import FollowButton from './follow/followButton';
+import FollowButton from '../../components/follow/followButton';
 import Likes from '../../components/likes/Likes';
 import Comments from '../../components/comments/Comments';
 import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import BookmarkModal from '../../components/modal/BookmarkModal';
+import BookmarkModal from '../../components/Modals/BookmarkModal/BookmarkModal';
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);

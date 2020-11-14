@@ -437,7 +437,7 @@ def api_delete_like_from_image():
 @app.route("/get_num_likes_of_image")
 def api_get_num_likes_of_image():
     image_id = request.args.get("image_id")
-    if image_id is not None and app.user_id is not None:
+    if image_id is not None:
         conn, cur = get_conn_and_cur()
         result = get_num_likes(image_id, conn, cur)
         conn.close()

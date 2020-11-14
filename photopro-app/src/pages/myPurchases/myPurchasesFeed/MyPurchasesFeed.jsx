@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import "./MyPurchasesFeed.css";
-import PurchasedImage from "./purchasedImage/PurchasedImage";
+import React, { useState, useEffect } from 'react';
+import './MyPurchasesFeed.css';
+import PurchasedImage from './purchasedImage/PurchasedImage';
 
 const MyPurchasedFeed = (props) => {
   const [purchasedImgs, setPurchasedImgs] = useState([]);
@@ -19,9 +19,6 @@ const MyPurchasedFeed = (props) => {
           if (image === null) {
             return null;
           }
-
-          //   console.log(image);
-          //   console.log(`index is ${index}`);
 
           return <PurchasedImage key={image.image_id} image={image} />;
         })}
