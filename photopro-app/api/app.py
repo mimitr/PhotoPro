@@ -27,6 +27,9 @@ from utils.database.general_user import (
     delete_image_post,
     set_user_timestamp,
     download_image,
+    post_profile_image,
+    get_profile_image,
+    delete_profile_image
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -181,6 +184,65 @@ def api_post_image():
         return jsonify({"result": result})
 
 
+@app.route("/post_profile_photo", methods=["POST"])
+@cross_origin(supports_credentials=True)
+def api_post_profile_photo():
+    if request.method == "POST":
+        user_id = app.user_id
+        if user_id is None:
+            return jsonify({"result": False})
+        image = request.form["image"]
+
+        image = image.split(",")[-1]
+        image = base64.b64decode(image)
+        conn, cur = get_conn_and_cur()
+        result = post_profile_image(user_id, image, conn, cur)
+        if result:
+            followers = get_followers(int(user_id), conn, cur)
+            if followers:
+                for tup in followers:
+                    (follower,) = tup
+                    print("~~~~~~~~~~~ Post photo notification sent ~~~~~~~~~~~~~")
+                    send_notification(
+                        int(follower), int(user_id), "profile_photo", int(result), conn, cur
+                    )
+        conn.close()
+        return jsonify({"result": result})
+
+
+@app.route("/get_profile_photo", methods=["GET", "POST"])
+@cross_origin(supports_credentials=True)
+def api_get_profile_photo():
+    user_id = request.args.get("user_id")
+    if user_id is None:
+        return jsonify({"result": False})
+    else:
+        conn, cur = get_conn_and_cur()
+        img = get_profile_image(int(user_id), conn, cur)
+        file = "image.jpeg"
+        photo = open(file, "wb")
+        photo.write(img)
+        photo.close()
+        result = base64.encodebytes(img).decode("utf-8")
+        conn.close()
+        print("get_profile_photo", result, "\nget_profile_photo")
+        return jsonify({"result": result})
+
+
+@app.route("/delete_profile_photo", methods=["GET", "POST"])
+@cross_origin(supports_credentials=True)
+def api_delete_profile_photo():
+    user_id = app.user_id
+    if user_id is None:
+        return jsonify({"result": False})
+    else:
+        conn, cur = get_conn_and_cur()
+        result = delete_profile_image(int(user_id), conn, cur)
+        conn.close()
+        print("delete_profile_photo", result, "\ndelete_profile_photo")
+        return jsonify({"result": result})
+
+
 @app.route("/discovery")
 def api_discovery():
     user_id = request.args.get("user_id")
@@ -262,7 +324,7 @@ def api_discovery():
                 print("id - %d, start_point - %d" % (id, app.start_point))
                 if id > app.start_point:
                     app.start_point = id
-                    
+
                     processed_result.append(
                         {
                             "id": id,
@@ -326,7 +388,7 @@ def api_discovery():
                 img = base64.encodebytes(img).decode("utf-8")
                 if id > app.start_point:
                     app.start_point = id
-                    
+
                     processed_result.append(
                         {
                             "id": id,
@@ -382,7 +444,7 @@ def api_profile_photos():
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
-            
+
             processed_result.append(
                 {
                     "id": id,
@@ -905,7 +967,7 @@ def api_get_collection_data():
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
-            
+
             processed_result.append(
                 {
                     "collection_id": collection_id,
@@ -1209,7 +1271,7 @@ def api_get_related_images():
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
             print(tup)
-            
+
             processed_result.append(
                 {
                     "id": id,
@@ -1270,7 +1332,7 @@ def api_get_recommended_images():
                 min_score = float(score)
 
             print(tup)
-            
+
             processed_result.append(
                 {
                     "id": id,
