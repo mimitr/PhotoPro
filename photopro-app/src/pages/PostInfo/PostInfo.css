@@ -22,16 +22,17 @@
   padding: 1em;
 }
 
-/* .postWrapper > div:nth-child(odd) {
-  background: #ddd;
-} */
-
 .postImage {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   position: sticky;
   top: 0;
+  max-width: 100%;
 }
 
-.main-img {
+.postImage > img {
+  justify-content: center;
   margin-top: 4%;
   max-width: 100%;
   max-height: 100%;
@@ -41,12 +42,14 @@
 }
 
 .postInfo {
+  display: grid;
+  grid-row: auto / span 2;
+
   position: sticky;
   top: 0;
-  display: grid;
+
   justify-content: center;
   align-items: center;
-  grid-row: auto / span 2;
   max-height: 30vh;
 }
 
