@@ -250,7 +250,6 @@ class ImageCard extends Component {
             </React.Fragment>
           ) : null}
         </div>
-        {/* // </div> */}
         {this.state.openPostModal ? (
           <div
             className="modal-wrapper"

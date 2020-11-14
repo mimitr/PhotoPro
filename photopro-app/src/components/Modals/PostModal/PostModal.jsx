@@ -191,6 +191,7 @@ export default function PostModal(props) {
               </div>
             </div>
           </div>
+
           {bookmarkModalIsOpen ? (
             <BookmarkModal
               openModal={true}
