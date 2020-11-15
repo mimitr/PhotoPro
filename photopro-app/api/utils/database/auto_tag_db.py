@@ -23,8 +23,8 @@ conn = psycopg2.connect(user=database_user, password=database_password,
 cur = conn.cursor()
 
 
-image_id=922
-while(image_id < 9999):
+image_id=1
+while(image_id < 1000):
 	print(image_id)
 
 	cmd = "select image_id,file from images where image_id={};".format(image_id)
@@ -59,7 +59,7 @@ while(image_id < 9999):
 				#if label.score > (image_classify_threshold_percent / 100):
 					# print(label.description)
 				label_to_add = label.description.lstrip('"')
-				label_to_add = label_to_add.rstrip('"')
+				label_to_add = label_to_add.rstrip('"').lower()
 				print(label_to_add)
 
 
