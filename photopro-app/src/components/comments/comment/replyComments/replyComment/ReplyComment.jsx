@@ -47,7 +47,7 @@ export default function ReplyComment(props) {
             alt="user icon"
           ></img>
         </div>
-        <div className="username">@{props.replies_info.commenter}</div>
+        <div className="username">@{props.replies_info.username}</div>
         <div className="date">
           <p>{props.replies_info.created_at}</p>
         </div>

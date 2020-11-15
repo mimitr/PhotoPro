@@ -2,6 +2,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
+  overflow: auto;
   transform: translate(-50%, -50%);
   background-color: #fff;
   padding: 50px;
@@ -18,8 +19,7 @@
   z-index: 1001;
 }
 
-.closeButton {
-  position: absolute;
-  top: 0;
-  right: 0;
+.collection-folders {
+  overflow: auto;
+  max-height: 40vh;
 }

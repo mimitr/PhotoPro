@@ -13,13 +13,49 @@ import BookmarkIcon from '@material-ui/icons/Bookmark';
 import BookmarkModal from '../BookmarkModal/BookmarkModal';
 
 export default function PostModal(props) {
+  const [username, setUsername] = useState(props.uploader);
+  const [email, setEmail] = useState('');
   const [comments, setComments] = useState([]);
+  const [addedToCart, setAddedToCart] = useState(false);
   const [tags, setTags] = useState([]);
   const [commentUpdated, updateComments] = useState('');
   const [bookmarkModalIsOpen, setBookmarkModalIsOpen] = useState(false);
   const cancelAxiosRequest = useRef();
   const { imageID } = props;
   const history = useHistory();
+
+  useEffect(() => {
+    axios({
+      url: 'http://localhost:5000/get_user_username',
+      params: { user_id: props.uploader },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response.data);
+        setUsername(response.data.result);
+      }
+    });
+
+    axios({
+      url: 'http://localhost:5000/item_is_in_cart',
+      params: { image_id: imageID },
+    }).then((response) => {
+      console.log(response);
+      if (response.data.result) {
+        console.log('added to cart');
+        setAddedToCart(true);
+      }
+    });
+
+    axios({
+      url: 'http://localhost:5000/get_user_email',
+      params: { user_id: props.uploader },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response.data);
+        setEmail(response.data.result);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -80,13 +116,37 @@ export default function PostModal(props) {
       },
     }).then((response) => {
       if (response.data.result !== false) {
+        setAddedToCart(true);
         console.log(response);
+      } else {
+        setAddedToCart(false);
+      }
+    });
+  };
+
+  const apiRemovePurchase = (imageID) => {
+    axios({
+      method: 'POST',
+      url: 'http://localhost:5000/delete_item_from_cart',
+      params: {
+        image_id: String(imageID),
+      },
+    }).then((response) => {
+      if (response.data.result !== false) {
+        setAddedToCart(false);
+        console.log(response);
+      } else {
+        setAddedToCart(true);
       }
     });
   };
 
   const handleBuyButton = () => {
-    apiAddPurchase(props.imageID);
+    if (addedToCart) {
+      apiRemovePurchase(props.imageID);
+    } else {
+      apiAddPurchase(props.imageID);
+    }
   };
 
   const handleBookmarkClicked = () => {
@@ -108,19 +168,6 @@ export default function PostModal(props) {
           <div className="postWrapper">
             <div className="postInfo">
               <div className="username">
-                <div className="username-wrapper">
-                  <Button
-                    varient="outlined"
-                    onClick={() => {
-                      history.push({
-                        pathname: `/profile/${props.uploader}`,
-                        state: { uploaderID: props.uploader },
-                      });
-                    }}
-                  >
-                    @{props.uploader}
-                  </Button>
-                </div>
                 {localStorage.getItem('userLoggedIn') ? (
                   <React.Fragment>
                     {localStorage.getItem('userID') !== props.uploader ? (
@@ -159,7 +206,26 @@ export default function PostModal(props) {
               </div>
             </div>
             <div className="postFeed-nested">
-              <h1>{props.title}</h1>
+              <div className="title">
+                <h1>{props.title}</h1>
+                <div className="username-wrapper">
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      history.push({
+                        pathname: `/profile/${props.uploader}`,
+                        state: { uploaderID: props.uploader },
+                      });
+                    }}
+                  >
+                    @{username}
+                  </Button>
+                </div>
+                <p className="roboto" style={{ fontSize: '70%' }}>
+                  Email: {email}
+                </p>
+              </div>
+
               <h2 className="roboto">{props.caption}</h2>
               <div className="postTags">
                 <h3>
@@ -180,9 +246,21 @@ export default function PostModal(props) {
               </div>
               <div className="postPrice">
                 <h2 className="roboto">Price: ${props.price}</h2>
-                <Button variant="contained" onClick={handleBuyButton}>
-                  Add to Cart
-                </Button>
+                {localStorage.getItem('userLoggedIn') ? (
+                  addedToCart ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleBuyButton}
+                    >
+                      Added to Cart
+                    </Button>
+                  ) : (
+                    <Button variant="contained" onClick={handleBuyButton}>
+                      Add to Cart
+                    </Button>
+                  )
+                ) : null}
               </div>
               <div className="postComments">
                 <h2 className="roboto">Comments:</h2>
@@ -196,13 +274,15 @@ export default function PostModal(props) {
             </div>
           </div>
 
-          {bookmarkModalIsOpen ? (
-            <BookmarkModal
-              openModal={true}
-              setOpenModal={setBookmarkModalIsOpen}
-              photoId={props.imageID}
-            ></BookmarkModal>
-          ) : null}
+          <div onClick={() => setBookmarkModalIsOpen(false)}>
+            {bookmarkModalIsOpen ? (
+              <BookmarkModal
+                openModal={true}
+                setOpenModal={setBookmarkModalIsOpen}
+                photoId={props.imageID}
+              ></BookmarkModal>
+            ) : null}
+          </div>
         </div>
       </React.Fragment>,
 

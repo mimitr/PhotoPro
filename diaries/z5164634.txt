@@ -102,3 +102,5 @@ UPDATE
 At the suggestion of Christian, I did a complete overhaul of the notifications functions, which now pull from a table which stores
 tuples representing different types of notifications
 >>>>>>> master
+15/11/2020
+I wrote a shell script that should run the appropriate commands to start and run the project without having to open too many terminals

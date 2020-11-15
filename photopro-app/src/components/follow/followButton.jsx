@@ -70,14 +70,25 @@ const FollowButton = (props) => {
 
   return (
     <React.Fragment>
-      <Button
-        variant={following ? 'contained' : 'outlined'}
-        color="primary"
-        style={{}}
-        onClick={handleFollowClicked}
-      >
-        Follow
-      </Button>
+      {following ? (
+        <Button
+          variant="contained"
+          color="primary"
+          style={{}}
+          onClick={handleFollowClicked}
+        >
+          Following
+        </Button>
+      ) : (
+        <Button
+          variant="outlined"
+          color="primary"
+          style={{}}
+          onClick={handleFollowClicked}
+        >
+          Follow
+        </Button>
+      )}
     </React.Fragment>
   );
 };

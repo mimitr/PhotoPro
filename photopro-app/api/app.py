@@ -11,6 +11,7 @@ from utils.database.watermark import apply_watermark
 from utils.database.general_user import (
     create_user,
     login_user,
+    delete_account,
     change_password,
     forgot_password_get_change_password_link,
     post_image,
@@ -22,6 +23,7 @@ from utils.database.general_user import (
     add_tags,
     get_tags,
     get_username_by_id,
+    get_email_by_id,
     get_post_title_by_id,
     remove_tag,
     delete_image_post,
@@ -29,7 +31,7 @@ from utils.database.general_user import (
     download_image,
     post_profile_image,
     get_profile_image,
-    delete_profile_image
+    delete_profile_image,
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -65,7 +67,9 @@ from utils.database.recommendation import (
     update_recommendation_term,
     get_related,
     get_related_images,
-    get_recommendation_photos
+    get_recommendation_photos,
+    init_user_recommendation,
+    get_global_recommendations
 )
 from utils.database.collections import (
     create_collection,
@@ -80,6 +84,7 @@ from utils.database.collections import (
 from utils.database.user_purchases import (
     add_purchase,
     delete_item_from_cart,
+    item_is_in_cart,
     get_user_purchases,
     update_user_purchases_details,
 )
@@ -87,8 +92,16 @@ from utils.database.user_purchases import (
 app = Flask(__name__)
 app.user_id = None
 app.last_query = ""
-app.start_point = 0
+app.start_point = 1000000
 CORS(app)
+
+
+def invalid_text(text):
+    return text is None or "'" in text or '"' in text
+
+
+def clean_text(text):
+    return str(text).replace("'", "").replace('"', '')
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -97,6 +110,9 @@ def api_login():
     email = request.args.get("email")
     password = request.args.get("password")
     print(email, password)
+
+    if invalid_text(email) or invalid_text(password):
+        return jsonify({"result": False, "user_id": None})
 
     (result, user_id) = login_user(email, password, conn, cur)
     print(result, user_id)
@@ -116,18 +132,43 @@ def api_create_user():
     email = request.args.get("email")
     password = request.args.get("password")
     username = request.args.get("username")
+
     if username is None:
         username = str(str(first) + " " + str(last))
     print(username)
 
+    if invalid_text(email) or invalid_text(password) or invalid_text(first) \
+            or invalid_text(last) or invalid_text(username):
+        return jsonify({"result": False})
+
     result = create_user(first, last, email, password, username, conn, cur)
     if result:
         (result, user_id) = login_user(email, password, conn, cur)
-        print(result, user_id)
-        app.user_id = user_id
+        if result:
+            app.user_id = user_id
+            r = init_user_recommendation(int(user_id), conn, cur)
+            print("init_user_recommendation result: ", r)
         conn.close()
         return jsonify({"result": result})
     conn.close()
+    return jsonify({"result": result})
+
+
+@app.route("/delete_user", methods=["GET", "POST"])
+def api_delete_user():
+    conn, cur = get_conn_and_cur()
+    email = request.args.get("email")
+    password = request.args.get("password")
+    user_id = app.user_id
+
+    if invalid_text(email) or invalid_text(password) or user_id is None:
+        return jsonify({"result": False})
+
+    result = delete_account(user_id, email, password, conn, cur)
+
+    if result:
+        app.user_id = None
+
     return jsonify({"result": result})
 
 
@@ -137,6 +178,8 @@ def api_change_password():
     email = request.args.get("email")
     password = request.args.get("password")
     new_password = request.args.get("new_password")
+    if invalid_text(email) or invalid_text(password) or invalid_text(new_password):
+        return {"result": False}
     result = change_password(email, password, new_password, conn, cur)
     conn.close()
     return {"result": result}
@@ -146,6 +189,8 @@ def api_change_password():
 def api_forgot_password():
     conn, cur = get_conn_and_cur()
     email = request.args.get("email")
+    if invalid_text(email):
+        return jsonify({"result": False})
     result = forgot_password_get_change_password_link(email, conn, cur)
     conn.close()
     return jsonify({"result": result})
@@ -204,7 +249,12 @@ def api_post_profile_photo():
                     (follower,) = tup
                     print("~~~~~~~~~~~ Post photo notification sent ~~~~~~~~~~~~~")
                     send_notification(
-                        int(follower), int(user_id), "profile_photo", int(result), conn, cur
+                        int(follower),
+                        int(user_id),
+                        "profile_photo",
+                        int(result),
+                        conn,
+                        cur,
                     )
         conn.close()
         return jsonify({"result": result})
@@ -252,6 +302,7 @@ def api_discovery():
     query = request.args.get("query")
 
     if query is not None:
+        query = clean_text(query)
         terms = query.split(' ')
         print(terms)
 
@@ -259,14 +310,14 @@ def api_discovery():
         "++++++++++++++++++++++ DISCOVERY API CALLED - %s ++++++++++++++++++++++++++++++"
         % query
     )
-    start_point = 0
+    start_point = 1000000
 
     if app.last_query == query:
         print("------------------ last query === query ----------------------")
         start_point = app.start_point
     else:
-        print("---------------------- app.start_point reset to 0 ------------------")
-        app.start_point = 0
+        print("---------------------- app.start_point reset to 1000000 ------------------")
+        app.start_point = 1000000
     app.last_query = query
     if query is not None:
         connImages, curImages = get_conn_and_cur()
@@ -282,6 +333,7 @@ def api_discovery():
         connImages2.close()
     start_point_before_iteration = app.start_point
     if not result:
+        connImages, curImages = get_conn_and_cur()
         result = discovery_with_search_term(
             user_id, batch_size, query, start_point, connImages, curImages
         )
@@ -296,7 +348,7 @@ def api_discovery():
                         "=============== THIS REQUEST FOR - %s - HAS BEEN CANCELLED ============="
                         % query
                     )
-                    app.start_point = 0
+                    app.start_point = 1000000
                     return jsonify({"result": False})
 
                 print(tup)
@@ -322,7 +374,7 @@ def api_discovery():
                 img = base64.encodebytes(img).decode("utf-8")
 
                 print("id - %d, start_point - %d" % (id, app.start_point))
-                if id > app.start_point:
+                if id < app.start_point:
                     app.start_point = id
 
                     processed_result.append(
@@ -386,7 +438,7 @@ def api_discovery():
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
-                if id > app.start_point:
+                if id < app.start_point:
                     app.start_point = id
 
                     processed_result.append(
@@ -419,15 +471,18 @@ def api_discovery():
 def api_profile_photos():
     user_id = request.args.get("user_id")
     batch_size = int(request.args.get("batch_size"))
+    last_id = request.args.get("last_id")
+    if last_id is None:
+        last_id = 1000000
 
     if user_id is None:
         return jsonify({"result": False})
 
     if batch_size is None or batch_size <= 0:
-        batch_size = 32
+        batch_size = 90
 
     conn, cur = get_conn_and_cur()
-    result = profiles_photos(user_id, batch_size, conn, cur)
+    result = profiles_photos(user_id, batch_size, int(last_id), conn, cur)
     conn.close()
 
     if result:
@@ -445,6 +500,11 @@ def api_profile_photos():
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
 
+            if last_id is None:
+                last_id = id
+            elif last_id < id:
+                last_id = id
+
             processed_result.append(
                 {
                     "id": id,
@@ -461,7 +521,7 @@ def api_profile_photos():
 
         # print(imgarr[0])
 
-        retval = jsonify({"result": processed_result})
+        retval = jsonify({"result": processed_result, "last_id": last_id})
         print(retval)
         return retval
     else:
@@ -475,6 +535,11 @@ def api_edit_post():
     price = int(request.args.get("price"))
     caption = request.args.get("caption")
     tags = request.args.get("tags")
+    if invalid_text(title) or invalid_text(caption):
+        return jsonify({"result": False})
+    for t in tags:
+        if invalid_text(t):
+            return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
     conn.close()
@@ -635,6 +700,7 @@ def api_post_comment_to_image():
     if image_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
+        comment = clean_text(comment)
         conn, cur = get_conn_and_cur()
         result = post_comment_to_image(image_id, commenter, comment, conn, cur)
         conn.close()
@@ -651,6 +717,7 @@ def api_post_comment_to_comment():
     if image_id is None or comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
+        comment = clean_text(comment)
         conn, cur = get_conn_and_cur()
         result = post_comment_to_comment(
             image_id, commenter, comment, comment_id, conn, cur
@@ -701,6 +768,14 @@ def api_get_comments_to_image():
                     created_at,
                     count,
                 ) = tup
+
+                conn, cur = get_conn_and_cur()
+                username = get_username_by_id(commenter, conn, cur)
+                conn.close()
+
+                if username is None:
+                    username = comment_id
+
                 if count is None:
                     count = 0
                 processed_result.append(
@@ -708,6 +783,7 @@ def api_get_comments_to_image():
                         "comment_id": comment_id,
                         "image_id": image_id,
                         "commenter": commenter,
+                        "username": username,
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
@@ -741,6 +817,14 @@ def api_get_comments_to_comment():
                     created_at,
                     count,
                 ) = tup
+
+                conn, cur = get_conn_and_cur()
+                username = get_username_by_id(commenter, conn, cur)
+                conn.close()
+
+                if username is None:
+                    username = comment_id
+
                 if count is None:
                     count = 0
                 processed_result.append(
@@ -748,6 +832,7 @@ def api_get_comments_to_comment():
                         "comment_id": comment_id,
                         "image_id": image_id,
                         "commenter": commenter,
+                        "username": username,
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
@@ -764,7 +849,7 @@ def api_get_tags():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = get_tags(image_id, conn, cur)
-    for x in ['', " "]:
+    for x in ["", " "]:
         if x in result:
             result.remove(x)
     conn.close()
@@ -774,7 +859,7 @@ def api_get_tags():
 @app.route("/add_tags")
 def api_add_tags():
     image_id = request.args.get("image_id")
-    tags = request.args.get("tags")
+    tags = clean_text(request.args.get("tags"))
     tags = tags.split(",")
     if image_id is None or tags is None:
         return jsonify({"result": False})
@@ -787,7 +872,7 @@ def api_add_tags():
 @app.route("/remove_tag")
 def api_remove_tag():
     image_id = request.args.get("image_id")
-    tag = request.args.get("tag")
+    tag = clean_text(request.args.get("tag"))
     if image_id is None or tag is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -798,7 +883,7 @@ def api_remove_tag():
 
 @app.route("/create_collection", methods=["GET", "POST"])
 def api_create_collection():
-    collection_name = request.args.get("collection_name")
+    collection_name = clean_text(request.args.get("collection_name"))
     private = request.args.get("private")
     user_id = app.user_id
 
@@ -1071,6 +1156,22 @@ def api_delete_item_from_cart():
     return jsonify({"result": result})
 
 
+@app.route("/item_is_in_cart", methods=["GET", "POST"])
+def api_check_if_added_to_cart():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or image_id is None:
+        print("~~~~~~~~~~~~HEREEEEEE IN ITEM IS IN CART~~~~~~~~~~~~")
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = item_is_in_cart(int(user_id), int(image_id), conn, cur)
+    conn.close()
+
+    print("~~~~~~~~RESULT ISSS %s ~~~~~~~~~" % result)
+    return jsonify({"result": result})
+
+
 @app.route("/get_user_purchases", methods=["GET", "POST"])
 def api_get_user_purchases():
     user_id = app.user_id
@@ -1174,20 +1275,38 @@ def api_get_user_username():
     return jsonify({"result": result})
 
 
+@app.route("/get_user_email", methods=["GET", "POST"])
+def api_get_user_email():
+    uid = request.args.get("user_id")
+
+    if uid is None:
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = get_email_by_id(int(uid), conn, cur, )
+    conn.close()
+    return jsonify({"result": result})
+
+
 @app.route("/update_search_recommendation", methods=["GET", "POST"])
 def api_update_search_recommendation():
     user_id = app.user_id
-    query = request.args.get("query")
+    query = clean_text(request.args.get("query"))
     if query is not None and app.user_id is not None:
-        terms = query.split(' ')
+        terms = query.split(" ")
         conn, cur = get_conn_and_cur()
         for term in terms:
             if term is not None:
-                result = update_recommendation_term(int(user_id), term, 0.5, 0.5, conn, cur)
+                result = update_recommendation_term(
+                    int(user_id), term, 0.5, 0.5, conn, cur
+                )
                 if not result:
                     conn.close()
                     return jsonify({"result": result})
+        conn.close()
         return jsonify({"result": True})
+    print(
+        "~~~~~~~~~~~Update search recommendation says query or app.user_id is none~~~~~~~~~~~"
+    )
     return jsonify({"result": False})
 
 
@@ -1195,7 +1314,7 @@ def api_update_search_recommendation():
 def api_update_comment_recommendation():
     user_id = app.user_id
     image_id = request.args.get("image_id")
-    print('update_comment_recommendation: ', user_id, image_id)
+    print("update_comment_recommendation: ", user_id, image_id)
     if image_id is not None and app.user_id is not None:
         conn, cur = get_conn_and_cur()
         result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
@@ -1205,7 +1324,9 @@ def api_update_comment_recommendation():
                 print(term, value)
                 if term is not None:
                     print("eep")
-                    result = update_recommendation_term(int(user_id), term, float(value), 0.75, conn, cur)
+                    result = update_recommendation_term(
+                        int(user_id), term, float(value), 0.75, conn, cur
+                    )
                     """if not result:
                         print("floop")
                         conn.close()
@@ -1220,7 +1341,7 @@ def api_update_comment_recommendation():
 def api_update_likes_recommendation():
     user_id = app.user_id
     image_id = request.args.get("image_id")
-    print('update_comment_recommendation: ', user_id, image_id)
+    print("update_comment_recommendation: ", user_id, image_id)
     if image_id is not None and app.user_id is not None:
         conn, cur = get_conn_and_cur()
         result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
@@ -1230,7 +1351,9 @@ def api_update_likes_recommendation():
                 print(term, value)
                 if term is not None:
                     print("eep")
-                    result = update_recommendation_term(int(user_id), term, float(value), 0.75, conn, cur)
+                    result = update_recommendation_term(
+                        int(user_id), term, float(value), 0.75, conn, cur
+                    )
                     """if not result:
                         print("floop")
                         conn.close()
@@ -1250,7 +1373,7 @@ def api_get_related_images():
     if user_id is None:
         # print("\n=================RELATED IMAGES: USER_ID is None=================\n")
         # return jsonify({"result": False})
-        user_id = 0;
+        user_id = 0
 
     conn, cur = get_conn_and_cur()
     result = get_related(user_id, image_id, conn, cur)
@@ -1317,7 +1440,18 @@ def api_get_recommended_images():
         min_score = None
 
         for tup in result:
-            id, caption, uploader, img, title, price, created_at, tags, num_likes, score = tup
+            (
+                id,
+                caption,
+                uploader,
+                img,
+                title,
+                price,
+                created_at,
+                tags,
+                num_likes,
+                score,
+            ) = tup
             if not num_likes:
                 num_likes = 0
             file = "image.jpeg"
@@ -1349,8 +1483,85 @@ def api_get_recommended_images():
 
         # print(imgarr[0])
 
-        retval = jsonify({"result": processed_result, "score": float(min_score)})
+        retval = jsonify({"result": processed_result, "score": float(min_score) - 0.01})
         print(retval)
         return retval
     else:
         return jsonify({"result": False})
+
+
+@app.route("/get_global_recommendations")
+def api_get_global_recommendations():
+    print("\n=================RECOMMENDED IMAGES=================\n")
+    score = request.args.get("score")
+    batch_size = request.args.get("batch_size")
+    if batch_size is None:
+        batch_size = 10
+
+    conn, cur = get_conn_and_cur()
+    result = get_global_recommendations(score, batch_size, conn, cur)
+    conn.close()
+
+    if result:
+        processed_result = []
+        min_score = None
+
+        for tup in result:
+            (
+                id,
+                caption,
+                uploader,
+                img,
+                title,
+                price,
+                created_at,
+                tags,
+                num_likes,
+                score,
+            ) = tup
+            if not num_likes:
+                num_likes = 0
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            if min_score is None:
+                min_score = float(score)
+            elif float(score) < min_score:
+                min_score = float(score)
+
+            print(tup)
+
+            processed_result.append(
+                {
+                    "id": id,
+                    "caption": caption,
+                    "uploader": uploader,
+                    "img": img,
+                    "title": title,
+                    "price": str(price),
+                    "created_at": created_at,
+                    "num_likes": num_likes,
+                    "tags": tags,
+                }
+            )
+
+        retval = jsonify({"result": processed_result, "score": float(min_score) - 0.01})
+        print(retval)
+        return retval
+    else:
+        return jsonify({"result": False})
+
+
+@app.route("/get_post_title", methods=["GET", "POST"])
+def api_get_post_title():
+    image_id = request.args.get("photo_id")
+
+    if image_id is None:
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = get_post_title_by_id(int(image_id), conn, cur)
+    conn.close()
+    return jsonify({"result": result})
