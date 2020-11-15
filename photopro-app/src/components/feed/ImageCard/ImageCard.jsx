@@ -213,6 +213,9 @@ class ImageCard extends Component {
 
     let uploaderID = String(this.props.image.uploader);
     let userID = localStorage.getItem('userID');
+
+    console.log(`uploaderID = ${uploaderID}, userID = ${userID}`);
+
     let deleteButton =
       uploaderID === userID ? (
         <IconButton
@@ -224,9 +227,7 @@ class ImageCard extends Component {
         >
           <DeleteIcon />
         </IconButton>
-      ) : (
-        <Button></Button>
-      );
+      ) : null;
 
     let editButton =
       uploaderID === userID ? (
@@ -239,9 +240,7 @@ class ImageCard extends Component {
         >
           <EditIcon />
         </IconButton>
-      ) : (
-        <Button></Button>
-      );
+      ) : null;
 
     component = (
       <React.Fragment>
@@ -272,26 +271,29 @@ class ImageCard extends Component {
 
           {this.props.userLoggedIn ? (
             <React.Fragment>
-              <IconButton
-                classes={{
-                  root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
-                }}
-                variant="contained"
-                onClick={this.handleBookmarkClicked}
-              >
-                <BookmarkIcon />
-              </IconButton>
+              {!this.props.displayMyProfile ? (
+                <React.Fragment>
+                  <IconButton
+                    classes={{
+                      root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
+                    }}
+                    variant="contained"
+                    onClick={this.handleBookmarkClicked}
+                  >
+                    <BookmarkIcon />
+                  </IconButton>
 
-              <IconButton
-                classes={{
-                  root: `${this.props.classes.root} ${this.props.classes.buy}`,
-                }}
-                variant="contained"
-                onClick={this.handleBuyClicked}
-              >
-                <ShoppingCartIcon />
-              </IconButton>
-
+                  <IconButton
+                    classes={{
+                      root: `${this.props.classes.root} ${this.props.classes.buy}`,
+                    }}
+                    variant="contained"
+                    onClick={this.handleBuyClicked}
+                  >
+                    <ShoppingCartIcon />
+                  </IconButton>
+                </React.Fragment>
+              ) : null}
               {deleteButton}
               {editButton}
             </React.Fragment>
