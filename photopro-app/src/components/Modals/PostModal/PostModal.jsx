@@ -223,6 +223,7 @@ export default function PostModal(props) {
                               console.log(
                                 `image with caption ${images.caption}`
                               );
+                              props.setRelatedImagesClicked(images);
                             }}
                             src={`data:image/jpg;base64,${images.img}`}
                             alt={images.caption}
