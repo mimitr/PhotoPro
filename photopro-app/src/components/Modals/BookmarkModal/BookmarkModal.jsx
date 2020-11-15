@@ -105,6 +105,7 @@ export default function BookmarkModal(props) {
               color="primary"
               onClick={() => {
                 setShowCreateCollectionButton(false);
+                console.log('create collection button clicked');
               }}
             >
               Create a new collection
@@ -135,27 +136,29 @@ export default function BookmarkModal(props) {
                     onChange={(e) => setEnteredCollection(e.target.value)}
                   />
                 </div>
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={privateCollection}
+                        onChange={() => {
+                          if (privateCollection == true) {
+                            setPrivateCollection(0);
+                          } else {
+                            setPrivateCollection(1);
+                          }
+                        }}
+                        name="privateCheckbox"
+                        color="primary"
+                      />
+                    }
+                    label="Private"
+                  />
+                </div>
                 <Button variant="contained" color="primary" type="submit">
                   Create collection
                 </Button>
               </form>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={privateCollection}
-                    onChange={() => {
-                      if (privateCollection == true) {
-                        setPrivateCollection(0);
-                      } else {
-                        setPrivateCollection(1);
-                      }
-                    }}
-                    name="privateCheckbox"
-                    color="primary"
-                  />
-                }
-                label="Private"
-              />
 
               <Button
                 variant="contained"

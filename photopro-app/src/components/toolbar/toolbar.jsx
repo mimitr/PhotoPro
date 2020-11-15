@@ -10,6 +10,9 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Notifications from './notifications/notifications';
 import logo from '../../logo/logo-new.png';
 
+import LoginModal from '../Modals/LoginModal/LoginModal';
+import SignupModal from '../Modals/SignupModal/SignupModal';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
@@ -28,6 +31,9 @@ function Toolbar() {
 
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
+  const [signupModalIsOpen, setSignupModalIsOpen] = useState(false);
+
   const handleAccountClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -37,11 +43,11 @@ function Toolbar() {
   };
 
   const handleSignInClicked = () => {
-    history.push('/login');
+    setLoginModalIsOpen(true);
   };
 
   const handleSignUpClicked = () => {
-    history.push('/signup');
+    setSignupModalIsOpen(true);
   };
 
   const handleProfileClicked = function () {
@@ -91,6 +97,8 @@ function Toolbar() {
   const handleLogoClicked = () => {
     history.push('/');
   };
+
+  console.log(signupModalIsOpen);
 
   let buttons;
   if (loggedIn === 'true') {
@@ -205,6 +213,34 @@ function Toolbar() {
           />
         </div>
         {buttons}
+
+        {loginModalIsOpen ? (
+          <div
+            className="toolbar-modal-wrapper"
+            onClick={() => {
+              setLoginModalIsOpen(false);
+            }}
+          >
+            <LoginModal
+              openLoginModal={true}
+              setOpenLoginModal={setLoginModalIsOpen}
+            ></LoginModal>
+          </div>
+        ) : null}
+
+        {signupModalIsOpen ? (
+          <div
+            className="toolbar-modal-wrapper"
+            onClick={() => {
+              setSignupModalIsOpen(false);
+            }}
+          >
+            <SignupModal
+              openSignupModal={true}
+              setOpenSignupModal={setSignupModalIsOpen}
+            ></SignupModal>
+          </div>
+        ) : null}
       </div>
     </React.Fragment>
   );

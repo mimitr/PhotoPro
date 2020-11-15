@@ -69,6 +69,8 @@ const useStyles = makeStyles((theme) => ({
     padding: `${theme.spacing(2)}px ${theme.spacing(4)}px ${
       theme.spacing(1) + 6
     }px`,
+    fontSize: 28,
+    fontWeight: "bold",
   },
   imageMarked: {
     height: 3,

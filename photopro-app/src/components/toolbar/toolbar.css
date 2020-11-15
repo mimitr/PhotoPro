@@ -59,3 +59,9 @@
   order: 1;
   width: 10rem;
 }
+
+.toolbar-modal-wrapper {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+}
