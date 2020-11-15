@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "./toolbar.css";
 import { useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
@@ -6,14 +7,17 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import Notifications from "./notifications/notifications";
+import logo from "../../logo/logo-new.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
     border: "3px solid red",
+    margin: "auto",
   },
   button: {
-    color: "white",
+    color: "rgb(83, 85, 89)",
   },
 }));
 
@@ -41,7 +45,12 @@ function Toolbar() {
   };
 
   const handleProfileClicked = function () {
-    history.push("/profile/1");
+    const userID = localStorage.getItem("userID");
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/profile/${userID}`,
+      state: { uploaderID: userID },
+    });
   };
 
   const handleLogoutClicked = () => {
@@ -63,7 +72,24 @@ function Toolbar() {
   };
 
   const handleCollectionsClicked = () => {
-    history.push("/collections");
+    const userID = localStorage.getItem("userID");
+    console.log(`In toolbar the userID = ${userID}`);
+    history.push({
+      pathname: `/collections/${userID}`,
+      state: { uploaderID: userID },
+    });
+  };
+
+  const handleCartClicked = () => {
+    history.push("/shopping-cart");
+  };
+
+  const handleMyPurchasesClicked = () => {
+    history.push("/my-purchases");
+  };
+
+  const handleLogoClicked = () => {
+    history.push("/");
   };
 
   let buttons;
@@ -72,6 +98,8 @@ function Toolbar() {
       <React.Fragment>
         <div className={"flex-container-buttons-2"}>
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             size="small"
             onClick={handleDiscoveryClicked}
@@ -79,6 +107,8 @@ function Toolbar() {
             Discovery
           </Button>
           <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             size="small"
             onClick={handleCollectionsClicked}
@@ -87,6 +117,18 @@ function Toolbar() {
           </Button>
 
           <Button
+            variant="outlined"
+            size="large"
+            className={classes.button}
+            size="small"
+            onClick={handleCartClicked}
+          >
+            My Cart
+          </Button>
+
+          <Button
+            variant="outlined"
+            size="large"
             className={classes.button}
             aria-controls="simple-menu"
             aria-haspopup="true"
@@ -102,14 +144,18 @@ function Toolbar() {
             onClose={handleAccountClose}
           >
             <MenuItem onClick={handleProfileClicked}>Profile</MenuItem>
+            <MenuItem onClick={handleMyPurchasesClicked}>My Purchases</MenuItem>
             <MenuItem onClick={handleChangePassClicked}>
               Change Password
             </MenuItem>
             <MenuItem onClick={handleLogoutClicked}>Logout</MenuItem>
           </Menu>
+          <Notifications />
         </div>
         <div className="toolbar-left">
           <Button
+            variant="outlined"
+            size="large"
             onClick={handleUploadClicked}
             // variant="outlined"
             color="primary"
@@ -126,10 +172,20 @@ function Toolbar() {
       <React.Fragment>
         <div className="toolbar-left-placeholder"></div>
         <div className="flex-container-buttons-1">
-          <Button style={{ color: "white" }} onClick={handleSignInClicked}>
+          <Button
+            variant="outlined"
+            size="large"
+            className={classes.button}
+            onClick={handleSignInClicked}
+          >
             Sign in
           </Button>
-          <Button style={{ color: "white" }} onClick={handleSignUpClicked}>
+          <Button
+            variant="outlined"
+            size="large"
+            className={classes.button}
+            onClick={handleSignUpClicked}
+          >
             Getting Started
           </Button>
         </div>
@@ -140,7 +196,10 @@ function Toolbar() {
   return (
     <React.Fragment>
       <div className="flex-container-toolbar">
-        <h1 className="toolbar-text">PhotoPro</h1>
+        <div className="logo" onClick={handleLogoClicked}>
+          <img className="logo" src={logo} alt="Logo" />
+        </div>
+        {/* <img src={logo} alt="Logo" /> */}
         {buttons}
       </div>
     </React.Fragment>

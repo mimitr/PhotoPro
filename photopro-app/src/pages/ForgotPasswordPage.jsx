@@ -5,9 +5,6 @@ import axios from 'axios';
 
 export default function ForgotPasswordPage() {
   const [email, set_email] = useState('');
-  const [password, set_password] = useState('');
-  const [new_password, set_new_password] = useState('');
-  const [new_confirmed_password, set_new_confirmed_password] = useState('');
 
   const history = useHistory();
 

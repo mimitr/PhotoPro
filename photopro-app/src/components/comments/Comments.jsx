@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Comment from './comment/Comment';
 import './Comments.css';
 import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,23 +36,46 @@ export default function Comments(props) {
     postComments(comment_input);
   };
 
+  const sendCommentNotification = () => {
+    axios({
+      url: 'http://localhost:5000/send_notification',
+      params: {
+        uploader_id: props.uploader_id,
+        notification: 'comment',
+        image_id: props.image_id,
+      },
+    }).then((response) => {
+      console.log(response);
+    });
+  };
+
   const postComments = (comment_input) => {
+    console.log(`imageid=${props.image_id}`);
     axios({
       method: 'POST',
       url: 'http://localhost:5000/post_comment_to_image',
       params: { comment: comment_input, image_id: props.image_id },
     }).then((response) => {
+      console.log(response);
       if (response.data.result) {
-        console.log(`comment posted successfully with ${response.data.result}`);
         props.updateComments(props.comments_list.concat(comment_input));
         set_comment_input('');
+        sendCommentNotification();
       }
     });
+    axios({
+        method: 'GET',
+        url: 'http://localhost:5000/update_comment_recommendation',
+        params: { image_id: props.image_id}, //user_id: 1
+        
+      }).then((res) => {
+        console.log(res);
+      });
   };
 
   return (
     <React.Fragment>
-      <div className="comment-input">
+      {localStorage.getItem('userLoggedIn') ? (
         <form onSubmit={handlePostClick}>
           <div className={classes.margin}>
             <TextField
@@ -77,7 +97,7 @@ export default function Comments(props) {
             />
           </div>
         </form>
-      </div>
+      ) : null}
       <div className="comments-container">{comments}</div>
     </React.Fragment>
   );

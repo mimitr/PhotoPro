@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './ImageCard.css';
-import { Redirect, Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core';
@@ -10,6 +9,7 @@ import BookmarkIcon from '@material-ui/icons/Bookmark';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import PostModal from '../../Modals/PostModal/PostModal';
 
 const deletePostRequest = async function (imageID) {
   const response = await axios.get('http://localhost:5000/delete_image_post', {
@@ -17,6 +17,22 @@ const deletePostRequest = async function (imageID) {
   });
 
   return response;
+};
+
+const apiAddPurchase = (imageID) => {
+  axios({
+    method: 'POST',
+    url: 'http://localhost:5000/add_purchase',
+    params: {
+      save_for_later: 0,
+      purchased: 0,
+      image_id: String(imageID),
+    },
+  }).then((response) => {
+    if (response.data.result !== false) {
+      console.log(response);
+    }
+  });
 };
 
 // matrial-ui component style override
@@ -56,11 +72,10 @@ const styles = {
     },
   },
   edit: {
-    left: '92%',
+    left: '82%',
     top: '10%',
     width: '14%',
     height: '18%',
-    left: '82%',
     '&:hover': {
       backgroundColor: 'rgba(6, 149, 193, 0.7)',
     },
@@ -74,24 +89,45 @@ class ImageCard extends Component {
     // CreateRef is used to access the DOM
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
-    this.state = { redirect: null, spans: 0 };
-
-    // for Bookmarks
-    //this.state = { modalIsOpen: false };
+    this.setOpenPostModal = this.setOpenPostModal.bind(this);
+    this.setNumLikes = this.setNumLikes.bind(this);
+    this.state = {
+      openPostModal: false,
+      spans: 0,
+      animateImages: '',
+      numLikes: this.props.image.num_likes,
+    };
   }
 
   componentDidMount() {
     this.imageRef.current.addEventListener('load', this.setSpans);
+    setTimeout(() => {
+      this.setState({
+        animateImages: 'image-container-animate',
+      });
+    }, 100);
   }
 
   setSpans = () => {
-    const height = this.imageRef.current.clientHeight;
-    const spansRows = Math.ceil(height / 10);
-    this.setState({ spans: spansRows });
+    if (this.imageRef.current != null) {
+      const height = this.imageRef.current.clientHeight;
+      const spansRows = Math.ceil(height / 10);
+      this.setState({ spans: spansRows });
+    }
+  };
+
+  setOpenPostModal = (newState) => {
+    this.setState({ openPostModal: newState });
+  };
+
+  setNumLikes = (newState) => {
+    console.log(`set num likes called with value ${newState}`);
+    this.setState({ numLikes: newState });
   };
 
   handleImageClicked = (e) => {
-    this.setState({ redirect: `/post-${this.props.image.id}` });
+    // this.setState({ redirect: `/post-${this.props.image.id}` });
+    this.setState({ openPostModal: true });
   };
 
   handleLikeClicked = (e) => {
@@ -100,13 +136,13 @@ class ImageCard extends Component {
 
   handleBookmarkClicked = (e) => {
     e.stopPropagation();
-    //this.setState({ modalIsOpen: true });
     this.props.setOpenBookmarkModal(true);
     this.props.setPhotoId(parseInt(this.props.image.id));
   };
 
   handleBuyClicked = (e) => {
     e.stopPropagation();
+    apiAddPurchase(this.props.image.id);
   };
 
   handleDeleteClicked = (e) => {
@@ -122,62 +158,51 @@ class ImageCard extends Component {
   };
 
   render() {
+    document.body.style.overflow = this.state.openPostModal
+      ? 'hidden'
+      : 'unset';
+
     let component;
 
-    if (this.state.redirect) {
-      component = (
-        <Redirect
-          push
-          to={{
-            pathname: `${this.state.redirect}`,
-            state: {
-              id: `${this.props.image.id}`,
-              url: `${this.props.image.img}`,
-              caption: `${this.props.image.caption}`,
-              price: `${this.props.image.price}`,
-              title: `${this.props.image.title}`,
-              uploader: `${this.props.image.uploader}`,
-              num_likes: `${this.props.image.num_likes}`,
-            },
+    let uploaderID = String(this.props.image.uploader);
+    let userID = localStorage.getItem('userID');
+    let deleteButton =
+      uploaderID === userID ? (
+        <IconButton
+          variant="contained"
+          classes={{
+            root: `${this.props.classes.root} ${this.props.classes.delete}`,
           }}
-        />
+          onClick={this.handleDeleteClicked}
+        >
+          <DeleteIcon />
+        </IconButton>
+      ) : (
+        <Button></Button>
       );
-    } else {
-      let uploaderID = String(this.props.image.uploader);
-      let userID = localStorage.getItem('userID');
-      let deleteButton =
-        uploaderID === userID ? (
-          <IconButton
-            variant="contained"
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.delete}`,
-            }}
-            onClick={this.handleDeleteClicked}
-          >
-            <DeleteIcon />
-          </IconButton>
-        ) : (
-          <Button></Button>
-        );
 
-      let editButton =
-        uploaderID === userID ? (
-          <IconButton
-            variant="contained"
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.edit}`,
-            }}
-            onClick={this.handleEditClicked}
-          >
-            <EditIcon />
-          </IconButton>
-        ) : (
-          <Button></Button>
-        );
+    let editButton =
+      uploaderID === userID ? (
+        <IconButton
+          variant="contained"
+          classes={{
+            root: `${this.props.classes.root} ${this.props.classes.edit}`,
+          }}
+          onClick={this.handleEditClicked}
+        >
+          <EditIcon />
+        </IconButton>
+      ) : (
+        <Button></Button>
+      );
 
-      component = (
-        // <div style={{ gridRowEnd: `span ${this.state.spans}` }}>
-        <div className="image-container" onClick={this.handleImageClicked}>
+    component = (
+      <React.Fragment>
+        {/* // <div style={{ gridRowEnd: `span ${this.state.spans}` }}> */}
+        <div
+          className={`image-container ${this.state.animateImages}`}
+          onClick={this.handleImageClicked}
+        >
           <div className="icon-bar"></div>
 
           <img
@@ -195,35 +220,59 @@ class ImageCard extends Component {
             onClick={this.handleLikeClicked}
           >
             <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
-            <div className="num-likes">{this.props.image.num_likes}</div>
+            <div className="num-likes">{this.state.numLikes}</div>
           </IconButton>
 
-          <IconButton
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
-            }}
-            variant="contained"
-            onClick={this.handleBookmarkClicked}
-          >
-            <BookmarkIcon />
-          </IconButton>
+          {this.props.userLoggedIn ? (
+            <React.Fragment>
+              <IconButton
+                classes={{
+                  root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
+                }}
+                variant="contained"
+                onClick={this.handleBookmarkClicked}
+              >
+                <BookmarkIcon />
+              </IconButton>
 
-          <IconButton
-            classes={{
-              root: `${this.props.classes.root} ${this.props.classes.buy}`,
-            }}
-            variant="contained"
-            onClick={this.handleBuyClicked}
-          >
-            <ShoppingCartIcon />
-          </IconButton>
+              <IconButton
+                classes={{
+                  root: `${this.props.classes.root} ${this.props.classes.buy}`,
+                }}
+                variant="contained"
+                onClick={this.handleBuyClicked}
+              >
+                <ShoppingCartIcon />
+              </IconButton>
 
-          {deleteButton}
-          {editButton}
+              {deleteButton}
+              {editButton}
+            </React.Fragment>
+          ) : null}
         </div>
-        // </div>
-      );
-    }
+        {this.state.openPostModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openPostModal: false });
+            }}
+          >
+            <PostModal
+              openModal={this.state.openPostModal}
+              setOpenModal={this.setOpenPostModal}
+              imageID={this.props.image.id}
+              url={this.props.image.img}
+              caption={this.props.image.caption}
+              price={this.props.image.price}
+              title={this.props.image.title}
+              uploader={this.props.image.uploader}
+              setNumLikes={this.setNumLikes}
+            />
+          </div>
+        ) : null}
+      </React.Fragment>
+    );
+
     return <React.Fragment>{component}</React.Fragment>;
   }
 }

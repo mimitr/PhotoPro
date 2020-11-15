@@ -1,0 +1,12 @@
+diaries/z5164634.txt
+photopro-app/api/__pycache__/app.cpython-37.pyc
+photopro-app/api/app.py
+photopro-app/api/image.jpeg
+photopro-app/api/utils/database/__pycache__/connect.cpython-37.pyc
+photopro-app/api/utils/database/__pycache__/general_user.cpython-37.pyc
+photopro-app/api/utils/database/connect.py
+photopro-app/api/utils/database/general_user.py
+photopro-app/src/App.js
+photopro-app/src/components/toolbar/toolbar.jsx
+photopro-app/src/pages/PostInfo/PostInfo.jsx
+photopro-app/src/pages/collections/collection/collectionDataPage/CollectionFeed.jsx

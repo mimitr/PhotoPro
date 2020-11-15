@@ -1,0 +1,46 @@
+@font-face {
+  font-family: 'Quicksand';
+  /* font-style: normal; */
+  /* font-weight: 400; */
+  src: local('Lato'),
+    url(../../fonts/Quicksand/static/Quicksand-Light.ttf) format('truetype');
+}
+
+* {
+  font-family: 'Quicksand';
+}
+
+.collectionsWrapper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 1em;
+  grid-auto-rows: minmax(50px, auto);
+  align-content: start;
+  justify-content: center;
+  width: 75%;
+  margin: 0 auto;
+  margin-top: 15%;
+}
+
+.collectionsWrapper > div {
+  background: #eee;
+  padding: 0.2em;
+}
+
+.collectionsWrapper > div:nth-child(odd) {
+  background: #ddd;
+  padding: 0.2em;
+}
+
+.title > h1 {
+  text-align: center;
+}
+
+.collections-box {
+  border: 3px solid red;
+  height: 50vh;
+}
+
+.collectionsPageWrapper {
+  margin-top: 15%;
+}
