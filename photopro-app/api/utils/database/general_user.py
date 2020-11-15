@@ -167,10 +167,9 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
 
         # classification code goes here
 
-        cmd = "INSERT INTO images (caption, uploader, file, title, price, tags) VALUES (%s, %s, %s, %s, %s, %s) RETURNING image_id"
+        cmd = "INSERT INTO images (caption, uploader, file, title, price) VALUES (%s, %s, %s, %s, %s) RETURNING image_id"
         # print(cmd, uploader, caption, title, price, tags)
-        print(tags)
-        cur.execute(cmd, (caption, uploader, image, title, price, tags))
+        cur.execute(cmd, (caption, uploader, image, title, price))
         conn.commit()
 
         result = cur.fetchone()[0]
@@ -193,12 +192,19 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
             # if label.score > (image_classify_threshold_percent / 100):
             # print(label.description)
             label_to_add = label.description.lstrip('"')
-            label_to_add = label_to_add.rstrip('"')
+            label_to_add = label_to_add.rstrip('"').lower()
             print(label_to_add)
-
-            cmd = "INSERT INTO auto_tags (image_id, term, value) VALUES (%s, %s, %s)"
-            cur.execute(cmd, (result, label_to_add, label.score))
-
+            if len(label_to_add) < 32:
+                cmd = "INSERT INTO auto_tags (image_id, term, value) VALUES (%s, %s, %s)"
+                cur.execute(cmd, (result, label_to_add, label.score))
+                tags.append(label_to_add)
+        cmd = "UPDATE images SET tags=%s WHERE image_id=%s"
+        tags = list(set([t.lower() for t in tags]))
+        final_tags = []
+        for t in tags:
+            if len(t) < 32:
+                final_tags.append(t)
+        cur.execute(cmd, (final_tags, result))
         conn.commit()
 
         return result
@@ -271,9 +277,15 @@ def delete_image_post(image_id, uploader, conn, cur):
     try:
         cmd = "DELETE FROM comments WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
-        conn.commit()
-
         cmd = "DELETE FROM likes WHERE image_id = {}".format(image_id)
+        cur.execute(cmd)
+        cmd = "DELETE FROM auto_tags WHERE image_id = {}".format(image_id)
+        cur.execute(cmd)
+        cmd = "DELETE FROM notifications WHERE image_id = {}".format(image_id)
+        cur.execute(cmd)
+        cmd = "DELETE FROM collection_photos WHERE image_id = {}".format(image_id)
+        cur.execute(cmd)
+        cmd = "DELETE FROM user_purchases WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
         conn.commit()
 
@@ -304,8 +316,8 @@ def discovery(user_id, batch_size, start_point, conn, cur):
 
         cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE images.image_id> {} AND uploader!={} \
-                     ORDER BY created_at DESC LIMIT {}".format(
+                    WHERE images.image_id < {} AND uploader!={} \
+                     ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
             start_point, user_id, batch_size
         )
         print(cmd)
@@ -336,8 +348,8 @@ def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cu
         batch_size = int(batch_size)
         cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE images.image_id> {} AND uploader!={} AND caption ILIKE '%{}%'\
-                     ORDER BY created_at DESC LIMIT {}".format(
+                    WHERE images.image_id < {} AND uploader!={} AND caption ILIKE '%{}%'\
+                     ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
             start_point, user_id, query, batch_size
         )
         print(cmd)
@@ -380,8 +392,8 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
         batch_size = int(batch_size)
         cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                     WHERE images.image_id> {} AND uploader != {} AND '{}' ILIKE ANY(tags)\
-                      ORDER BY created_at DESC LIMIT {}".format(
+                     WHERE images.image_id < {} AND uploader != {} AND '{}' ILIKE ANY(tags)\
+                      ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
             start_point, user_id, query, batch_size
         )
         print(cmd)
@@ -400,17 +412,24 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
         return False
 
 
-def profiles_photos(user_id, batch_size, conn, cur):
+def profiles_photos(user_id, batch_size, start_point, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
 
-        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
-                RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                 WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
-            user_id, batch_size
-        )
+        if start_point is None:
+            cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                                RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                                 WHERE AND uploader={} ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
+                user_id, batch_size
+            )
+        else:
+            cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                     WHERE images.image_id < {} AND uploader={} ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
+                int(start_point), user_id, batch_size
+            )
 
         print(cmd)
         cur.execute(cmd)
@@ -653,4 +672,55 @@ def get_post_title_by_id(image_id, conn, cur):
     except psycopg2.Error as e:
         error = e.pgcode
         print(error)
+        return False
+
+
+def delete_account(user_id, email, password, conn, cur):
+    cur.execute("SAVEPOINT save_point")
+    try:
+        cmd = "select image_id from images where uploader={}".format(int(user_id))
+        cur.execute(cmd)
+        conn.commit()
+        result = cur.fetchall()
+        for i in result:
+            (image_id,) = i
+            delete_image_post(image_id, user_id, conn, cur)
+        cmd = "select collection_id from collections where creator_id={}".format(int(user_id))
+        cur.execute(cmd)
+        conn.commit()
+        result = cur.fetchall()
+        for i in result:
+            (collection_id,) = i
+            cmd = "DELETE FROM collection_photos WHERE collection_id={}".format(collection_id)
+            cur.execute(cmd)
+        cmd = "DELETE FROM likes WHERE liker={}".format(int(user_id))
+        cur.execute(cmd)
+        cmd = "DELETE FROM notifications WHERE uploader={} OR sender={}".format(int(user_id), int(user_id))
+        cur.execute(cmd)
+        cmd = "DELETE FROM collections WHERE creator_id={}".format(int(user_id))
+        cur.execute(cmd)
+        cmd = "DELETE FROM comments WHERE commenter={}".format(int(user_id))
+        cur.execute(cmd)
+        cmd = "DELETE FROM follows WHERE followee={} OR follower={}".format(int(user_id), int(user_id))
+        cur.execute(cmd)
+        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(int(user_id))
+        cur.execute(cmd)
+        cmd = "DELETE FROM recommendations WHERE user_id={}".format(int(user_id))
+        cur.execute(cmd)
+        cmd = "DELETE FROM user_purchases WHERE user_id = {}".format(int(user_id))
+        cur.execute(cmd)
+        cmd = "DELETE FROM users WHERE id={}".format(int(user_id))
+        cur.execute(cmd)
+
+        conn.commit()
+
+        return True
+    except Exception as e:
+        print(e)
+        conn.rollback()
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        conn.rollback()
         return False
