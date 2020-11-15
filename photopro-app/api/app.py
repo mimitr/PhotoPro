@@ -471,15 +471,17 @@ def api_profile_photos():
     user_id = request.args.get("user_id")
     batch_size = int(request.args.get("batch_size"))
     last_id = request.args.get("last_id")
+    if last_id is None:
+        last_id = 1000000
 
     if user_id is None:
         return jsonify({"result": False})
 
     if batch_size is None or batch_size <= 0:
-        batch_size = 9
+        batch_size = 90
 
     conn, cur = get_conn_and_cur()
-    result = profiles_photos(user_id, batch_size, conn, cur)
+    result = profiles_photos(user_id, batch_size, int(last_id), conn, cur)
     conn.close()
 
     if result:
