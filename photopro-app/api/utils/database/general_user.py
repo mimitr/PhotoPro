@@ -193,7 +193,7 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
             # if label.score > (image_classify_threshold_percent / 100):
             # print(label.description)
             label_to_add = label.description.lstrip('"')
-            label_to_add = label_to_add.rstrip('"')
+            label_to_add = label_to_add.rstrip('"').lower()
             print(label_to_add)
 
             cmd = "INSERT INTO auto_tags (image_id, term, value) VALUES (%s, %s, %s)"
