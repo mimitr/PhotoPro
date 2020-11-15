@@ -122,7 +122,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 message["Subject"] = "PhotoPro: Reset Your Password"
                 message["From"] = sender
                 message["To"] = recipient
-                reset_url = "www.photopro.com/reset-password/id"
+                reset_url = "http://localhost:3000/reset-password/"
 
                 html = "\
                     <html>\
@@ -143,7 +143,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 server.sendmail(sender, recipient, message.as_string())
 
                 # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
-                return True
+                return reset_url
         else:
             print("Email not unique")
             return False
