@@ -21,12 +21,17 @@ export default function Email(props) {
   }, [submitFormClicked]);
 
   const handleEmailInput = (text) => {
-    if (text.length > 16 && text.length < 50) {
+    if (
+      text.length > 10 &&
+      text.length < 50 &&
+      text.includes('@') &&
+      text.includes('.com')
+    ) {
       setErrorValue(false);
       setErrorText('');
       return true;
     } else {
-      setErrorText('Email must be entered');
+      setErrorText('Email must be entered and include an @ and .com');
       setErrorValue(true);
       return false;
     }
