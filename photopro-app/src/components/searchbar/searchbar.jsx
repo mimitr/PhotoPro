@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './searchbar.css';
 import axios from 'axios';
 import Feed from '../feed/feed';
@@ -21,8 +21,11 @@ function SearchBar() {
         axios({
           url: 'http://localhost:5000/update_search_recommendation',
           params: { query: query },
-        }).then((response) => {});
+        }).then((response) => {
+          console.log(response);
+        });
       };
+      updateSearchRecommendation();
     }
     console.log(`The query is - ${query}`);
   }, [query]);

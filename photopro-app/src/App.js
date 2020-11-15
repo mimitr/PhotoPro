@@ -14,6 +14,7 @@ import CollectionDataPage from './pages/collections/CollectionsDataPage';
 import ShoppingCartPage from './pages/shoppingCartPage/ShoppingCartPage';
 import CheckoutPage from './pages/checkoutPage/CheckoutPage';
 import MyPurchases from './pages/myPurchases/MyPurchases';
+import RecommendationsPage from './pages/RecommendationsPage/RecommendationsPage';
 
 import { Switch, Route } from 'react-router-dom';
 
@@ -41,6 +42,7 @@ function App() {
         <Route path="/shopping-cart" component={ShoppingCartPage} />
         <Route path="/checkout" component={CheckoutPage} />
         <Route path="/my-purchases" component={MyPurchases} />
+        <Route path="/recommendations" component={RecommendationsPage} />
       </Switch>
     </React.Fragment>
   );

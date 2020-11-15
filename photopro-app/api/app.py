@@ -1194,7 +1194,11 @@ def api_update_search_recommendation():
                 if not result:
                     conn.close()
                     return jsonify({"result": result})
+        conn.close()
         return jsonify({"result": True})
+    print(
+        "~~~~~~~~~~~Update search recommendation says query or app.user_id is none~~~~~~~~~~~"
+    )
     return jsonify({"result": False})
 
 

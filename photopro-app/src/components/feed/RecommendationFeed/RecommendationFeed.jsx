@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './feed.css';
+import '../feed.css';
 import axios from 'axios';
-import ImageCard from './ImageCard/ImageCard';
-import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
+import ImageCard from '../ImageCard/ImageCard';
+import BookmarkModal from '../../Modals/BookmarkModal/BookmarkModal';
 
-const Feed = (props) => {
+const RecommendationFeed = () => {
   const [imgs, setImgs] = useState([]);
+  const [score, setScore] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -14,47 +15,49 @@ const Feed = (props) => {
   const userLoggedIn = localStorage.getItem('userLoggedIn');
   const fetchIsCancelled = useRef(false);
   const cancelAxiosRequest = useRef();
-  const observer = useRef();
-  const lastImageRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setLoading(true);
-          fetchImages(props.query);
-        }
-      });
+  //   const observer = useRef();
+  //   const lastImageRef = useCallback(
+  //     (node) => {
+  //       if (loading) return;
+  //       if (observer.current) observer.current.disconnect();
+  //       observer.current = new IntersectionObserver((entries) => {
+  //         if (entries[0].isIntersecting && hasMore) {
+  //           setLoading(true);
 
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore, props.query]
-  );
+  //           setTimeout(() => {
+  //             fetchRecommendations();
+  //           }, 3000);
+  //         }
+  //       });
+
+  //       if (node) observer.current.observe(node);
+  //     },
+  //     [loading, hasMore]
+  //   );
 
   useEffect(() => {
     fetchIsCancelled.current = false;
     setLoading(true);
 
     setTimeout(() => {
-      fetchImages(props.query);
+      fetchRecommendations();
     }, 150);
 
     return () => {
-      console.log('CLEAN UP - Feed');
-
       if (cancelAxiosRequest.current != null) cancelAxiosRequest.current();
 
       fetchIsCancelled.current = true;
       setImgs([]);
       setHasMore(true);
     };
-  }, [props.query]);
+  }, []);
 
-  const fetchImages = (term) => {
+  const fetchRecommendations = () => {
+    console.log(`fetching recommendation with a score of ${score}`);
     axios({
       method: 'GET',
-      url: 'http://localhost:5000/discovery',
-      params: { query: term, batch_size: 10 }, //user_id: 1
+      url: 'http://localhost:5000/get_recommended_images',
+      params: { score: score, batch_size: 20 },
       cancelToken: new axios.CancelToken(
         (c) => (cancelAxiosRequest.current = c)
       ),
@@ -62,6 +65,8 @@ const Feed = (props) => {
       .then((res) => {
         console.log(res);
         if (res.data.result !== false && !fetchIsCancelled.current) {
+          console.log(`setting score to ${res.data.score}`);
+          setScore(res.data.score);
           setHasMore(true);
           setLoading(false);
           setImgs((prevImgs) => {
@@ -75,15 +80,10 @@ const Feed = (props) => {
       })
       .catch((e) => {
         if (axios.isCancel(e)) {
-          console.log(`previous search request cancelled for - ${term}`);
           return;
         }
       });
   };
-
-  // console.log(`LENGTH = ${imgs.length}`);
-  // console.log(`HASMORE = ${hasMore}`);
-  // console.log(`LOADING = ${loading}`);
 
   return (
     <React.Fragment>
@@ -105,7 +105,7 @@ const Feed = (props) => {
                   setPhotoId={setPhotoIdBookmarked}
                   userLoggedIn={userLoggedIn}
                 />
-                <div
+                {/* <div
                   key={index}
                   ref={lastImageRef}
                   style={{
@@ -114,7 +114,7 @@ const Feed = (props) => {
                     // border: '3px solid red',
                     height: '0%',
                   }}
-                ></div>
+                ></div> */}
               </React.Fragment>
             );
           } else {
@@ -146,4 +146,4 @@ const Feed = (props) => {
   );
 };
 
-export default Feed;
+export default RecommendationFeed;
