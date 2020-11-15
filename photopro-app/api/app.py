@@ -706,6 +706,14 @@ def api_get_comments_to_image():
                     created_at,
                     count,
                 ) = tup
+
+                conn, cur = get_conn_and_cur()
+                username = get_username_by_id(commenter, conn, cur)
+                conn.close()
+
+                if username is None:
+                    username = comment_id
+
                 if count is None:
                     count = 0
                 processed_result.append(
@@ -713,6 +721,7 @@ def api_get_comments_to_image():
                         "comment_id": comment_id,
                         "image_id": image_id,
                         "commenter": commenter,
+                        "username": username,
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
@@ -746,6 +755,14 @@ def api_get_comments_to_comment():
                     created_at,
                     count,
                 ) = tup
+
+                conn, cur = get_conn_and_cur()
+                username = get_username_by_id(commenter, conn, cur)
+                conn.close()
+
+                if username is None:
+                    username = comment_id
+
                 if count is None:
                     count = 0
                 processed_result.append(
@@ -753,6 +770,7 @@ def api_get_comments_to_comment():
                         "comment_id": comment_id,
                         "image_id": image_id,
                         "commenter": commenter,
+                        "username": username,
                         "comment": comment,
                         "reply_id": reply_id,
                         "created_at": created_at,
@@ -1375,7 +1393,7 @@ def api_get_recommended_images():
 
         # print(imgarr[0])
 
-        retval = jsonify({"result": processed_result, "score": float(min_score)-0.01})
+        retval = jsonify({"result": processed_result, "score": float(min_score) - 0.01})
         print(retval)
         return retval
     else:
