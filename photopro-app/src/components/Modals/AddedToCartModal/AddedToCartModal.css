@@ -1,25 +1,19 @@
-.bookmarkModal {
+.cart-confirmation-modal {
   position: fixed;
   top: 50%;
   left: 50%;
-  overflow: auto;
   transform: translate(-50%, -50%);
   background-color: #fff;
   padding: 50px;
-  z-index: 1001;
+  z-index: 1010;
 }
 
-.overlayStyles {
+.cart-confirmation-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1001;
-}
-
-.collection-folders {
-  overflow: auto;
-  max-height: 40vh;
+  z-index: 1010;
 }

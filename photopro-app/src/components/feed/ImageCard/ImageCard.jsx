@@ -10,6 +10,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import PostModal from '../../Modals/PostModal/PostModal';
+import AddedToCartModal from '../../Modals/AddedToCartModal/AddedToCartModal';
 
 const deletePostRequest = async function (imageID) {
   const response = await axios.get('http://localhost:5000/delete_image_post', {
@@ -17,22 +18,6 @@ const deletePostRequest = async function (imageID) {
   });
 
   return response;
-};
-
-const apiAddPurchase = (imageID) => {
-  axios({
-    method: 'POST',
-    url: 'http://localhost:5000/add_purchase',
-    params: {
-      save_for_later: 0,
-      purchased: 0,
-      image_id: String(imageID),
-    },
-  }).then((response) => {
-    if (response.data.result !== false) {
-      console.log(response);
-    }
-  });
 };
 
 // matrial-ui component style override
@@ -90,9 +75,13 @@ class ImageCard extends Component {
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
     this.setOpenPostModal = this.setOpenPostModal.bind(this);
+    this.setAddedToCartModal = this.setAddedToCartModal.bind(this);
+    this.setCartStatus = this.setCartStatus.bind(this);
     this.setNumLikes = this.setNumLikes.bind(this);
     this.state = {
       openPostModal: false,
+      openCartAddedModal: false,
+      cartStatus: '',
       spans: 0,
       animateImages: '',
       numLikes: this.props.image.num_likes,
@@ -116,6 +105,14 @@ class ImageCard extends Component {
     }
   };
 
+  setAddedToCartModal = (newState) => {
+    this.setState({ openCartAddedModal: newState });
+  };
+
+  setCartStatus = (newState) => {
+    this.setState({ cartStatus: newState });
+  };
+
   setOpenPostModal = (newState) => {
     this.setState({ openPostModal: newState });
   };
@@ -126,7 +123,6 @@ class ImageCard extends Component {
   };
 
   handleImageClicked = (e) => {
-    // this.setState({ redirect: `/post-${this.props.image.id}` });
     this.setState({ openPostModal: true });
   };
 
@@ -142,7 +138,58 @@ class ImageCard extends Component {
 
   handleBuyClicked = (e) => {
     e.stopPropagation();
-    apiAddPurchase(this.props.image.id);
+
+    const apiAddToCart = (imageID, setModal, setCartStatus) => {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:5000/add_purchase',
+        params: {
+          save_for_later: 0,
+          purchased: 0,
+          image_id: String(imageID),
+        },
+      }).then((response) => {
+        if (response.data.result !== false) {
+          setModal(true);
+          setCartStatus('added');
+        }
+      });
+    };
+
+    const apiRemoveFromCart = (imageID, setModal, setCartStatus) => {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:5000/delete_item_from_cart',
+        params: {
+          image_id: String(imageID),
+        },
+      }).then((response) => {
+        if (response.data.result !== false) {
+          setModal(true);
+          setCartStatus('removed');
+        }
+      });
+    };
+
+    axios({
+      url: 'http://localhost:5000/item_is_in_cart',
+      params: { image_id: this.props.image.id },
+    }).then((response) => {
+      console.log(response);
+      if (!response.data.result) {
+        apiAddToCart(
+          this.props.image.id,
+          this.setAddedToCartModal,
+          this.setCartStatus
+        );
+      } else {
+        apiRemoveFromCart(
+          this.props.image.id,
+          this.setAddedToCartModal,
+          this.setCartStatus
+        );
+      }
+    });
   };
 
   handleDeleteClicked = (e) => {
@@ -267,6 +314,20 @@ class ImageCard extends Component {
               title={this.props.image.title}
               uploader={this.props.image.uploader}
               setNumLikes={this.setNumLikes}
+            />
+          </div>
+        ) : null}
+
+        {this.state.openCartAddedModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openCartAddedModal: false });
+            }}
+          >
+            <AddedToCartModal
+              openModal={true}
+              cartStatus={this.state.cartStatus}
             />
           </div>
         ) : null}
