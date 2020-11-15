@@ -208,13 +208,15 @@ export default function PostModal(props) {
             </div>
           </div>
 
-          {bookmarkModalIsOpen ? (
-            <BookmarkModal
-              openModal={true}
-              setOpenModal={setBookmarkModalIsOpen}
-              photoId={props.imageID}
-            ></BookmarkModal>
-          ) : null}
+          <div onClick={() => setBookmarkModalIsOpen(false)}>
+            {bookmarkModalIsOpen ? (
+              <BookmarkModal
+                openModal={true}
+                setOpenModal={setBookmarkModalIsOpen}
+                photoId={props.imageID}
+              ></BookmarkModal>
+            ) : null}
+          </div>
         </div>
       </React.Fragment>,
 
