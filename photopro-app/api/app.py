@@ -280,15 +280,15 @@ def api_discovery():
         result = search_by_tag(
             user_id, batch_size, query, start_point, connImages, curImages
         )
-        if result:
-            connImages.close()
+        connImages.close()
     else:
-        connImages2, curImages2 = get_conn_and_cur()
         print("==================== QUERY IS NONE =======================")
+        connImages2, curImages2 = get_conn_and_cur()
         result = discovery(user_id, batch_size, start_point, connImages2, curImages2)
         connImages2.close()
     start_point_before_iteration = app.start_point
     if not result:
+        connImages, curImages = get_conn_and_cur()
         result = discovery_with_search_term(
             user_id, batch_size, query, start_point, connImages, curImages
         )
@@ -1213,6 +1213,7 @@ def api_get_user_username():
     result = get_username_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
+
 
 @app.route("/get_user_email", methods=["GET", "POST"])
 def api_get_user_email():
