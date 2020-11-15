@@ -14,6 +14,7 @@ import BookmarkModal from '../BookmarkModal/BookmarkModal';
 
 export default function PostModal(props) {
   const [username, setUsername] = useState(props.uploader);
+  const [email, setEmail] = useState('');
   const [comments, setComments] = useState([]);
   const [addedToCart, setAddedToCart] = useState(false);
   const [tags, setTags] = useState([]);
@@ -29,6 +30,7 @@ export default function PostModal(props) {
       params: { user_id: props.uploader },
     }).then((response) => {
       if (response.data.result) {
+        console.log(response.data);
         setUsername(response.data.result);
       }
     });
@@ -41,6 +43,16 @@ export default function PostModal(props) {
       if (response.data.result) {
         console.log('added to cart');
         setAddedToCart(true);
+      }
+    });
+
+    axios({
+      url: 'http://localhost:5000/get_user_email',
+      params: { user_id: props.uploader },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response.data);
+        setEmail(response.data.result);
       }
     });
   }, []);
@@ -156,19 +168,6 @@ export default function PostModal(props) {
           <div className="postWrapper">
             <div className="postInfo">
               <div className="username">
-                <div className="username-wrapper">
-                  <Button
-                    varient="outlined"
-                    onClick={() => {
-                      history.push({
-                        pathname: `/profile/${props.uploader}`,
-                        state: { uploaderID: props.uploader },
-                      });
-                    }}
-                  >
-                    @{username}
-                  </Button>
-                </div>
                 {localStorage.getItem('userLoggedIn') ? (
                   <React.Fragment>
                     {localStorage.getItem('userID') !== props.uploader ? (
@@ -207,7 +206,26 @@ export default function PostModal(props) {
               </div>
             </div>
             <div className="postFeed-nested">
-              <h1>{props.title}</h1>
+              <div className="title">
+                <h1>{props.title}</h1>
+                <div className="username-wrapper">
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      history.push({
+                        pathname: `/profile/${props.uploader}`,
+                        state: { uploaderID: props.uploader },
+                      });
+                    }}
+                  >
+                    @{username}
+                  </Button>
+                </div>
+                <p className="roboto" style={{ fontSize: '70%' }}>
+                  Email: {email}
+                </p>
+              </div>
+
               <h2 className="roboto">{props.caption}</h2>
               <div className="postTags">
                 <h3>

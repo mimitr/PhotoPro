@@ -22,6 +22,7 @@ from utils.database.general_user import (
     add_tags,
     get_tags,
     get_username_by_id,
+    get_email_by_id,
     get_post_title_by_id,
     remove_tag,
     delete_image_post,
@@ -1210,6 +1211,17 @@ def api_get_user_username():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = get_username_by_id(int(uid), conn, cur,)
+    conn.close()
+    return jsonify({"result": result})
+
+@app.route("/get_user_email", methods=["GET", "POST"])
+def api_get_user_email():
+    uid = request.args.get("user_id")
+
+    if uid is None:
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = get_email_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
 

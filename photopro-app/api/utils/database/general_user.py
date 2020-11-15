@@ -228,10 +228,12 @@ def post_profile_image(uploader, image, conn, cur):
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
 
+
 def get_profile_image(uploader, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "select file from profile_photos WHERE user_id={}".format(int(uploader))
+        cmd = "select file from profile_photos WHERE user_id={}".format(
+            int(uploader))
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchone()[0]
@@ -249,7 +251,8 @@ def get_profile_image(uploader, conn, cur):
 def delete_profile_image(uploader, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(int(uploader))
+        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(
+            int(uploader))
         cur.execute(cmd)
         conn.commit()
         return True
@@ -523,7 +526,8 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (int(image_id))
+        cmd = """select tags from images where image_id=%d """ % (
+            int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -556,7 +560,8 @@ def set_user_timestamp(user_id, conn, cur):
 
 def download_image(image_id, conn, cur):
     try:
-        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(image_id)
+        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(
+            image_id)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -582,7 +587,8 @@ def download_image(image_id, conn, cur):
 def get_username_by_id(user_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT email, username from users where id={}".format(int(user_id))
+        cmd = "SELECT email, username from users where id={}".format(
+            int(user_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -602,10 +608,35 @@ def get_username_by_id(user_id, conn, cur):
         return False
 
 
+def get_email_by_id(user_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "SELECT email, username from users where id={}".format(
+            int(user_id))
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchall()
+        (email, username) = query_result[0]
+        print(email, username)
+        if username is None:
+            username = email.split("@")[0]
+        # print("get_username_by_id", username)
+        return email
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
 def get_post_title_by_id(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT title from images WHERE image_id={}".format(int(image_id))
+        cmd = "SELECT title from images WHERE image_id={}".format(
+            int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()

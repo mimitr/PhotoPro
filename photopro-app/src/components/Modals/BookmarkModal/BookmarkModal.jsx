@@ -107,7 +107,6 @@ export default function BookmarkModal(props) {
               color="primary"
               onClick={() => {
                 setShowCreateCollectionButton(false);
-                console.log('create collection button clicked');
               }}
             >
               Create a new collection

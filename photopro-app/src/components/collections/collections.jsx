@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './collections.css';
-import { Redirect } from 'react-router-dom';
-import Collection from './collection/Collection';
-import { CropPortrait } from '@material-ui/icons';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./collections.css";
+import { Redirect } from "react-router-dom";
+import Collection from "./collection/Collection";
+import Userbackground from "../../background/user-background/user-background.jpg";
 
 export default function Collections(props) {
   const [username, setUsername] = useState([props.userID]);
+  const [email, setEmail] = useState("");
   const [allCollections, setAllCollections] = useState([]);
   const [collectionClicked, setCollectionClicked] = useState(false);
   const [collectionIdClicked, setCollectionIdClicked] = useState(null);
@@ -25,11 +26,19 @@ export default function Collections(props) {
 
   useEffect(() => {
     axios({
-      url: 'http://localhost:5000/get_user_username',
+      url: "http://localhost:5000/get_user_username",
       params: { user_id: userID },
     }).then((response) => {
       if (response.data.result) {
         setUsername(response.data.result);
+      }
+    });
+    axios({
+      url: "http://localhost:5000/get_user_email",
+      params: { user_id: userID },
+    }).then((response) => {
+      if (response.data.result) {
+        setEmail(response.data.result);
       }
     });
   }, []);
@@ -37,8 +46,8 @@ export default function Collections(props) {
   useEffect(() => {
     const getUsersCollections = () => {
       axios({
-        method: 'GET',
-        url: 'http://localhost:5000/get_users_collection',
+        method: "GET",
+        url: "http://localhost:5000/get_users_collection",
         params: {
           user_id: userID,
           batch_size: 20,
@@ -95,11 +104,40 @@ export default function Collections(props) {
   } else {
     componentsRender = (
       <div className="collectionsPageWrapper">
+        <div
+          className="userpage-username"
+          style={{
+            backgroundImage: `url(${Userbackground})`,
+          }}
+        >
+          {!props.displayMyProfile ? (
+            <h1 style={{ textAlign: "center" }}>{username}</h1>
+          ) : null}
+
+          {!props.displayMyProfile ? (
+            <h3 style={{ textAlign: "center" }}>Email: {email}</h3>
+          ) : null}
+        </div>
+
         <div className="title">
           {props.displayMyProfile ? (
-            <h1 className="quicksand">My collections</h1>
+            <h2
+              className="quicksand"
+              style={{ marginTop: "10%", textAlign: "center" }}
+            >
+              My collections
+            </h2>
           ) : (
-            <h1 className="quicksand">Public Collections of @{username}</h1>
+            <h2
+              className="quicksand"
+              style={{
+                marginTop: "10%",
+                marginBottom: "8%",
+                textAlign: "center",
+              }}
+            >
+              Public Collections
+            </h2>
           )}
         </div>
         <div className="collectionsWrapper">{collectionsComponents}</div>

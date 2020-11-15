@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import './UserPhotos.css';
-import axios from 'axios';
-import ImageCard from '../feed/ImageCard/ImageCard';
-import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
+import React, { useState, useEffect } from "react";
+import "./UserPhotos.css";
+import axios from "axios";
+import ImageCard from "../feed/ImageCard/ImageCard";
+import BookmarkModal from "../Modals/BookmarkModal/BookmarkModal";
 
 const UserPhotos = (props) => {
   const [username, setUsername] = useState(props.userID);
@@ -14,11 +14,11 @@ const UserPhotos = (props) => {
 
   const { userID } = props;
   const displayMyProfile =
-    localStorage.getItem('userID') == userID ? true : false;
+    localStorage.getItem("userID") == userID ? true : false;
 
   useEffect(() => {
     axios({
-      url: 'http://localhost:5000/get_user_username',
+      url: "http://localhost:5000/get_user_username",
       params: { user_id: userID },
     }).then((response) => {
       if (response.data.result) {
@@ -42,8 +42,8 @@ const UserPhotos = (props) => {
     setLoading(true);
 
     axios({
-      method: 'GET',
-      url: 'http://localhost:5000/profile_photos',
+      method: "GET",
+      url: "http://localhost:5000/profile_photos",
       params: { user_id: userID, batch_size: 30 }, //user_id: 1
     }).then((res) => {
       console.log(res);
@@ -60,14 +60,16 @@ const UserPhotos = (props) => {
   return (
     <React.Fragment>
       {displayMyProfile ? (
-        <h2>Uploaded Images: {profileImgs.length}</h2>
+        <h2 style={{ marginTop: "10%", marginLeft: "9%" }}>
+          Uploaded Images: {profileImgs.length}
+        </h2>
       ) : (
-        <h2>
-          Uploads by @{username}: {profileImgs.length}
+        <h2 style={{ marginTop: "10%", marginLeft: "9%" }}>
+          Uploads: {profileImgs.length}
         </h2>
       )}
       {hasPhotos ? null : (
-        <h2 style={{ textAlign: 'center' }}>
+        <h2 style={{ textAlign: "center" }}>
           You haven't uploaded any photos!
         </h2>
       )}
@@ -90,7 +92,7 @@ const UserPhotos = (props) => {
           );
         })}
       </div>
-      <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
+      <h2 style={{ textAlign: "center" }}>{loading && "Loading..."}</h2>
 
       {modalIsOpen ? (
         <BookmarkModal
