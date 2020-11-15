@@ -1,12 +1,12 @@
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   /* font-style: normal; */
   /* font-weight: 400; */
-  src: local('Lato'), url(../../fonts/Roboto/Roboto-Thin.ttf) format('truetype');
+  src: local("Lato"), url(../../fonts/Roboto/Roboto-Thin.ttf) format("truetype");
 }
 
 .roboto {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   color: rgba(73, 69, 69, 1);
 }
 
@@ -35,7 +35,6 @@
   justify-content: center;
   margin-top: 4%;
   max-width: 650px;
-  max-height: auto;
   margin-left: auto;
   margin-right: auto;
   display: block;
