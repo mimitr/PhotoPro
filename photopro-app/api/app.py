@@ -91,7 +91,7 @@ from utils.database.user_purchases import (
 app = Flask(__name__)
 app.user_id = None
 app.last_query = ""
-app.start_point = 0
+app.start_point = 1000000
 CORS(app)
 
 
@@ -309,14 +309,14 @@ def api_discovery():
         "++++++++++++++++++++++ DISCOVERY API CALLED - %s ++++++++++++++++++++++++++++++"
         % query
     )
-    start_point = 0
+    start_point = 1000000
 
     if app.last_query == query:
         print("------------------ last query === query ----------------------")
         start_point = app.start_point
     else:
-        print("---------------------- app.start_point reset to 0 ------------------")
-        app.start_point = 0
+        print("---------------------- app.start_point reset to 1000000 ------------------")
+        app.start_point = 1000000
     app.last_query = query
     if query is not None:
         connImages, curImages = get_conn_and_cur()
@@ -347,7 +347,7 @@ def api_discovery():
                         "=============== THIS REQUEST FOR - %s - HAS BEEN CANCELLED ============="
                         % query
                     )
-                    app.start_point = 0
+                    app.start_point = 1000000
                     return jsonify({"result": False})
 
                 print(tup)
@@ -373,7 +373,7 @@ def api_discovery():
                 img = base64.encodebytes(img).decode("utf-8")
 
                 print("id - %d, start_point - %d" % (id, app.start_point))
-                if id > app.start_point:
+                if id < app.start_point:
                     app.start_point = id
 
                     processed_result.append(
@@ -437,7 +437,7 @@ def api_discovery():
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
-                if id > app.start_point:
+                if id < app.start_point:
                     app.start_point = id
 
                     processed_result.append(
@@ -470,12 +470,13 @@ def api_discovery():
 def api_profile_photos():
     user_id = request.args.get("user_id")
     batch_size = int(request.args.get("batch_size"))
+    last_id = request.args.get("last_id")
 
     if user_id is None:
         return jsonify({"result": False})
 
     if batch_size is None or batch_size <= 0:
-        batch_size = 32
+        batch_size = 9
 
     conn, cur = get_conn_and_cur()
     result = profiles_photos(user_id, batch_size, conn, cur)
@@ -496,6 +497,11 @@ def api_profile_photos():
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
 
+            if last_id is None:
+                last_id = id
+            elif last_id < id:
+                last_id = id
+
             processed_result.append(
                 {
                     "id": id,
@@ -512,7 +518,7 @@ def api_profile_photos():
 
         # print(imgarr[0])
 
-        retval = jsonify({"result": processed_result})
+        retval = jsonify({"result": processed_result, "last_id": last_id})
         print(retval)
         return retval
     else:

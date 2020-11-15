@@ -316,8 +316,8 @@ def discovery(user_id, batch_size, start_point, conn, cur):
 
         cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE images.image_id> {} AND uploader!={} \
-                     ORDER BY created_at DESC LIMIT {}".format(
+                    WHERE images.image_id < {} AND uploader!={} \
+                     ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
             start_point, user_id, batch_size
         )
         print(cmd)
@@ -348,8 +348,8 @@ def discovery_with_search_term(user_id, batch_size, query, start_point, conn, cu
         batch_size = int(batch_size)
         cmd = "select images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                    WHERE images.image_id> {} AND uploader!={} AND caption ILIKE '%{}%'\
-                     ORDER BY created_at DESC LIMIT {}".format(
+                    WHERE images.image_id < {} AND uploader!={} AND caption ILIKE '%{}%'\
+                     ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
             start_point, user_id, query, batch_size
         )
         print(cmd)
@@ -392,8 +392,8 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
         batch_size = int(batch_size)
         cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
                     RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                     WHERE images.image_id> {} AND uploader != {} AND '{}' ILIKE ANY(tags)\
-                      ORDER BY created_at DESC LIMIT {}".format(
+                     WHERE images.image_id < {} AND uploader != {} AND '{}' ILIKE ANY(tags)\
+                      ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
             start_point, user_id, query, batch_size
         )
         print(cmd)
@@ -412,17 +412,24 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
         return False
 
 
-def profiles_photos(user_id, batch_size, conn, cur):
+def profiles_photos(user_id, batch_size, start_point, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
         user_id = int(user_id)
         batch_size = int(batch_size)
 
-        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
-                RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                 WHERE uploader={} ORDER BY created_at DESC LIMIT {}".format(
-            user_id, batch_size
-        )
+        if start_point is None:
+            cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                                RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                                 WHERE AND uploader={} ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
+                user_id, batch_size
+            )
+        else:
+            cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
+                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
+                     WHERE images.image_id < {} AND uploader={} ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
+                int(start_point), user_id, batch_size
+            )
 
         print(cmd)
         cur.execute(cmd)
