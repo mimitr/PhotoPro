@@ -25,6 +25,7 @@ export default function BookmarkModal(props) {
     true
   );
   const [privateCollection, setPrivateCollection] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getUsersCollections = () => {
@@ -39,6 +40,7 @@ export default function BookmarkModal(props) {
       }).then((response) => {
         if (response.data.result !== false) {
           setUsersCollections(response.data.result);
+          setLoading(false);
         }
       });
     };
@@ -114,6 +116,7 @@ export default function BookmarkModal(props) {
 
           {showCreateCollectionButton ? (
             <div className="collection-folders">
+              {loading && 'Loading...'}
               {usersCollections.map((collection) => {
                 return (
                   <CollectionFolder
@@ -173,13 +176,19 @@ export default function BookmarkModal(props) {
           ) : null}
         </div>
 
-        {bookmarkConfirmationModalOpen ? (
-          <BookmarkConfirmationModal
-            openModal={true}
-            photoID={props.photoId}
-            modalCollectionName={modalCollectionName}
-          />
-        ) : null}
+        <div
+          onClick={() => {
+            setBookmarkConfirmationModalOpen(false);
+          }}
+        >
+          {bookmarkConfirmationModalOpen ? (
+            <BookmarkConfirmationModal
+              openModal={true}
+              photoID={props.photoId}
+              modalCollectionName={modalCollectionName}
+            />
+          ) : null}
+        </div>
       </React.Fragment>,
       document.getElementById('confirmationPortal')
     );

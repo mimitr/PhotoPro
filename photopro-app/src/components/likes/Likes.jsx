@@ -24,7 +24,6 @@ function Likes(props) {
   const classes = useStyles();
 
   const { image_id: imageID } = props;
-  console.log(`image id in likes is ${imageID}`);
   let userID = localStorage.getItem('userID');
 
   useEffect(() => {
@@ -69,7 +68,6 @@ function Likes(props) {
   const handleLikeClicked = () => {
     if (userID != null) {
       if (!postLiked) {
-        console.log(`image_id is ${imageID}`);
         post_likes();
       } else {
         delete_likes();
@@ -122,8 +120,6 @@ function Likes(props) {
       url: 'http://localhost:5000/delete_like_from_image',
       params: { image_id: imageID },
     }).then((response) => {
-      console.log(`delete_likes api response is ${response.data.result}`);
-
       if (response.data.result) {
         set_num_likes((prevState) => parseInt(prevState) - 1);
         setPostLiked(false);

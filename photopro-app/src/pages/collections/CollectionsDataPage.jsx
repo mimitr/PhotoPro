@@ -162,9 +162,6 @@ export default function CollectionDataPage(props) {
           </div>
         </div>
 
-        {/* <div class="bg-image">
-          <img src={`data:image/jpg;base64,${collectionImages[0].img}`} />
-        </div> */}
         <CollectionFeed
           retrievedImgs={collectionImages}
           isMyCollection={props.location.state.isMyCollection}

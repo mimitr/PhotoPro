@@ -80,6 +80,7 @@ from utils.database.collections import (
 from utils.database.user_purchases import (
     add_purchase,
     delete_item_from_cart,
+    item_is_in_cart,
     get_user_purchases,
     update_user_purchases_details,
 )
@@ -1091,6 +1092,22 @@ def api_delete_item_from_cart():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = delete_item_from_cart(int(user_id), int(image_id), conn, cur)
+    return jsonify({"result": result})
+
+
+@app.route("/item_is_in_cart", methods=["GET", "POST"])
+def api_check_if_added_to_cart():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+
+    if user_id is None or image_id is None:
+        print("~~~~~~~~~~~~HEREEEEEE IN ITEM IS IN CART~~~~~~~~~~~~")
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = item_is_in_cart(int(user_id), int(image_id), conn, cur)
+    conn.close()
+
+    print("~~~~~~~~RESULT ISSS %s ~~~~~~~~~" % result)
     return jsonify({"result": result})
 
 
