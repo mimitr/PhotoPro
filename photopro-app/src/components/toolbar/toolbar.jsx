@@ -1,30 +1,30 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "./toolbar.css";
-import { useHistory } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { makeStyles } from "@material-ui/core/styles";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import Notifications from "./notifications/notifications";
-import logo from "../../logo/logo-new.png";
+import React, { useState } from 'react';
+import axios from 'axios';
+import './toolbar.css';
+import { useHistory } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles } from '@material-ui/core/styles';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Notifications from './notifications/notifications';
+import logo from '../../logo/logo-new.png';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
-    border: "3px solid red",
-    margin: "auto",
+    border: '3px solid red',
+    margin: 'auto',
   },
   button: {
-    color: "rgb(83, 85, 89)",
+    color: 'rgb(83, 85, 89)',
   },
 }));
 
 function Toolbar() {
   const history = useHistory();
   const classes = useStyles();
-  const loggedIn = localStorage.getItem("userLoggedIn");
+  const loggedIn = localStorage.getItem('userLoggedIn');
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -37,15 +37,15 @@ function Toolbar() {
   };
 
   const handleSignInClicked = () => {
-    history.push("/login");
+    history.push('/login');
   };
 
   const handleSignUpClicked = () => {
-    history.push("/signup");
+    history.push('/signup');
   };
 
   const handleProfileClicked = function () {
-    const userID = localStorage.getItem("userID");
+    const userID = localStorage.getItem('userID');
     console.log(`In toolbar the userID = ${userID}`);
     history.push({
       pathname: `/profile/${userID}`,
@@ -55,24 +55,24 @@ function Toolbar() {
 
   const handleLogoutClicked = () => {
     localStorage.clear();
-    history.push("/");
+    history.push('/');
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
   };
 
   const handleDiscoveryClicked = () => {
-    history.push("/");
+    history.push('/recommendations');
   };
 
   const handleUploadClicked = () => {
-    history.push("/uploadphoto");
+    history.push('/uploadphoto');
   };
 
   const handleChangePassClicked = () => {
-    history.push("/changepassword");
+    history.push('/changepassword');
   };
 
   const handleCollectionsClicked = () => {
-    const userID = localStorage.getItem("userID");
+    const userID = localStorage.getItem('userID');
     console.log(`In toolbar the userID = ${userID}`);
     history.push({
       pathname: `/collections/${userID}`,
@@ -81,22 +81,22 @@ function Toolbar() {
   };
 
   const handleCartClicked = () => {
-    history.push("/shopping-cart");
+    history.push('/shopping-cart');
   };
 
   const handleMyPurchasesClicked = () => {
-    history.push("/my-purchases");
+    history.push('/my-purchases');
   };
 
   const handleLogoClicked = () => {
-    history.push("/");
+    history.push('/');
   };
 
   let buttons;
-  if (loggedIn === "true") {
+  if (loggedIn === 'true') {
     buttons = (
       <React.Fragment>
-        <div className={"flex-container-buttons-2"}>
+        <div className={'flex-container-buttons-2'}>
           <Button
             variant="outlined"
             size="large"
