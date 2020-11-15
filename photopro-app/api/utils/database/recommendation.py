@@ -209,3 +209,28 @@ def get_related(user_id, image_id, conn, cur):
         print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
+
+
+def init_user_recommendation(user_id, conn, cur):
+    try:
+        cmd = "select term, SUM(value) as score from recommendations GROUP\
+                BY term HAVING COUNT(*)>1 ORDER BY score DESC LIMIT 50"
+        cur.execute(cmd)
+        conn.commit()
+        result = cur.fetchall()
+        for i in result:
+            (term, value) = i
+            value = float(value)
+            if value > 3:
+                value = 3
+            update_recommendation_term(int(user_id), term, value, 0.01, conn, cur)
+        return True
+    except Exception as e:
+        print(e)
+        conn.rollback()
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        conn.rollback()
+        return False

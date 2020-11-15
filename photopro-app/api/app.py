@@ -68,6 +68,7 @@ from utils.database.recommendation import (
     get_related,
     get_related_images,
     get_recommendation_photos,
+    init_user_recommendation
 )
 from utils.database.collections import (
     create_collection,
@@ -142,8 +143,10 @@ def api_create_user():
     result = create_user(first, last, email, password, username, conn, cur)
     if result:
         (result, user_id) = login_user(email, password, conn, cur)
-        print(result, user_id)
-        app.user_id = user_id
+        if result:
+            app.user_id = user_id
+            r = init_user_recommendation(int(user_id), conn, cur)
+            print("init_user_recommendation result: ", r)
         conn.close()
         return jsonify({"result": result})
     conn.close()
