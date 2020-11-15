@@ -112,20 +112,22 @@ export default function Collections(props) {
   } else {
     componentsRender = (
       <div className="collectionsPageWrapper">
-        <div
-          className="userpage-username"
-          style={{
-            backgroundImage: `url(${Userbackground})`,
-          }}
-        >
-          {!props.displayMyProfile ? (
-            <h1 style={{ textAlign: 'center' }}>{username}</h1>
-          ) : null}
+        {!props.displayMyProfile ? (
+          <div
+            className="userpage-username"
+            style={{
+              backgroundImage: `url(${Userbackground})`,
+            }}
+          >
+            {!props.displayMyProfile ? (
+              <h1 style={{ textAlign: 'center' }}>{username}</h1>
+            ) : null}
 
-          {!props.displayMyProfile ? (
-            <h3 style={{ textAlign: 'center' }}>Email: {email}</h3>
-          ) : null}
-        </div>
+            {!props.displayMyProfile ? (
+              <h3 style={{ textAlign: 'center' }}>Email: {email}</h3>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="title">
           {props.displayMyProfile ? (
