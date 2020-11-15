@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import './PostInfo.css';
 import Toolbar from '../../components/toolbar/toolbar';
+import FollowButton from '../../components/follow/followButton';
 import Likes from '../../components/likes/Likes';
 import Comments from '../../components/comments/Comments';
 import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import BookmarkModal from '../../components/modal/BookmarkModal';
+import BookmarkModal from '../../components/Modals/BookmarkModal/BookmarkModal';
 
 const PostInfo = (props) => {
   const [comments, setComments] = useState([]);
@@ -44,6 +45,16 @@ const PostInfo = (props) => {
         }
       });
     };
+    const fetchRelatedImgs = (id) => {
+      axios({
+          method: 'GET',
+          url: 'http://localhost:5000/get_related_images',
+          params: { image_id: id}, //user_id: 1
+
+        }).then((res) => {
+          console.log(res);
+        });
+    }
 
     const fetchComments = (id) => {
       axios({
@@ -62,7 +73,9 @@ const PostInfo = (props) => {
         fetchTags(id);
       });
     };
+
     fetchComments(imageID);
+    fetchRelatedImgs(imageID);
 
     return () => {
       console.log('CLEAN UP - PostInfo');
@@ -101,26 +114,40 @@ const PostInfo = (props) => {
       <div className="postWrapper">
         <div className="postInfo">
           <div className="username">
-            <Button
-              varient="outlined"
-              onClick={() => {
-                history.push({
-                  pathname: `/profile/${props.location.state.uploader}`,
-                  state: { uploaderID: props.location.state.uploader },
-                });
-              }}
-            >
-              @{props.location.state.uploader}
-            </Button>
-            <button className="btn">Follow</button>
+            <div className="username-wrapper">
+              <Button
+                varient="outlined"
+                onClick={() => {
+                  history.push({
+                    pathname: `/profile/${props.location.state.uploader}`,
+                    state: { uploaderID: props.location.state.uploader },
+                  });
+                }}
+              >
+                @{props.location.state.uploader}
+              </Button>
+            </div>
+            {localStorage.getItem('userLoggedIn') ? (
+              <React.Fragment>
+                {localStorage.getItem('userID') !==
+                props.location.state.uploader ? (
+                  <FollowButton uploader={props.location.state.uploader} />
+                ) : null}
+                <div className="bookmark-wrapper">
+                  <IconButton
+                    variant="contained"
+                    onClick={handleBookmarkClicked}
+                  >
+                    <BookmarkIcon />
+                  </IconButton>
+                </div>
+              </React.Fragment>
+            ) : null}
             <Likes
               num_likes={props.location.state.num_likes}
               image_id={props.location.state.id}
               uploader_id={props.location.state.uploader}
             />
-            <IconButton variant="contained" onClick={handleBookmarkClicked}>
-              <BookmarkIcon />
-            </IconButton>
           </div>
         </div>
         <div className="postImage">
@@ -128,6 +155,7 @@ const PostInfo = (props) => {
             src={`data:image/jpg;base64,${props.location.state.url}`}
             alt={props.location.state.caption}
           />
+
           <div className="recImages-nested">
             <h1 className="roboto"> Related Photos:</h1>
             <div className="recImage"></div>
@@ -139,7 +167,6 @@ const PostInfo = (props) => {
           <h1>{props.location.state.title}</h1>
           <h2 className="roboto">{props.location.state.caption}</h2>
           <div className="postTags">
-            <h2 className="roboto">{props.location.state.caption}</h2>
             <h3>
               Tags:{' '}
               {tags.length < 1 ? 'this post has no tags to display' : null}
@@ -164,7 +191,6 @@ const PostInfo = (props) => {
           </div>
           <div className="postComments">
             <h2 className="roboto">Comments:</h2>
-            {/* <Comments className="comments" /> */}
             <Comments
               image_id={props.location.state.id}
               comments_list={comments}

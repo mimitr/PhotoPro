@@ -1,0 +1,8 @@
+.recommendation-gap {
+  margin: 15vh;
+  border: 3px solid red;
+}
+
+.recommendation-text {
+  text-align: center;
+}

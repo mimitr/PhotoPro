@@ -30,7 +30,7 @@ export default function MyPurchases() {
   return (
     <React.Fragment>
       <ToolBar />
-      <div className="my-purchases-wrapper">
+      <div className="my-purchases-wrapper" style={{ marginTop: "15%" }}>
         <h1>My purchases</h1>
         <div className="my-purchases-feed">
           <MyPurchasesFeed retrievedImgs={boughtItems} />

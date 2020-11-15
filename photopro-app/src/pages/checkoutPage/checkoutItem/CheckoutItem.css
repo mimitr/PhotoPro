@@ -2,6 +2,9 @@
   border: #333 1px solid;
   margin: 5px;
   padding: 3%;
+  max-height: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .image > img {
@@ -13,7 +16,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 1em;
-  grid-auto-rows: minmax(50px, auto);
+  grid-auto-rows: minmax(10px, auto);
 }
 
 .image-info > h2 {

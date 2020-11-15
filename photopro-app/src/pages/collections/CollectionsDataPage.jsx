@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './CollectionDataPage.css';
 import LockIcon from '@material-ui/icons/Lock';
@@ -9,11 +10,25 @@ import Toolbar from '../../components/toolbar/toolbar';
 import CollectionFeed from '../../components/collections/collection/collectionDataPage/CollectionFeed';
 
 export default function CollectionDataPage(props) {
+  const [username, setUsername] = useState(props.location.state.creator_id);
   const [collectionImages, setCollectionImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [privateCollection, setPrivateCollection] = useState(
     props.location.state.private
   );
+
+  const history = useHistory();
+
+  useEffect(() => {
+    axios({
+      url: 'http://localhost:5000/get_user_username',
+      params: { user_id: props.location.state.creator_id },
+    }).then((response) => {
+      if (response.data.result) {
+        setUsername(response.data.result);
+      }
+    });
+  }, []);
 
   const [anchorEl, setAnchorEl] = useState(null);
   // the below line is to get rid of warning messages in useEffect
@@ -54,6 +69,9 @@ export default function CollectionDataPage(props) {
       },
     }).then((response) => {
       console.log(response);
+      if (response.data.result) {
+        history.goBack();
+      }
     });
   };
 
@@ -91,52 +109,62 @@ export default function CollectionDataPage(props) {
     setAnchorEl(event.currentTarget);
   };
 
+  // console.log(collectionImages[0].img);
+
   return (
     <React.Fragment>
       <Toolbar />
       <div className="collectionDataWrapper">
-        <div className="collection-info">
-          {privateCollection === 'true' ? <LockIcon /> : null}
-          <h1>{props.location.state.collection_name}</h1>
-          <p>by @{props.location.state.creator_id}</p>
-          <p>Total photos: {collectionImages.length}</p>
+        <div className="circle-wrapper">
+          <div className="circleBase">
+            <div className="collection-info">
+              {privateCollection === 'true' ? <LockIcon /> : null}
+              <h1>{props.location.state.collection_name}</h1>
+              <p>by @{username}</p>
+              <p>Total photos: {collectionImages.length}</p>
 
-          {props.location.state.isMyCollection === 'true' ? (
-            <Button
-              aria-controls="simple-menu"
-              aria-haspopup="true"
-              variant="outlined"
-              color="primary"
-              onClick={handleEditCollectionClicked}
-            >
-              Edit collection
-            </Button>
-          ) : null}
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleEditCollectionClose}
-          >
-            {privateCollection === 'true' ? (
-              <MenuItem onClick={handleChangePrivateClicked}>
-                Make Public
-              </MenuItem>
-            ) : (
-              <MenuItem onClick={handleChangePrivateClicked}>
-                Make Private
-              </MenuItem>
-            )}
-            <MenuItem
-              onClick={() => {
-                deleteCollection();
-              }}
-            >
-              Delete collection
-            </MenuItem>
-          </Menu>
+              {props.location.state.isMyCollection === 'true' ? (
+                <Button
+                  aria-controls="simple-menu"
+                  aria-haspopup="true"
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleEditCollectionClicked}
+                >
+                  Edit collection
+                </Button>
+              ) : null}
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleEditCollectionClose}
+              >
+                {privateCollection === 'true' ? (
+                  <MenuItem onClick={handleChangePrivateClicked}>
+                    Make Public
+                  </MenuItem>
+                ) : (
+                  <MenuItem onClick={handleChangePrivateClicked}>
+                    Make Private
+                  </MenuItem>
+                )}
+                <MenuItem
+                  onClick={() => {
+                    deleteCollection();
+                  }}
+                >
+                  Delete collection
+                </MenuItem>
+              </Menu>
+            </div>
+          </div>
         </div>
+
+        {/* <div class="bg-image">
+          <img src={`data:image/jpg;base64,${collectionImages[0].img}`} />
+        </div> */}
         <CollectionFeed
           retrievedImgs={collectionImages}
           isMyCollection={props.location.state.isMyCollection}

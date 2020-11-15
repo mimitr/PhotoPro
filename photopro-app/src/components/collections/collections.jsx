@@ -6,8 +6,8 @@ import Collection from './collection/Collection';
 import { CropPortrait } from '@material-ui/icons';
 
 export default function Collections(props) {
+  const [username, setUsername] = useState([props.userID]);
   const [allCollections, setAllCollections] = useState([]);
-
   const [collectionClicked, setCollectionClicked] = useState(false);
   const [collectionIdClicked, setCollectionIdClicked] = useState(null);
   const [collectionNameClicked, setCollectionNameClicked] = useState(null);
@@ -22,6 +22,17 @@ export default function Collections(props) {
   );
 
   const { userID, displayMyProfile } = props;
+
+  useEffect(() => {
+    axios({
+      url: 'http://localhost:5000/get_user_username',
+      params: { user_id: userID },
+    }).then((response) => {
+      if (response.data.result) {
+        setUsername(response.data.result);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const getUsersCollections = () => {
@@ -44,6 +55,7 @@ export default function Collections(props) {
   }, [userID]);
 
   const collectionsComponents = allCollections.map((collection) => {
+    console.log(collection);
     if (displayMyProfile === true || collection.private === false) {
       return (
         <Collection
@@ -85,9 +97,9 @@ export default function Collections(props) {
       <div className="collectionsPageWrapper">
         <div className="title">
           {props.displayMyProfile ? (
-            <h1>My collections</h1>
+            <h1 className="quicksand">My collections</h1>
           ) : (
-            <h1>Public Collections of @{userID}</h1>
+            <h1 className="quicksand">Public Collections of @{username}</h1>
           )}
         </div>
         <div className="collectionsWrapper">{collectionsComponents}</div>
