@@ -1,20 +1,31 @@
-import React, { useState } from "react";
-import "./searchbar.css";
-import Feed from "../feed/feed";
-import SearchBarInput from "./searchBarInput";
+import React, { useState } from 'react';
+import './searchbar.css';
+import axios from 'axios';
+import Feed from '../feed/feed';
+import SearchBarInput from './searchBarInput';
 
-import img1 from "../../background/1.jpg";
-import img2 from "../../background/2.jpg";
-import img3 from "../../background/3.jpg";
-import img4 from "../../background/4.jpg";
-import img5 from "../../background/5.jpg";
-import img6 from "../../background/6.jpg";
-import img7 from "../../background/7.jpg";
+import img1 from '../../background/1.jpg';
+import img2 from '../../background/2.jpg';
+import img3 from '../../background/3.jpg';
+import img4 from '../../background/4.jpg';
+import img5 from '../../background/5.jpg';
+import img6 from '../../background/6.jpg';
+import img7 from '../../background/7.jpg';
 
 function SearchBar() {
   const [query, setQuery] = useState(null);
 
-  console.log(`The query is - ${query}`);
+  useEffect(() => {
+    if (query !== null) {
+      const updateSearchRecommendation = () => {
+        axios({
+          url: 'http://localhost:5000/update_search_recommendation',
+          params: { query: query },
+        }).then((response) => {});
+      };
+    }
+    console.log(`The query is - ${query}`);
+  }, [query]);
 
   let backgroundImages = [];
   let index = 0;

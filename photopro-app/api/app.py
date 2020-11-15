@@ -29,7 +29,7 @@ from utils.database.general_user import (
     download_image,
     post_profile_image,
     get_profile_image,
-    delete_profile_image
+    delete_profile_image,
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -65,7 +65,7 @@ from utils.database.recommendation import (
     update_recommendation_term,
     get_related,
     get_related_images,
-    get_recommendation_photos
+    get_recommendation_photos,
 )
 from utils.database.collections import (
     create_collection,
@@ -204,7 +204,12 @@ def api_post_profile_photo():
                     (follower,) = tup
                     print("~~~~~~~~~~~ Post photo notification sent ~~~~~~~~~~~~~")
                     send_notification(
-                        int(follower), int(user_id), "profile_photo", int(result), conn, cur
+                        int(follower),
+                        int(user_id),
+                        "profile_photo",
+                        int(result),
+                        conn,
+                        cur,
                     )
         conn.close()
         return jsonify({"result": result})
@@ -252,7 +257,7 @@ def api_discovery():
     query = request.args.get("query")
 
     if query is not None:
-        terms = query.split(' ')
+        terms = query.split(" ")
         print(terms)
 
     print(
@@ -764,7 +769,7 @@ def api_get_tags():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = get_tags(image_id, conn, cur)
-    for x in ['', " "]:
+    for x in ["", " "]:
         if x in result:
             result.remove(x)
     conn.close()
@@ -1041,10 +1046,10 @@ def api_add_purchase():
     user_id = app.user_id
 
     if (
-            user_id is None
-            or purchased is None
-            or image_id is None
-            or save_for_later is None
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1132,10 +1137,10 @@ def api_update_user_purchases_details():
     user_id = app.user_id
 
     if (
-            user_id is None
-            or purchased is None
-            or image_id is None
-            or save_for_later is None
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1169,7 +1174,7 @@ def api_get_user_username():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_username_by_id(int(uid), conn, cur, )
+    result = get_username_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
 
@@ -1179,11 +1184,13 @@ def api_update_search_recommendation():
     user_id = app.user_id
     query = request.args.get("query")
     if query is not None and app.user_id is not None:
-        terms = query.split(' ')
+        terms = query.split(" ")
         conn, cur = get_conn_and_cur()
         for term in terms:
             if term is not None:
-                result = update_recommendation_term(int(user_id), term, 0.5, 0.5, conn, cur)
+                result = update_recommendation_term(
+                    int(user_id), term, 0.5, 0.5, conn, cur
+                )
                 if not result:
                     conn.close()
                     return jsonify({"result": result})
@@ -1195,7 +1202,7 @@ def api_update_search_recommendation():
 def api_update_comment_recommendation():
     user_id = app.user_id
     image_id = request.args.get("image_id")
-    print('update_comment_recommendation: ', user_id, image_id)
+    print("update_comment_recommendation: ", user_id, image_id)
     if image_id is not None and app.user_id is not None:
         conn, cur = get_conn_and_cur()
         result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
@@ -1205,7 +1212,9 @@ def api_update_comment_recommendation():
                 print(term, value)
                 if term is not None:
                     print("eep")
-                    result = update_recommendation_term(int(user_id), term, float(value), 0.75, conn, cur)
+                    result = update_recommendation_term(
+                        int(user_id), term, float(value), 0.75, conn, cur
+                    )
                     """if not result:
                         print("floop")
                         conn.close()
@@ -1220,7 +1229,7 @@ def api_update_comment_recommendation():
 def api_update_likes_recommendation():
     user_id = app.user_id
     image_id = request.args.get("image_id")
-    print('update_comment_recommendation: ', user_id, image_id)
+    print("update_comment_recommendation: ", user_id, image_id)
     if image_id is not None and app.user_id is not None:
         conn, cur = get_conn_and_cur()
         result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
@@ -1230,7 +1239,9 @@ def api_update_likes_recommendation():
                 print(term, value)
                 if term is not None:
                     print("eep")
-                    result = update_recommendation_term(int(user_id), term, float(value), 0.75, conn, cur)
+                    result = update_recommendation_term(
+                        int(user_id), term, float(value), 0.75, conn, cur
+                    )
                     """if not result:
                         print("floop")
                         conn.close()
@@ -1250,7 +1261,7 @@ def api_get_related_images():
     if user_id is None:
         # print("\n=================RELATED IMAGES: USER_ID is None=================\n")
         # return jsonify({"result": False})
-        user_id = 0;
+        user_id = 0
 
     conn, cur = get_conn_and_cur()
     result = get_related(user_id, image_id, conn, cur)
@@ -1317,7 +1328,18 @@ def api_get_recommended_images():
         min_score = None
 
         for tup in result:
-            id, caption, uploader, img, title, price, created_at, tags, num_likes, score = tup
+            (
+                id,
+                caption,
+                uploader,
+                img,
+                title,
+                price,
+                created_at,
+                tags,
+                num_likes,
+                score,
+            ) = tup
             if not num_likes:
                 num_likes = 0
             file = "image.jpeg"
