@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
-import ReactDom from "react-dom";
-import "./SignupModal.css";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import ReactDom from 'react-dom';
+import './SignupModal.css';
+import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
+import TextField from '@material-ui/core/TextField';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 export default function RegistrationPage(props) {
   const history = useHistory();
 
-  const [email, set_email] = useState("");
-  const [password, set_password] = useState("");
-  const [first_name, set_first_name] = useState("");
-  const [last_name, set_last_name] = useState("");
-  const [username, set_username] = useState("");
+  const [email, set_email] = useState('');
+  const [password, set_password] = useState('');
+  const [first_name, set_first_name] = useState('');
+  const [last_name, set_last_name] = useState('');
+  const [username, set_username] = useState('');
 
   function validate_email() {
     return email.length > 0 && email.length < 50;
@@ -37,7 +38,7 @@ export default function RegistrationPage(props) {
   async function attempt_registration(event) {
     event.preventDefault();
 
-    const response = await axios.get("http://localhost:5000/create_user", {
+    const response = await axios.get('http://localhost:5000/create_user', {
       params: {
         email: email,
         password: password,
@@ -49,7 +50,7 @@ export default function RegistrationPage(props) {
     console.log(response);
 
     if (response.data.result !== false) {
-      history.push("/");
+      history.push('/');
       history.go(0);
     }
   }
@@ -69,6 +70,7 @@ export default function RegistrationPage(props) {
           }}
         >
           <h1>Join PhotoPro</h1>
+
           <form onSubmit={attempt_registration}>
             <FormGroup controlId="first_name" bsSize="large">
               <div>
@@ -147,7 +149,7 @@ export default function RegistrationPage(props) {
           </form>
         </div>
       </React.Fragment>,
-      document.getElementById("toolbarPortal")
+      document.getElementById('toolbarPortal')
     );
   }
 }
