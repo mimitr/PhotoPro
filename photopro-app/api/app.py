@@ -91,12 +91,23 @@ app.start_point = 0
 CORS(app)
 
 
+def invalid_text(text):
+    return text is None or "'" in text or '"' in text
+
+
+def clean_text(text):
+    return str(text).replace("'", "").replace('"', '')
+
+
 @app.route("/login", methods=["GET", "POST"])
 def api_login():
     conn, cur = get_conn_and_cur()
     email = request.args.get("email")
     password = request.args.get("password")
     print(email, password)
+
+    if invalid_text(email) or invalid_text(password):
+        return jsonify({"result": False, "user_id": None})
 
     (result, user_id) = login_user(email, password, conn, cur)
     print(result, user_id)
@@ -116,9 +127,14 @@ def api_create_user():
     email = request.args.get("email")
     password = request.args.get("password")
     username = request.args.get("username")
+
     if username is None:
         username = str(str(first) + " " + str(last))
     print(username)
+
+    if invalid_text(email) or invalid_text(password) or invalid_text(first)\
+            or invalid_text(last) or invalid_text(username):
+        return jsonify({"result": False})
 
     result = create_user(first, last, email, password, username, conn, cur)
     if result:
@@ -137,6 +153,8 @@ def api_change_password():
     email = request.args.get("email")
     password = request.args.get("password")
     new_password = request.args.get("new_password")
+    if invalid_text(email) or invalid_text(password) or invalid_text(new_password):
+        return {"result": False}
     result = change_password(email, password, new_password, conn, cur)
     conn.close()
     return {"result": result}
@@ -146,6 +164,8 @@ def api_change_password():
 def api_forgot_password():
     conn, cur = get_conn_and_cur()
     email = request.args.get("email")
+    if invalid_text(email):
+        return jsonify({"result": False})
     result = forgot_password_get_change_password_link(email, conn, cur)
     conn.close()
     return jsonify({"result": result})
@@ -252,6 +272,7 @@ def api_discovery():
     query = request.args.get("query")
 
     if query is not None:
+        query = clean_text(query)
         terms = query.split(' ')
         print(terms)
 
@@ -475,6 +496,11 @@ def api_edit_post():
     price = int(request.args.get("price"))
     caption = request.args.get("caption")
     tags = request.args.get("tags")
+    if invalid_text(title) or invalid_text(caption):
+        return jsonify({"result": False})
+    for t in tags:
+        if invalid_text(t):
+            return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
     conn.close()
@@ -635,6 +661,7 @@ def api_post_comment_to_image():
     if image_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
+        clean_text(comment)
         conn, cur = get_conn_and_cur()
         result = post_comment_to_image(image_id, commenter, comment, conn, cur)
         conn.close()
@@ -651,6 +678,7 @@ def api_post_comment_to_comment():
     if image_id is None or comment_id is None or comment is None or commenter is None:
         return jsonify({"result": False})
     else:
+        clean_text(comment)
         conn, cur = get_conn_and_cur()
         result = post_comment_to_comment(
             image_id, commenter, comment, comment_id, conn, cur
@@ -774,7 +802,7 @@ def api_get_tags():
 @app.route("/add_tags")
 def api_add_tags():
     image_id = request.args.get("image_id")
-    tags = request.args.get("tags")
+    tags = clean_text(request.args.get("tags"))
     tags = tags.split(",")
     if image_id is None or tags is None:
         return jsonify({"result": False})
@@ -787,7 +815,7 @@ def api_add_tags():
 @app.route("/remove_tag")
 def api_remove_tag():
     image_id = request.args.get("image_id")
-    tag = request.args.get("tag")
+    tag = clean_text(request.args.get("tag"))
     if image_id is None or tag is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -798,7 +826,7 @@ def api_remove_tag():
 
 @app.route("/create_collection", methods=["GET", "POST"])
 def api_create_collection():
-    collection_name = request.args.get("collection_name")
+    collection_name = clean_text(request.args.get("collection_name"))
     private = request.args.get("private")
     user_id = app.user_id
 
@@ -1177,7 +1205,7 @@ def api_get_user_username():
 @app.route("/update_search_recommendation", methods=["GET", "POST"])
 def api_update_search_recommendation():
     user_id = app.user_id
-    query = request.args.get("query")
+    query = clean_text(request.args.get("query"))
     if query is not None and app.user_id is not None:
         terms = query.split(' ')
         conn, cur = get_conn_and_cur()
@@ -1250,7 +1278,7 @@ def api_get_related_images():
     if user_id is None:
         # print("\n=================RELATED IMAGES: USER_ID is None=================\n")
         # return jsonify({"result": False})
-        user_id = 0;
+        user_id = 0
 
     conn, cur = get_conn_and_cur()
     result = get_related(user_id, image_id, conn, cur)
