@@ -68,7 +68,8 @@ from utils.database.recommendation import (
     get_related,
     get_related_images,
     get_recommendation_photos,
-    init_user_recommendation
+    init_user_recommendation,
+    get_global_recommendations
 )
 from utils.database.collections import (
     create_collection,
@@ -1481,6 +1482,71 @@ def api_get_recommended_images():
             )
 
         # print(imgarr[0])
+
+        retval = jsonify({"result": processed_result, "score": float(min_score) - 0.01})
+        print(retval)
+        return retval
+    else:
+        return jsonify({"result": False})
+
+
+@app.route("/get_global_recommendations")
+def api_get_global_recommendations():
+    print("\n=================RECOMMENDED IMAGES=================\n")
+    score = request.args.get("score")
+    batch_size = request.args.get("batch_size")
+    if batch_size is None:
+        batch_size = 10
+
+    conn, cur = get_conn_and_cur()
+    result = get_global_recommendations(score, batch_size, conn, cur)
+    conn.close()
+
+    if result:
+        processed_result = []
+        min_score = None
+
+        for tup in result:
+            (
+                id,
+                caption,
+                uploader,
+                img,
+                title,
+                price,
+                created_at,
+                tags,
+                num_likes,
+                score,
+            ) = tup
+            if not num_likes:
+                num_likes = 0
+            file = "image.jpeg"
+            photo = open(file, "wb")
+            photo.write(img)
+            photo.close()
+            img = apply_watermark(file).getvalue()
+            img = base64.encodebytes(img).decode("utf-8")
+            if min_score is None:
+                min_score = float(score)
+            elif float(score) < min_score:
+                min_score = float(score)
+
+            print(tup)
+
+            processed_result.append(
+                {
+                    "id": id,
+                    "caption": caption,
+                    "uploader": uploader,
+                    "img": img,
+                    "title": title,
+                    "price": str(price),
+                    "created_at": created_at,
+                    "num_likes": num_likes,
+                    "tags": tags,
+                }
+            )
 
         retval = jsonify({"result": processed_result, "score": float(min_score) - 0.01})
         print(retval)
