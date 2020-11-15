@@ -91,6 +91,16 @@ function Likes(props) {
   };
 
   const post_likes = () => {
+    const updateLikeRecommendation = () => {
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/update_likes_recommendation',
+        params: { image_id: imageID },
+      }).then((res) => {
+        console.log(res);
+      });
+    };
+
     axios({
       method: 'GET',
       url: 'http://localhost:5000/post_like_to_image',
@@ -101,6 +111,7 @@ function Likes(props) {
         set_num_likes((prevState) => parseInt(prevState) + 1);
         setPostLiked(true);
         sendLikeNotification();
+        updateLikeRecommendation();
       }
     });
   };

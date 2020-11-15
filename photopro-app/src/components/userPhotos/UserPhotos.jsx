@@ -5,6 +5,7 @@ import ImageCard from '../feed/ImageCard/ImageCard';
 import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
 
 const UserPhotos = (props) => {
+  const [username, setUsername] = useState(props.userID);
   const [profileImgs, setProfileImgs] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
@@ -14,6 +15,17 @@ const UserPhotos = (props) => {
   const { userID } = props;
   const displayMyProfile =
     localStorage.getItem('userID') == userID ? true : false;
+
+  useEffect(() => {
+    axios({
+      url: 'http://localhost:5000/get_user_username',
+      params: { user_id: userID },
+    }).then((response) => {
+      if (response.data.result) {
+        setUsername(response.data.result);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -51,7 +63,7 @@ const UserPhotos = (props) => {
         <h2>Uploaded Images: {profileImgs.length}</h2>
       ) : (
         <h2>
-          Uploads by @{userID}: {profileImgs.length}
+          Uploads by @{username}: {profileImgs.length}
         </h2>
       )}
       {hasPhotos ? null : (

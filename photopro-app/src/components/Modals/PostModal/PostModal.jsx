@@ -13,6 +13,7 @@ import BookmarkIcon from '@material-ui/icons/Bookmark';
 import BookmarkModal from '../BookmarkModal/BookmarkModal';
 
 export default function PostModal(props) {
+  const [username, setUsername] = useState(props.uploader);
   const [comments, setComments] = useState([]);
   const [tags, setTags] = useState([]);
   const [commentUpdated, updateComments] = useState('');
@@ -20,6 +21,17 @@ export default function PostModal(props) {
   const cancelAxiosRequest = useRef();
   const { imageID } = props;
   const history = useHistory();
+
+  useEffect(() => {
+    axios({
+      url: 'http://localhost:5000/get_user_username',
+      params: { user_id: props.uploader },
+    }).then((response) => {
+      if (response.data.result) {
+        setUsername(response.data.result);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -118,7 +130,7 @@ export default function PostModal(props) {
                       });
                     }}
                   >
-                    @{props.uploader}
+                    @{username}
                   </Button>
                 </div>
                 {localStorage.getItem('userLoggedIn') ? (
