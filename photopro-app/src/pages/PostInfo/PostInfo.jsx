@@ -45,6 +45,16 @@ const PostInfo = (props) => {
         }
       });
     };
+    const fetchRelatedImgs = (id) => {
+      axios({
+          method: 'GET',
+          url: 'http://localhost:5000/get_related_images',
+          params: { image_id: id}, //user_id: 1
+
+        }).then((res) => {
+          console.log(res);
+        });
+    }
 
     const fetchComments = (id) => {
       axios({
@@ -65,6 +75,7 @@ const PostInfo = (props) => {
     };
 
     fetchComments(imageID);
+    fetchRelatedImgs(imageID);
 
     return () => {
       console.log('CLEAN UP - PostInfo');
