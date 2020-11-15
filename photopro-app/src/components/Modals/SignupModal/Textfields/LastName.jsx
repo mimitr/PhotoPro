@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
 
-export default function CardMonth(props) {
-  const [text, setText] = useState("");
-  const [errorText, setErrorText] = useState("");
+export default function LastName(props) {
+  const [text, setText] = useState('');
+  const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { placeOrderClicked } = props;
+  const { submitFormClicked } = props;
 
   useEffect(() => {
     setFirstRender(false);
@@ -15,25 +15,25 @@ export default function CardMonth(props) {
 
   useEffect(() => {
     if (firstRender === false) {
-      const result = handleMonthInput(text);
-      props.setCardMonthValidated(result);
+      const result = handleLastNameInput(text);
+      props.setLastNameValidated([result, text]);
     }
-  }, [placeOrderClicked]);
+  }, [submitFormClicked]);
 
-  const handleMonthInput = (text) => {
-    if (parseInt(text) > 0 && parseInt(text) <= 12) {
+  const handleLastNameInput = (text) => {
+    if (text.length > 0) {
       setErrorValue(false);
-      setErrorText("");
+      setErrorText('');
       return true;
     } else {
-      setErrorText("Input the correct month [1-12]");
+      setErrorText('Last name must be included');
       setErrorValue(true);
       return false;
     }
   };
   return (
     <React.Fragment>
-      <h3>EXPIRY DATE</h3>
+      <h1></h1>
       <div>
         <TextField
           required
@@ -41,15 +41,12 @@ export default function CardMonth(props) {
           helperText={errorText}
           onChange={(e) => {
             setText(e.target.value);
-            handleMonthInput(e.target.value);
+            handleLastNameInput(e.target.value);
           }}
-          id="outlined-number"
-          label="Month"
-          type="number"
+          label="Last name"
           InputLabelProps={{
             shrink: true,
           }}
-          variant="outlined"
         />
       </div>
     </React.Fragment>

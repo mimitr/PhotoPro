@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 
-export default function (props) {
+export default function FirstName(props) {
   const [text, setText] = useState('');
   const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { placeOrderClicked } = props;
+  const { submitFormClicked } = props;
 
   useEffect(() => {
     setFirstRender(false);
@@ -15,41 +15,38 @@ export default function (props) {
 
   useEffect(() => {
     if (firstRender === false) {
-      const result = handleCvvInput(text);
-      props.setCardCvvValidated(result);
+      const result = handleFirstNameInput(text);
+      props.setFirstNameValidated([result, text]);
     }
-  }, [placeOrderClicked]);
+  }, [submitFormClicked]);
 
-  const handleCvvInput = (text) => {
-    let patt = /\d+/;
-    if ((parseInt(text.length) === 3) & patt.test(text)) {
+  const handleFirstNameInput = (text) => {
+    if (text.length > 0) {
       setErrorValue(false);
       setErrorText('');
       return true;
     } else {
-      setErrorText('Input the correct CVV [3 digits]');
+      setErrorText('First name must be included');
       setErrorValue(true);
       return false;
     }
   };
   return (
     <React.Fragment>
-      <h3>CVC</h3>
-      <div style={{ marginBottom: '10%' }}>
-        <TextField
-          required
-          error={errorValue}
-          helperText={errorText}
-          onChange={(e) => {
-            setText(e.target.value);
-            handleCvvInput(e.target.value);
-          }}
-          id="outlined-required"
-          label="Required"
-          defaultValue="123"
-          variant="outlined"
-        />
-      </div>
+      <h1></h1>
+      <TextField
+        required
+        error={errorValue}
+        helperText={errorText}
+        onChange={(e) => {
+          setText(e.target.value);
+          handleFirstNameInput(e.target.value);
+        }}
+        label="First name"
+        InputLabelProps={{
+          shrink: true,
+        }}
+      />
     </React.Fragment>
   );
 }

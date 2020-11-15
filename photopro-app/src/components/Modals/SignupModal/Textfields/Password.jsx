@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 
-export default function CardName(props) {
+export default function Password(props) {
   const [text, setText] = useState('');
   const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { placeOrderClicked } = props;
+  const { submitFormClicked } = props;
 
   useEffect(() => {
     setFirstRender(false);
@@ -15,37 +15,37 @@ export default function CardName(props) {
 
   useEffect(() => {
     if (firstRender === false) {
-      const result = handleNameCardInput(text);
-      props.setCardNameValidated(result);
+      const result = handlePasswordInput(text);
+      props.setPasswordValidated([result, text]);
     }
-  }, [placeOrderClicked]);
+  }, [submitFormClicked]);
 
-  const handleNameCardInput = (text) => {
-    let patt = /\w+\s\w+/;
-    if (text.length > 0 && patt.test(text)) {
+  const handlePasswordInput = (text) => {
+    if (text.length >= 8 && text.length < 16) {
       setErrorValue(false);
       setErrorText('');
       return true;
     } else {
-      setErrorText('Enter your card name [first name + last name]');
+      setErrorText('Password must be between 8 and 16 characters long');
       setErrorValue(true);
       return false;
     }
   };
   return (
     <React.Fragment>
-      <h3>NAME ON CARD</h3>
+      <h1></h1>
       <TextField
         required
         error={errorValue}
         helperText={errorText}
         onChange={(e) => {
           setText(e.target.value);
-          handleNameCardInput(e.target.value);
+          handlePasswordInput(e.target.value);
         }}
-        id="outlined-required"
-        label="Required"
-        variant="outlined"
+        label="Password"
+        InputLabelProps={{
+          shrink: true,
+        }}
       />
     </React.Fragment>
   );

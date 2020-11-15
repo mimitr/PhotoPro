@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 
-export default function CardNum(props) {
+export default function Email(props) {
   const [text, setText] = useState('');
   const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { placeOrderClicked } = props;
+  const { submitFormClicked } = props;
 
   useEffect(() => {
     setFirstRender(false);
@@ -15,36 +15,37 @@ export default function CardNum(props) {
 
   useEffect(() => {
     if (firstRender === false) {
-      const result = handleCardNumberInput(text);
-      props.setCardNumValidated(result);
+      const result = handleEmailInput(text);
+      props.setEmailValidated([result, text]);
     }
-  }, [placeOrderClicked]);
+  }, [submitFormClicked]);
 
-  const handleCardNumberInput = (text) => {
-    let patt = /\d+/;
-    if (text.length === 16 && patt.test(text)) {
+  const handleEmailInput = (text) => {
+    if (text.length > 16 && text.length < 50) {
       setErrorValue(false);
       setErrorText('');
       return true;
     } else {
-      setErrorText('Bank Account should be 16 digits only');
+      setErrorText('Email must be entered');
       setErrorValue(true);
       return false;
     }
   };
+
   return (
     <React.Fragment>
-      <h3>CARD NUMBER</h3>
+      <h1></h1>
       <TextField
         required
         error={errorValue}
-        id="outlined-required"
-        label="Required"
-        variant="outlined"
         helperText={errorText}
         onChange={(e) => {
           setText(e.target.value);
-          handleCardNumberInput(e.target.value);
+          handleEmailInput(e.target.value);
+        }}
+        label="Email"
+        InputLabelProps={{
+          shrink: true,
         }}
       />
     </React.Fragment>
