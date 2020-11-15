@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
+import React, { useState, useEffect } from "react";
+import TextField from "@material-ui/core/TextField";
 
 export default function CardMonth(props) {
-  const [text, setText] = useState('');
-  const [errorText, setErrorText] = useState('');
+  const [text, setText] = useState("");
+  const [errorText, setErrorText] = useState("");
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
@@ -23,10 +23,10 @@ export default function CardMonth(props) {
   const handleMonthInput = (text) => {
     if (parseInt(text) > 0 && parseInt(text) <= 12) {
       setErrorValue(false);
-      setErrorText('');
+      setErrorText("");
       return true;
     } else {
-      setErrorText('Input the correct month [1-12]');
+      setErrorText("Input the correct month [1-12]");
       setErrorValue(true);
       return false;
     }
@@ -34,22 +34,24 @@ export default function CardMonth(props) {
   return (
     <React.Fragment>
       <h3>EXPIRY DATE</h3>
-      <TextField
-        required
-        error={errorValue}
-        helperText={errorText}
-        onChange={(e) => {
-          setText(e.target.value);
-          handleMonthInput(e.target.value);
-        }}
-        id="outlined-number"
-        label="Month"
-        type="number"
-        InputLabelProps={{
-          shrink: true,
-        }}
-        variant="outlined"
-      />
+      <div>
+        <TextField
+          required
+          error={errorValue}
+          helperText={errorText}
+          onChange={(e) => {
+            setText(e.target.value);
+            handleMonthInput(e.target.value);
+          }}
+          id="outlined-number"
+          label="Month"
+          type="number"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          variant="outlined"
+        />
+      </div>
     </React.Fragment>
   );
 }
