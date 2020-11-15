@@ -258,8 +258,11 @@ export default function PostModal(props) {
                     @{username}
                   </Button>
                 </div>
-                <p className="roboto" style={{ fontSize: "70%" }}>
-                  Email: {email}
+                <p
+                  className="roboto"
+                  style={{ textAlign: "center", fontSize: "70%" }}
+                >
+                  email: {email}
                 </p>
               </div>
 
