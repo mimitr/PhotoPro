@@ -2,6 +2,7 @@ import React from 'react';
 import ImageUploader from 'react-images-upload';
 import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
 import axios from 'axios';
+import PostConfirmationModal from './PostConfirmationModal/PostConfirmationModal';
 
 var caption = '';
 var title = '';
@@ -32,7 +33,11 @@ async function attempt_login() {
 class CapturePhotoPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { pictures: [], caption: '' };
+    this.state = {
+      postConfirmationModalOpen: false,
+      pictures: [],
+      caption: '',
+    };
     this.onDrop = this.onDrop.bind(this);
     this.formSubmit = this.formSubmit.bind(this);
   }
@@ -52,14 +57,14 @@ class CapturePhotoPage extends React.Component {
     post.then((response) => {
       console.log(response);
       if (response.data.result !== false) {
-        this.props.history.push('/');
+        this.setState({ postConfirmationModalOpen: true });
       }
     });
   }
 
   render() {
     return (
-      <div>
+      <React.Fragment>
         <ImageUploader
           withIcon={true}
           buttonText="Choose image"
@@ -109,7 +114,10 @@ class CapturePhotoPage extends React.Component {
         >
           Cancel
         </Button>
-      </div>
+        {this.state.postConfirmationModalOpen ? (
+          <PostConfirmationModal isOpen={true} />
+        ) : null}
+      </React.Fragment>
     );
   }
 }

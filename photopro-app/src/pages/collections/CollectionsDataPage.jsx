@@ -1,19 +1,34 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import "./CollectionDataPage.css";
-import LockIcon from "@material-ui/icons/Lock";
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Toolbar from "../../components/toolbar/toolbar";
-import CollectionFeed from "../../components/collections/collection/collectionDataPage/CollectionFeed";
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import './CollectionDataPage.css';
+import LockIcon from '@material-ui/icons/Lock';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '../../components/toolbar/toolbar';
+import CollectionFeed from '../../components/collections/collection/collectionDataPage/CollectionFeed';
 
 export default function CollectionDataPage(props) {
+  const [username, setUsername] = useState(props.location.state.creator_id);
   const [collectionImages, setCollectionImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [privateCollection, setPrivateCollection] = useState(
     props.location.state.private
   );
+
+  const history = useHistory();
+
+  useEffect(() => {
+    axios({
+      url: 'http://localhost:5000/get_user_username',
+      params: { user_id: props.location.state.creator_id },
+    }).then((response) => {
+      if (response.data.result) {
+        setUsername(response.data.result);
+      }
+    });
+  }, []);
 
   const [anchorEl, setAnchorEl] = useState(null);
   // the below line is to get rid of warning messages in useEffect
@@ -26,11 +41,11 @@ export default function CollectionDataPage(props) {
   console.log(props.location.state);
 
   useEffect(() => {
-    console.log("getting collections data");
+    console.log('getting collections data');
     const getCollectionsById = () => {
       axios({
-        method: "GET",
-        url: "http://localhost:5000/get_collection_data",
+        method: 'GET',
+        url: 'http://localhost:5000/get_collection_data',
         params: {
           collection_id: collectionID,
         },
@@ -47,20 +62,23 @@ export default function CollectionDataPage(props) {
 
   const deleteCollection = () => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/delete_collection",
+      method: 'POST',
+      url: 'http://localhost:5000/delete_collection',
       params: {
         collection_id: props.location.state.collection_id,
       },
     }).then((response) => {
       console.log(response);
+      if (response.data.result) {
+        history.goBack();
+      }
     });
   };
 
   const updateCollectionsPrivate = (privValue) => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/update_collections_private",
+      method: 'POST',
+      url: 'http://localhost:5000/update_collections_private',
       params: {
         collection_id: props.location.state.collection_id,
         private: privValue,
@@ -68,9 +86,9 @@ export default function CollectionDataPage(props) {
     }).then((response) => {
       console.log(response);
       if (privValue === 0) {
-        setPrivateCollection("false");
+        setPrivateCollection('false');
       } else {
-        setPrivateCollection("true");
+        setPrivateCollection('true');
       }
     });
   };
@@ -80,7 +98,7 @@ export default function CollectionDataPage(props) {
   };
 
   const handleChangePrivateClicked = () => {
-    if (privateCollection === "true") {
+    if (privateCollection === 'true') {
       updateCollectionsPrivate(0);
     } else {
       updateCollectionsPrivate(1);
@@ -100,12 +118,12 @@ export default function CollectionDataPage(props) {
         <div className="circle-wrapper">
           <div className="circleBase">
             <div className="collection-info">
-              {privateCollection === "true" ? <LockIcon /> : null}
+              {privateCollection === 'true' ? <LockIcon /> : null}
               <h1>{props.location.state.collection_name}</h1>
-              <p>by @{props.location.state.creator_id}</p>
+              <p>by @{username}</p>
               <p>Total photos: {collectionImages.length}</p>
 
-              {props.location.state.isMyCollection === "true" ? (
+              {props.location.state.isMyCollection === 'true' ? (
                 <Button
                   aria-controls="simple-menu"
                   aria-haspopup="true"
@@ -123,7 +141,7 @@ export default function CollectionDataPage(props) {
                 open={Boolean(anchorEl)}
                 onClose={handleEditCollectionClose}
               >
-                {privateCollection === "true" ? (
+                {privateCollection === 'true' ? (
                   <MenuItem onClick={handleChangePrivateClicked}>
                     Make Public
                   </MenuItem>
@@ -153,7 +171,7 @@ export default function CollectionDataPage(props) {
           loading={loading}
         />
       </div>
-      <h2 style={{ textAlign: "center" }}>{loading && "Loading..."}</h2>
+      <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
     </React.Fragment>
   );
 }

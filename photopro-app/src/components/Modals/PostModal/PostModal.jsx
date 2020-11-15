@@ -1,33 +1,57 @@
-import ReactDom from 'react-dom';
-import React, { useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
-import './PostModal.css';
-import '../../../pages/PostInfo/PostInfo.css';
-import FollowButton from '../../follow/followButton';
-import Likes from '../../likes/Likes';
-import Comments from '../../comments/Comments';
-import axios from 'axios';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
-import BookmarkModal from '../BookmarkModal/BookmarkModal';
+import ReactDom from "react-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom";
+import "./PostModal.css";
+import "../../../pages/PostInfo/PostInfo.css";
+import FollowButton from "../../follow/followButton";
+import Likes from "../../likes/Likes";
+import Comments from "../../comments/Comments";
+import axios from "axios";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import BookmarkIcon from "@material-ui/icons/Bookmark";
+import BookmarkModal from "../BookmarkModal/BookmarkModal";
 
 export default function PostModal(props) {
+  const [username, setUsername] = useState(props.uploader);
+  const [email, setEmail] = useState("");
   const [comments, setComments] = useState([]);
   const [tags, setTags] = useState([]);
-  const [commentUpdated, updateComments] = useState('');
+  const [commentUpdated, updateComments] = useState("");
   const [bookmarkModalIsOpen, setBookmarkModalIsOpen] = useState(false);
   const cancelAxiosRequest = useRef();
   const { imageID } = props;
   const history = useHistory();
 
   useEffect(() => {
+    axios({
+      url: "http://localhost:5000/get_user_username",
+      params: { user_id: props.uploader },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response.data);
+        setUsername(response.data.result);
+      }
+    });
+
+    axios({
+      url: "http://localhost:5000/get_user_email",
+      params: { user_id: props.uploader },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response.data);
+        setEmail(response.data.result);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     let mounted = true;
 
     const fetchTags = (id) => {
       axios({
-        method: 'GET',
-        url: 'http://localhost:5000/get_tags',
+        method: "GET",
+        url: "http://localhost:5000/get_tags",
         params: { image_id: id },
         cancelToken: new axios.CancelToken(
           (c) => (cancelAxiosRequest.current = c)
@@ -45,8 +69,8 @@ export default function PostModal(props) {
 
     const fetchComments = (id) => {
       axios({
-        method: 'GET',
-        url: 'http://localhost:5000/get_comments_to_image',
+        method: "GET",
+        url: "http://localhost:5000/get_comments_to_image",
         params: { image_id: id, batch_size: 20 },
         cancelToken: new axios.CancelToken(
           (c) => (cancelAxiosRequest.current = c)
@@ -71,8 +95,8 @@ export default function PostModal(props) {
 
   const apiAddPurchase = (imageID) => {
     axios({
-      method: 'POST',
-      url: 'http://localhost:5000/add_purchase',
+      method: "POST",
+      url: "http://localhost:5000/add_purchase",
       params: {
         save_for_later: 0,
         purchased: 0,
@@ -108,22 +132,9 @@ export default function PostModal(props) {
           <div className="postWrapper">
             <div className="postInfo">
               <div className="username">
-                <div className="username-wrapper">
-                  <Button
-                    varient="outlined"
-                    onClick={() => {
-                      history.push({
-                        pathname: `/profile/${props.uploader}`,
-                        state: { uploaderID: props.uploader },
-                      });
-                    }}
-                  >
-                    @{props.uploader}
-                  </Button>
-                </div>
-                {localStorage.getItem('userLoggedIn') ? (
+                {localStorage.getItem("userLoggedIn") ? (
                   <React.Fragment>
-                    {localStorage.getItem('userID') !== props.uploader ? (
+                    {localStorage.getItem("userID") !== props.uploader ? (
                       <FollowButton uploader={props.uploader} />
                     ) : null}
                     <div className="bookmark-wrapper">
@@ -159,12 +170,31 @@ export default function PostModal(props) {
               </div>
             </div>
             <div className="postFeed-nested">
-              <h1>{props.title}</h1>
+              <div className="title">
+                <h1>{props.title}</h1>
+                <div className="username-wrapper">
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      history.push({
+                        pathname: `/profile/${props.uploader}`,
+                        state: { uploaderID: props.uploader },
+                      });
+                    }}
+                  >
+                    @{username}
+                  </Button>
+                </div>
+                <p className="roboto" style={{ fontSize: "70%" }}>
+                  Email: {email}
+                </p>
+              </div>
+
               <h2 className="roboto">{props.caption}</h2>
               <div className="postTags">
                 <h3>
-                  Tags:{' '}
-                  {tags.length < 1 ? 'this post has no tags to display' : null}
+                  Tags:{" "}
+                  {tags.length < 1 ? "this post has no tags to display" : null}
                 </h3>
                 <div className="flexbox-tags">
                   {tags.length > 0
@@ -206,7 +236,7 @@ export default function PostModal(props) {
         </div>
       </React.Fragment>,
 
-      document.getElementById('postPortal')
+      document.getElementById("postPortal")
     );
   }
 }
