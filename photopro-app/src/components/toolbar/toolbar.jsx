@@ -196,10 +196,14 @@ function Toolbar() {
   return (
     <React.Fragment>
       <div className="flex-container-toolbar">
-        <div className="logo" onClick={handleLogoClicked}>
-          <img className="logo" src={logo} alt="Logo" />
+        <div className="logo">
+          <img
+            className="logo"
+            src={logo}
+            alt="Logo"
+            onClick={handleLogoClicked}
+          />
         </div>
-        {/* <img src={logo} alt="Logo" /> */}
         {buttons}
       </div>
     </React.Fragment>

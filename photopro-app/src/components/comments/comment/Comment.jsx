@@ -71,9 +71,7 @@ export default function Comment(props) {
         props.updateComments(reply_input);
         set_reply_input('');
         if (showViewReplies === true) {
-          setTimeout(() => {
-            setNewReply(reply_input);
-          }, 200);
+          setNewReply(reply_input);
         }
         console.log('reply submitted');
       }
