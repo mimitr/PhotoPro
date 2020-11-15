@@ -15,25 +15,25 @@ const RecommendationFeed = () => {
   const userLoggedIn = localStorage.getItem('userLoggedIn');
   const fetchIsCancelled = useRef(false);
   const cancelAxiosRequest = useRef();
-  //   const observer = useRef();
-  //   const lastImageRef = useCallback(
-  //     (node) => {
-  //       if (loading) return;
-  //       if (observer.current) observer.current.disconnect();
-  //       observer.current = new IntersectionObserver((entries) => {
-  //         if (entries[0].isIntersecting && hasMore) {
-  //           setLoading(true);
+  const observer = useRef();
+  const lastImageRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setLoading(true);
 
-  //           setTimeout(() => {
-  //             fetchRecommendations();
-  //           }, 3000);
-  //         }
-  //       });
+          setTimeout(() => {
+            fetchRecommendations();
+          }, 2000);
+        }
+      });
 
-  //       if (node) observer.current.observe(node);
-  //     },
-  //     [loading, hasMore]
-  //   );
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
   useEffect(() => {
     fetchIsCancelled.current = false;
@@ -57,7 +57,7 @@ const RecommendationFeed = () => {
     axios({
       method: 'GET',
       url: 'http://localhost:5000/get_recommended_images',
-      params: { score: score, batch_size: 20 },
+      params: { score: score, batch_size: 10 },
       cancelToken: new axios.CancelToken(
         (c) => (cancelAxiosRequest.current = c)
       ),
@@ -105,7 +105,7 @@ const RecommendationFeed = () => {
                   setPhotoId={setPhotoIdBookmarked}
                   userLoggedIn={userLoggedIn}
                 />
-                {/* <div
+                <div
                   key={index}
                   ref={lastImageRef}
                   style={{
@@ -114,7 +114,7 @@ const RecommendationFeed = () => {
                     // border: '3px solid red',
                     height: '0%',
                   }}
-                ></div> */}
+                ></div>
               </React.Fragment>
             );
           } else {

@@ -1375,7 +1375,7 @@ def api_get_recommended_images():
 
         # print(imgarr[0])
 
-        retval = jsonify({"result": processed_result, "score": float(min_score)})
+        retval = jsonify({"result": processed_result, "score": float(min_score)-0.01})
         print(retval)
         return retval
     else:
