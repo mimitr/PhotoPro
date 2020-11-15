@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './feed.css';
 import axios from 'axios';
 import ImageCard from './ImageCard/ImageCard';
-import BookmarkModal from '../modal/BookmarkModal';
+import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
 
 const Feed = (props) => {
   const [imgs, setImgs] = useState([]);
@@ -76,6 +76,21 @@ const Feed = (props) => {
       .catch((e) => {
         if (axios.isCancel(e)) {
           console.log(`previous search request cancelled for - ${term}`);
+          return;
+        }
+      });
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/update_search_recommendation',
+        params: { query: term}, //user_id: 1
+        cancelToken: new axios.CancelToken(
+          (c) => (cancelAxiosRequest.current = c)
+        ),
+      }).then((res) => {
+        console.log(res);
+      }).catch((e) => {
+        if (axios.isCancel(e)) {
+          console.log(`update_search_recommendation cancelled for term - ${term}`);
           return;
         }
       });

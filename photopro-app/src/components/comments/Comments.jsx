@@ -50,18 +50,27 @@ export default function Comments(props) {
   };
 
   const postComments = (comment_input) => {
+    console.log(`imageid=${props.image_id}`);
     axios({
       method: 'POST',
       url: 'http://localhost:5000/post_comment_to_image',
       params: { comment: comment_input, image_id: props.image_id },
     }).then((response) => {
+      console.log(response);
       if (response.data.result) {
-        console.log(`comment posted successfully with ${response.data.result}`);
         props.updateComments(props.comments_list.concat(comment_input));
         set_comment_input('');
         sendCommentNotification();
       }
     });
+    axios({
+        method: 'GET',
+        url: 'http://localhost:5000/update_comment_recommendation',
+        params: { image_id: props.image_id}, //user_id: 1
+        
+      }).then((res) => {
+        console.log(res);
+      });
   };
 
   return (

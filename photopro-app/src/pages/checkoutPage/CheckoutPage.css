@@ -29,6 +29,8 @@
   border: #333 1px solid;
   margin: 30px;
   padding: 20px;
+  overflow: auto;
+  height: 55vh;
 }
 
 .cart-details-grid {
@@ -36,4 +38,5 @@
   grid-template-columns: 1fr;
   grid-column-gap: 1em;
   grid-auto-rows: minmax(50px, auto);
+  margin-bottom: 30%;
 }

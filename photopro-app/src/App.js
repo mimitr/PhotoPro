@@ -1,7 +1,7 @@
 import React from 'react';
 
 import MainPage from './pages/MainPage';
-import LoginPage from './pages/LoginPage';
+// import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 import ProfilePage from './pages/ProfilePage';
 import PostInfo from './pages/PostInfo/PostInfo';
@@ -24,9 +24,9 @@ function App() {
         <Route path="/" exact>
           <MainPage />
         </Route>
-        <Route path="/login">
+        {/* <Route path="/login">
           <LoginPage />
-        </Route>
+        </Route> */}
         <Route path="/signup">
           <RegistrationPage />
         </Route>

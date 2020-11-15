@@ -124,7 +124,7 @@ export default function CheckoutPage(props) {
         <h1>Checkout</h1>
         <div className="checkout-grid">
           <div className="payment-info">
-            <h2>Fill payment info:</h2>
+            {/* <h2>Fill payment info:</h2> */}
             <form className={classes.root} noValidate autoComplete="off">
               <div className="cart-details-grid">
                 <CardNum
@@ -160,15 +160,13 @@ export default function CheckoutPage(props) {
             </form>
           </div>
           <div className="purchase-info">
-            <h2>
-              {shoppingCartItems.length}{" "}
-              {shoppingCartItems.length > 1 ? "Items" : "Item"}:
-            </h2>
             <Button color="primary" onClick={handleEditButton}>
               Edit
             </Button>
-            <div className="purchased-items">{checkoutItemsComponents}</div>
+            <h2>Total number of item(s): {shoppingCartItems.length}</h2>
+
             <h2>TOTAL TO PAY: ${props.location.state.totalPrice}</h2>
+            <div className="purchased-items">{checkoutItemsComponents}</div>
           </div>
         </div>
       </div>

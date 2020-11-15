@@ -19,12 +19,32 @@ const useStyles = makeStyles({
 });
 
 function Likes(props) {
-  const [num_likes, set_num_likes] = useState(props.num_likes);
+  const [num_likes, set_num_likes] = useState();
   const [postLiked, setPostLiked] = useState(false);
   const classes = useStyles();
 
   const { image_id: imageID } = props;
+  console.log(`image id in likes is ${imageID}`);
   let userID = localStorage.getItem('userID');
+
+  useEffect(() => {
+    axios({
+      method: 'GET',
+      url: 'http://localhost:5000/get_num_likes_of_image',
+      params: { image_id: imageID },
+    }).then((response) => {
+      console.log(response);
+      if (response.data.result !== false) {
+        set_num_likes(response.data.result);
+      } else {
+        set_num_likes(0);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    props.setNumLikes(num_likes);
+  }, [num_likes]);
 
   useEffect(() => {
     const checkIfLiked = () => {
@@ -49,9 +69,10 @@ function Likes(props) {
   const handleLikeClicked = () => {
     if (userID != null) {
       if (!postLiked) {
-        post_likes(props.image_id);
+        console.log(`image_id is ${imageID}`);
+        post_likes();
       } else {
-        delete_likes(props.image_id);
+        delete_likes();
       }
     }
   };
@@ -62,36 +83,42 @@ function Likes(props) {
       params: {
         uploader_id: props.uploader_id,
         notification: 'like',
-        image_id: props.image_id,
+        image_id: imageID,
       },
     }).then((response) => {
       console.log(response);
     });
   };
 
-  const post_likes = (img_id) => {
+  const post_likes = () => {
     axios({
       method: 'GET',
       url: 'http://localhost:5000/post_like_to_image',
-      params: { image_id: img_id },
+      params: { image_id: imageID },
     }).then((response) => {
       console.log(response);
-
       if (response.data.result) {
         set_num_likes((prevState) => parseInt(prevState) + 1);
         setPostLiked(true);
         sendLikeNotification();
       }
-
-      return response.data.result;
     });
+
+    axios({
+        method: 'GET',
+        url: 'http://localhost:5000/update_likes_recommendation',
+        params: {image_id: props.image_id}, //user_id: 1
+
+      }).then((res) => {
+        console.log(res);
+      });
   };
 
-  const delete_likes = (img_id) => {
+  const delete_likes = () => {
     axios({
       method: 'POST',
       url: 'http://localhost:5000/delete_like_from_image',
-      params: { image_id: img_id },
+      params: { image_id: imageID },
     }).then((response) => {
       console.log(`delete_likes api response is ${response.data.result}`);
 

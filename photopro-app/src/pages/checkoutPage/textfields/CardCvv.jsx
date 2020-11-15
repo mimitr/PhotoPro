@@ -35,19 +35,21 @@ export default function (props) {
   return (
     <React.Fragment>
       <h3>CVC</h3>
-      <TextField
-        required
-        error={errorValue}
-        helperText={errorText}
-        onChange={(e) => {
-          setText(e.target.value);
-          handleCvvInput(e.target.value);
-        }}
-        id="outlined-required"
-        label="Required"
-        defaultValue="123"
-        variant="outlined"
-      />
+      <div style={{ marginBottom: "10%" }}>
+        <TextField
+          required
+          error={errorValue}
+          helperText={errorText}
+          onChange={(e) => {
+            setText(e.target.value);
+            handleCvvInput(e.target.value);
+          }}
+          id="outlined-required"
+          label="Required"
+          defaultValue="123"
+          variant="outlined"
+        />
+      </div>
     </React.Fragment>
   );
 }
