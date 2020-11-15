@@ -4,7 +4,7 @@ import './ConfirmationModal.css';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 
-export default function BookmarkModal(props) {
+export default function CheckoutConfirmationModal(props) {
   const history = useHistory();
   if (!props.isOpen) {
     return null;

@@ -71,21 +71,18 @@ export default function Comment(props) {
         props.updateComments(reply_input);
         set_reply_input('');
         if (showViewReplies === true) {
-          setTimeout(() => {
-            setNewReply(reply_input);
-          }, 200);
+          setNewReply(reply_input);
         }
         console.log('reply submitted');
       }
     });
     axios({
-        method: 'GET',
-        url: 'http://localhost:5000/update_comment_recommendation',
-        params: { image_id: props.comment_info.image_id}, //user_id: 1
-
-      }).then((res) => {
-        console.log(res);
-      });
+      method: 'GET',
+      url: 'http://localhost:5000/update_comment_recommendation',
+      params: { image_id: props.comment_info.image_id }, //user_id: 1
+    }).then((res) => {
+      console.log(res);
+    });
   };
 
   const handleViewRepliesClicked = () => {
@@ -111,7 +108,7 @@ export default function Comment(props) {
             ></img>
           </div>
           <span className="displayName title">
-            @{props.comment_info.commenter}
+            @{props.comment_info.username}
           </span>{' '}
           <span className="displayName caption">
             {props.comment_info.created_at}

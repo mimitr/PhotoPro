@@ -23,8 +23,8 @@ conn = psycopg2.connect(user=database_user, password=database_password,
 cur = conn.cursor()
 
 
-image_id=922
-while(image_id < 9999):
+image_id=919
+while(image_id < 1000):
 	print(image_id)
 
 	cmd = "select image_id,file from images where image_id={};".format(image_id)
@@ -54,17 +54,22 @@ while(image_id < 9999):
 			vision_response = vision_client.label_detection(image=vision_image)
 			# print(vision_response)
 			vision_labels = vision_response.label_annotations
-
+			tags = []
 			for label in vision_labels:
 				#if label.score > (image_classify_threshold_percent / 100):
 					# print(label.description)
 				label_to_add = label.description.lstrip('"')
-				label_to_add = label_to_add.rstrip('"')
+				label_to_add = label_to_add.rstrip('"').lower()
 				print(label_to_add)
+				if len(label_to_add) < 32:
 
-
-				cmd = "INSERT INTO auto_tags (image_id, term, value) VALUES (%s, %s, %s)"
-				cur.execute(cmd, (image_id, label_to_add, label.score))
+					cmd = "INSERT INTO auto_tags (image_id, term, value) VALUES (%s, %s, %s)"
+					cur.execute(cmd, (image_id, label_to_add, label.score))
+					tags.append(label_to_add)
+			cmd = "UPDATE images SET tags=%s WHERE image_id=%s"
+			tags = list(set([t.lower() for t in tags]))
+			cur.execute(cmd, (tags, image_id))
+			conn.commit()
 			conn.commit()
 	image_id=image_id+1
 		#image=img

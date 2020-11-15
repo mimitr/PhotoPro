@@ -5,6 +5,7 @@ import ImageCard from '../feed/ImageCard/ImageCard';
 import BookmarkModal from '../Modals/BookmarkModal/BookmarkModal';
 
 const UserPhotos = (props) => {
+  const [username, setUsername] = useState(props.userID);
   const [profileImgs, setProfileImgs] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
@@ -16,10 +17,23 @@ const UserPhotos = (props) => {
     localStorage.getItem('userID') == userID ? true : false;
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+
+    axios({
+      url: 'http://localhost:5000/get_user_username',
+      params: { user_id: userID },
+    }).then((response) => {
+      if (response.data.result) {
+        setUsername(response.data.result);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     setTimeout(() => {
       // temp fix to api call the clashes with another and which both modify file = "image.jpg"
       fetchProfilePhotos();
-    }, 1000);
+    }, 700);
 
     return () => {
       setProfileImgs([]);
@@ -48,10 +62,12 @@ const UserPhotos = (props) => {
   return (
     <React.Fragment>
       {displayMyProfile ? (
-        <h2>Uploaded Images: {profileImgs.length}</h2>
+        <h2 style={{ marginTop: '10%', marginLeft: '9%' }}>
+          Uploaded Images: {profileImgs.length}
+        </h2>
       ) : (
-        <h2>
-          Uploads by @{userID}: {profileImgs.length}
+        <h2 style={{ marginTop: '10%', marginLeft: '9%' }}>
+          Uploads: {profileImgs.length}
         </h2>
       )}
       {hasPhotos ? null : (

@@ -79,21 +79,6 @@ const Feed = (props) => {
           return;
         }
       });
-      axios({
-        method: 'GET',
-        url: 'http://localhost:5000/update_search_recommendation',
-        params: { query: term}, //user_id: 1
-        cancelToken: new axios.CancelToken(
-          (c) => (cancelAxiosRequest.current = c)
-        ),
-      }).then((res) => {
-        console.log(res);
-      }).catch((e) => {
-        if (axios.isCancel(e)) {
-          console.log(`update_search_recommendation cancelled for term - ${term}`);
-          return;
-        }
-      });
   };
 
   // console.log(`LENGTH = ${imgs.length}`);
@@ -150,13 +135,18 @@ const Feed = (props) => {
         {!hasMore && 'No more images to display'}
       </h2>
 
-      {modalIsOpen ? (
-        <BookmarkModal
-          openModal={true}
-          setOpenModal={setModalIsOpen}
-          photoId={photoIdBookmarked}
-        ></BookmarkModal>
-      ) : null}
+      <div
+        onClick={() => {
+          setModalIsOpen(false);
+        }}
+      >
+        {modalIsOpen ? (
+          <BookmarkModal
+            openModal={true}
+            photoId={photoIdBookmarked}
+          ></BookmarkModal>
+        ) : null}
+      </div>
     </React.Fragment>
   );
 };
