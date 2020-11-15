@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './CollectionDataPage.css';
 import LockIcon from '@material-ui/icons/Lock';
@@ -15,6 +16,8 @@ export default function CollectionDataPage(props) {
   const [privateCollection, setPrivateCollection] = useState(
     props.location.state.private
   );
+
+  const history = useHistory();
 
   useEffect(() => {
     axios({
@@ -66,6 +69,9 @@ export default function CollectionDataPage(props) {
       },
     }).then((response) => {
       console.log(response);
+      if (response.data.result) {
+        history.goBack();
+      }
     });
   };
 

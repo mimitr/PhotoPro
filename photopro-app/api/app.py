@@ -1398,3 +1398,16 @@ def api_get_recommended_images():
         return retval
     else:
         return jsonify({"result": False})
+
+
+@app.route("/get_post_title", methods=["GET", "POST"])
+def api_get_post_title():
+    image_id = request.args.get("photo_id")
+
+    if image_id is None:
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = get_post_title_by_id(int(image_id), conn, cur)
+    conn.close()
+    return jsonify({"result": result})
+

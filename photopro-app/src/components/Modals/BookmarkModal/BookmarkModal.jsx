@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDom from 'react-dom';
 import './BookmarkModal.css';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import IconButton from '@material-ui/core/IconButton';
+
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -10,83 +9,41 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import axios from 'axios';
 
 import CollectionFolder from './collectionFolder/CollectionFolder';
+import BookmarkConfirmationModal from './BookmarkConfirmationModal/BookmarkConfirmationModal';
 
-export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
+export default function BookmarkModal(props) {
+  const [
+    bookmarkConfirmationModalOpen,
+    setBookmarkConfirmationModalOpen,
+  ] = useState(false);
+  const [modalCollectionName, setModalCollectionName] = useState(null);
   const [enteredCollection, setEnteredCollection] = useState('');
 
-  const [usersCollections, setUsersCollections] = useState(null);
+  const [usersCollections, setUsersCollections] = useState([]);
 
   const [showCreateCollectionButton, setShowCreateCollectionButton] = useState(
     true
   );
-
   const [privateCollection, setPrivateCollection] = useState(0);
 
-  const getUsersCollections = () => {
-    const userID = localStorage.getItem('userID');
-    axios({
-      method: 'GET',
-      url: 'http://localhost:5000/get_users_collection',
-      params: {
-        user_id: userID,
-        batch_size: 20,
-      },
-    }).then((response) => {
-      console.log(response);
-      if (response.data.result !== false) {
-        console.log('not false');
-        setUsersCollections(response.data.result);
-      }
-    });
-  };
-
   useEffect(() => {
-    console.log('GETTING USERS COLLECTION');
+    const getUsersCollections = () => {
+      const userID = localStorage.getItem('userID');
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/get_users_collection',
+        params: {
+          user_id: userID,
+          batch_size: 20,
+        },
+      }).then((response) => {
+        if (response.data.result !== false) {
+          setUsersCollections(response.data.result);
+        }
+      });
+    };
     getUsersCollections();
   }, []);
-
-  useEffect(() => {
-    console.log(
-      `collection button state changed to ${showCreateCollectionButton}`
-    );
-  }, [showCreateCollectionButton]);
-
-  let collectionFolders = null;
-  if (usersCollections != null) {
-    collectionFolders = usersCollections.map((collection) => {
-      return (
-        <CollectionFolder
-          key={collection.collection_id}
-          collectionInfo={collection}
-          photoId={photoId}
-        />
-      );
-    });
-  }
-
-  const handleEnteredCollection = (e) => {
-    e.preventDefault();
-    console.log(enteredCollection);
-
-    createCollections();
-  };
-
-  const createCollections = () => {
-    axios({
-      method: 'POST',
-      url: 'http://localhost:5000/create_collection',
-      params: {
-        collection_name: enteredCollection,
-        private: privateCollection,
-      },
-    }).then((response) => {
-      console.log(response);
-      console.log(`colection created should return collection_id ${response}`);
-      if (response.data.result) {
-        addPhotoToCollections(response.data.result);
-      }
-    });
-  };
 
   const addPhotoToCollections = (col_id) => {
     axios({
@@ -94,33 +51,52 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
       url: 'http://localhost:5000/add_photo_to_collection',
       params: {
         collection_id: col_id,
-        image_id: photoId,
+        image_id: props.photoId,
       },
     }).then((response) => {
-      console.log(response);
+      console.log(response.data.result);
+      if (response.data.result) {
+        const collection = usersCollections.filter(
+          (collection) => collection.collection_id === col_id
+        );
+
+        setModalCollectionName(collection.collection_name);
+        setBookmarkConfirmationModalOpen(true);
+      }
     });
   };
 
-  console.log(`collectionButton = ${showCreateCollectionButton}`);
+  const handleEnteredCollection = (e) => {
+    e.preventDefault();
+    const createCollections = () => {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:5000/create_collection',
+        params: {
+          collection_name: enteredCollection,
+          private: privateCollection,
+        },
+      }).then((response) => {
+        if (response.data.result) {
+          addPhotoToCollections(response.data.result);
+        }
+      });
+    };
+    createCollections();
+  };
 
-  if (!openModal) {
+  if (!props.openModal) {
     return null;
   } else {
     return ReactDom.createPortal(
       <React.Fragment>
         <div className="overlayStyles" />
-        <div className="bookmarkModal">
-          <div className="closeButton">
-            <IconButton
-              variant="contained"
-              onClick={() => {
-                setShowCreateCollectionButton(true);
-                setOpenModal(false);
-              }}
-            >
-              <HighlightOffIcon />
-            </IconButton>
-          </div>
+        <div
+          className="bookmarkModal"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <h2>Add to Collection</h2>
 
           {showCreateCollectionButton ? (
@@ -129,7 +105,6 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
               color="primary"
               onClick={() => {
                 setShowCreateCollectionButton(false);
-                console.log('create collection button clicked');
               }}
             >
               Create a new collection
@@ -137,7 +112,18 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
           ) : null}
 
           {showCreateCollectionButton ? (
-            <div className="collectionFolders">{collectionFolders}</div>
+            <div className="collection-folders">
+              {usersCollections.map((collection) => {
+                return (
+                  <CollectionFolder
+                    key={collection.collection_id}
+                    collectionInfo={collection}
+                    photoId={props.photoId}
+                    addPhotoToCollections={addPhotoToCollections}
+                  />
+                );
+              })}
+            </div>
           ) : null}
 
           {!showCreateCollectionButton ? (
@@ -183,8 +169,16 @@ export default function BookmarkModal({ openModal, setOpenModal, photoId }) {
             </div>
           ) : null}
         </div>
+
+        {bookmarkConfirmationModalOpen ? (
+          <BookmarkConfirmationModal
+            openModal={true}
+            photoID={props.photoId}
+            modalCollectionName={modalCollectionName}
+          />
+        ) : null}
       </React.Fragment>,
-      document.getElementById('portal')
+      document.getElementById('confirmationPortal')
     );
   }
 }
