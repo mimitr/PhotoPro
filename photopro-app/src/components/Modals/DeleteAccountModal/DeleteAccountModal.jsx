@@ -156,7 +156,7 @@ export default function DeleteAccountModal(props) {
                 </div>
 
                 {credentialsValidated === "error" ? (
-                  <h2>Incorect Email or Password</h2>
+                  <h2>Incorrect Email or Password</h2>
                 ) : null}
               </form>
             </React.Fragment>
