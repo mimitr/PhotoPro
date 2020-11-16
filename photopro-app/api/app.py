@@ -148,11 +148,11 @@ def api_create_user():
     print(username)
 
     if (
-        invalid_text(email)
-        or invalid_text(password)
-        or invalid_text(first)
-        or invalid_text(last)
-        or invalid_text(username)
+            invalid_text(email)
+            or invalid_text(password)
+            or invalid_text(first)
+            or invalid_text(last)
+            or invalid_text(username)
     ):
         return jsonify({"result": False})
 
@@ -1154,10 +1154,10 @@ def api_add_purchase():
     user_id = app.user_id
 
     if (
-        user_id is None
-        or purchased is None
-        or image_id is None
-        or save_for_later is None
+            user_id is None
+            or purchased is None
+            or image_id is None
+            or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1263,10 +1263,10 @@ def api_update_user_purchases_details():
     user_id = app.user_id
 
     if (
-        user_id is None
-        or purchased is None
-        or image_id is None
-        or save_for_later is None
+            user_id is None
+            or purchased is None
+            or image_id is None
+            or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1280,11 +1280,21 @@ def api_update_user_purchases_details():
     )
 
     uploader_id = get_uploader_id_from_img(int(image_id), conn, cur)
-    if uploader_id is not False:
+    if uploader_id is not False and bool(int(purchased)):
         print("~~~~~~~~~~~~~Notification sent in user purchases~~~~~~~~~~~~~~")
         send_notification(
             int(uploader_id), int(user_id), "purchased", int(image_id), conn, cur
         )
+
+        result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
+        if result_terms:
+            for term, value in result_terms:
+                if term is not None:
+                    result = update_recommendation_term(
+                        int(user_id), term, float(value), 1.75, conn, cur
+                    )
+            return jsonify({"result": True})
+
     conn.close()
 
     return jsonify({"result": result})
@@ -1308,7 +1318,7 @@ def api_get_user_username():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_username_by_id(int(uid), conn, cur,)
+    result = get_username_by_id(int(uid), conn, cur, )
     conn.close()
     return jsonify({"result": result})
 
@@ -1320,7 +1330,7 @@ def api_get_user_email():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_email_by_id(int(uid), conn, cur,)
+    result = get_email_by_id(int(uid), conn, cur, )
     conn.close()
     return jsonify({"result": result})
 
@@ -1388,7 +1398,6 @@ def api_update_likes_recommendation():
                 print("terms and value:")
                 print(term, value)
                 if term is not None:
-                    print("eep")
                     result = update_recommendation_term(
                         int(user_id), term, float(value), 0.75, conn, cur
                     )
@@ -1400,7 +1409,6 @@ def api_update_likes_recommendation():
         else:
             return jsonify({"result": False})
     return jsonify({"result": False})
-
 
 @app.route("/get_related_images")
 def api_get_related_images():
@@ -1608,4 +1616,3 @@ def api_get_post_title():
     result = get_post_title_by_id(int(image_id), conn, cur)
     conn.close()
     return jsonify({"result": result})
-
