@@ -130,6 +130,7 @@ export default function DeleteAccountModal(props) {
                     label="Required"
                     defaultValue={props.oldTitle}
                     variant="outlined"
+                    type="password"
                   />
                 </div>
                 <div>
