@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./toolbar.css";
 import { useHistory } from "react-router-dom";
@@ -30,6 +30,7 @@ function Toolbar() {
   const history = useHistory();
   const classes = useStyles();
   const loggedIn = localStorage.getItem("userLoggedIn");
+  const [username, setUsername] = useState("");
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -37,15 +38,23 @@ function Toolbar() {
   const [forgotPasswordModalIsOpen, setForgotPasswordModalIsOpen] = useState(
     false
   );
-  const [
-    forgotPasswordButtonClicked,
-    setForgotPasswordButtonClicked,
-  ] = useState(false);
 
   const [signupModalIsOpen, setSignupModalIsOpen] = useState(false);
   const [deleteAcountModalIsOpen, setDeleteAccountModalIsOpen] = useState(
     false
   );
+
+  useEffect(() => {
+    axios({
+      url: "http://localhost:5000/get_user_username",
+      params: { user_id: localStorage.getItem("userID") },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response);
+        setUsername(response.data.result);
+      }
+    });
+  }, []);
 
   const handleAccountClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -117,10 +126,6 @@ function Toolbar() {
     handleAccountClose();
   };
 
-  if (forgotPasswordButtonClicked) {
-    setForgotPasswordModalIsOpen(true);
-  }
-
   console.log();
 
   let buttons;
@@ -165,7 +170,7 @@ function Toolbar() {
             aria-haspopup="true"
             onClick={handleAccountClick}
           >
-            Account
+            @{username}
           </Button>
           <Menu
             id="simple-menu"
