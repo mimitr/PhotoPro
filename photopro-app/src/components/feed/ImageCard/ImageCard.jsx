@@ -299,15 +299,18 @@ class ImageCard extends Component {
                     <BookmarkIcon />
                   </IconButton>
 
-                  <IconButton
-                    classes={{
-                      root: `${this.props.classes.root} ${this.props.classes.buy}`,
-                    }}
-                    variant="contained"
-                    onClick={this.handleBuyClicked}
-                  >
-                    <ShoppingCartIcon />
-                  </IconButton>
+                  {parseInt(localStorage.getItem('userID')) !==
+                  this.props.image.uploader ? (
+                    <IconButton
+                      classes={{
+                        root: `${this.props.classes.root} ${this.props.classes.buy}`,
+                      }}
+                      variant="contained"
+                      onClick={this.handleBuyClicked}
+                    >
+                      <ShoppingCartIcon />
+                    </IconButton>
+                  ) : null}
                 </React.Fragment>
               ) : null}
               {deleteButton}
