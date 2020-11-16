@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './UserPhotos.css';
 import axios from 'axios';
 import ImageCard from '../feed/ImageCard/ImageCard';
@@ -10,11 +10,40 @@ const UserPhotos = (props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [hasPhotos, setHasPhotos] = useState(true);
-
   const { userID } = props;
   const displayMyProfile =
     localStorage.getItem('userID') == userID ? true : false;
+  const userLoggedIn = localStorage.getItem('userLoggedIn');
+  const [lastID, setLastID] = useState(null);
+  const fetchIsCancelled = useRef(false);
+  const cancelAxiosRequest = useRef();
+  const observer = useRef();
+  const lastImageRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setLoading(true);
+          console.log(`called with last_id of ${lastID}`);
+          setTimeout(() => {
+            fetchProfilePhotos(lastID);
+          }, 1000);
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
+
+  useEffect(() => {
+    if (profileImgs.length === 0) {
+      setHasPhotos(false);
+    }
+  }, [profileImgs]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,27 +65,44 @@ const UserPhotos = (props) => {
     }, 700);
 
     return () => {
+      if (cancelAxiosRequest.current != null) cancelAxiosRequest.current();
+
+      fetchIsCancelled.current = true;
       setProfileImgs([]);
+      setHasMore(true);
     };
   }, [userID]);
 
-  const fetchProfilePhotos = () => {
+  const fetchProfilePhotos = (last_id) => {
     setLoading(true);
 
     axios({
       method: 'GET',
       url: 'http://localhost:5000/profile_photos',
-      params: { user_id: userID, batch_size: 30 }, //user_id: 1
-    }).then((res) => {
-      console.log(res);
-      if (res.data.result !== false) {
-        setLoading(false);
-        setProfileImgs(res.data.result);
-      } else {
-        setLoading(false);
-        setHasPhotos(false);
-      }
-    });
+      params: { user_id: userID, batch_size: 10, last_id: last_id },
+      cancelToken: new axios.CancelToken(
+        (c) => (cancelAxiosRequest.current = c)
+      ),
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.result !== false && !fetchIsCancelled.current) {
+          setLastID(res.data.last_id);
+          setHasMore(true);
+          setLoading(false);
+          setProfileImgs((prevImgs) => {
+            return [...prevImgs, ...res.data.result];
+          });
+        } else if (!fetchIsCancelled.current) {
+          setLoading(false);
+          setHasMore(false);
+        }
+      })
+      .catch((e) => {
+        if (axios.isCancel(e)) {
+          return;
+        }
+      });
   };
 
   return (
@@ -70,11 +116,6 @@ const UserPhotos = (props) => {
           Uploads: {profileImgs.length}
         </h2>
       )}
-      {hasPhotos ? null : (
-        <h2 style={{ textAlign: 'center' }}>
-          You haven't uploaded any photos!
-        </h2>
-      )}
 
       <div className="image-grid">
         {profileImgs.map((image, index) => {
@@ -82,20 +123,53 @@ const UserPhotos = (props) => {
             return null;
           }
 
-          return (
-            <ImageCard
-              key={image.id}
-              image={image}
-              openBookmarkModal={modalIsOpen}
-              setOpenBookmarkModal={setModalIsOpen}
-              setPhotoId={setPhotoIdBookmarked}
-              userLoggedIn={props.userLoggedIn}
-              displayMyProfile={displayMyProfile}
-            />
-          );
+          if (profileImgs.length === index + 1) {
+            return (
+              <React.Fragment key={index}>
+                <ImageCard
+                  key={image.id}
+                  image={image}
+                  setOpenBookmarkModal={setModalIsOpen}
+                  setPhotoId={setPhotoIdBookmarked}
+                  userLoggedIn={userLoggedIn}
+                />
+                <div
+                  key={index}
+                  ref={lastImageRef}
+                  style={{
+                    position: 'relative',
+                    bottom: '200px',
+                    // border: '3px solid red',
+                    height: '0%',
+                  }}
+                ></div>
+              </React.Fragment>
+            );
+          } else {
+            return (
+              <ImageCard
+                key={image.id}
+                image={image}
+                setOpenBookmarkModal={setModalIsOpen}
+                setPhotoId={setPhotoIdBookmarked}
+                userLoggedIn={userLoggedIn}
+              />
+            );
+          }
         })}
       </div>
       <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
+      {hasPhotos ? (
+        <h2 style={{ textAlign: 'center' }}>
+          You haven't uploaded any photos!
+        </h2>
+      ) : (
+        <React.Fragment>
+          <h2 style={{ textAlign: 'center' }}>
+            {!hasMore && 'No more images to display'}
+          </h2>
+        </React.Fragment>
+      )}
 
       {modalIsOpen ? (
         <BookmarkModal

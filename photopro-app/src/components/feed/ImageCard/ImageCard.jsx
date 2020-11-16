@@ -138,7 +138,6 @@ class ImageCard extends Component {
   };
 
   setRelatedImagesClicked = (newState) => {
-    console.log(newState);
     this.setState({
       relatedImageClicked: newState,
       openPostModal: false,
@@ -199,7 +198,6 @@ class ImageCard extends Component {
       url: 'http://localhost:5000/item_is_in_cart',
       params: { image_id: this.props.image.id },
     }).then((response) => {
-      console.log(response);
       if (!response.data.result) {
         apiAddToCart(
           this.props.image.id,
@@ -218,14 +216,12 @@ class ImageCard extends Component {
 
   handleDeleteClicked = (e) => {
     let response = deletePostRequest(this.props.image.id);
-    console.log(response);
     e.stopPropagation();
     window.location.reload();
   };
 
   handleEditClicked = (e) => {
     e.stopPropagation();
-    console.log('edit clicked');
     this.setState({ openEditPostModal: true });
   };
 
@@ -303,15 +299,18 @@ class ImageCard extends Component {
                     <BookmarkIcon />
                   </IconButton>
 
-                  <IconButton
-                    classes={{
-                      root: `${this.props.classes.root} ${this.props.classes.buy}`,
-                    }}
-                    variant="contained"
-                    onClick={this.handleBuyClicked}
-                  >
-                    <ShoppingCartIcon />
-                  </IconButton>
+                  {parseInt(localStorage.getItem('userID')) !==
+                  this.props.image.uploader ? (
+                    <IconButton
+                      classes={{
+                        root: `${this.props.classes.root} ${this.props.classes.buy}`,
+                      }}
+                      variant="contained"
+                      onClick={this.handleBuyClicked}
+                    >
+                      <ShoppingCartIcon />
+                    </IconButton>
+                  ) : null}
                 </React.Fragment>
               ) : null}
               {deleteButton}
@@ -360,27 +359,6 @@ class ImageCard extends Component {
               uploader={this.state.relatedImageClicked.uploader}
               setNumLikes={this.setNumLikesDummy}
               setRelatedImagesClicked={this.setRelatedImagesClicked}
-            />
-          </div>
-        ) : null}
-
-        {this.state.openPostModal ? (
-          <div
-            className="modal-wrapper"
-            onClick={() => {
-              this.setState({ openPostModal: false });
-            }}
-          >
-            <PostModal
-              openModal={this.state.openPostModal}
-              setOpenModal={this.setOpenPostModal}
-              imageID={this.props.image.id}
-              url={this.props.image.img}
-              caption={this.props.image.caption}
-              price={this.props.image.price}
-              title={this.props.image.title}
-              uploader={this.props.image.uploader}
-              setNumLikes={this.setNumLikes}
             />
           </div>
         ) : null}

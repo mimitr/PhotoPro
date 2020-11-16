@@ -10,7 +10,7 @@ const Feed = (props) => {
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-
+  const [score, setScore] = useState(null);
   const userLoggedIn = localStorage.getItem('userLoggedIn');
   const fetchIsCancelled = useRef(false);
   const cancelAxiosRequest = useRef();
@@ -22,7 +22,7 @@ const Feed = (props) => {
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
           setLoading(true);
-          fetchImages(props.query);
+          fetchImages(props.query, score);
         }
       });
 
@@ -36,12 +36,10 @@ const Feed = (props) => {
     setLoading(true);
 
     setTimeout(() => {
-      fetchImages(props.query);
+      fetchImages(props.query, score);
     }, 150);
 
     return () => {
-      console.log('CLEAN UP - Feed');
-
       if (cancelAxiosRequest.current != null) cancelAxiosRequest.current();
 
       fetchIsCancelled.current = true;
@@ -50,40 +48,63 @@ const Feed = (props) => {
     };
   }, [props.query]);
 
-  const fetchImages = (term) => {
-    axios({
-      method: 'GET',
-      url: 'http://localhost:5000/discovery',
-      params: { query: term, batch_size: 10 }, //user_id: 1
-      cancelToken: new axios.CancelToken(
-        (c) => (cancelAxiosRequest.current = c)
-      ),
-    })
-      .then((res) => {
-        console.log(res);
-        if (res.data.result !== false && !fetchIsCancelled.current) {
-          setHasMore(true);
-          setLoading(false);
-          setImgs((prevImgs) => {
-            return [...prevImgs, ...res.data.result];
-          });
-        } else if (!fetchIsCancelled.current) {
-          console.log('no more images to return');
-          setLoading(false);
-          setHasMore(false);
-        }
+  const fetchImages = (term, paramScore) => {
+    if (term === null) {
+      console.log(`called get_global_recommendations with score ${paramScore}`);
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/get_global_recommendations',
+        params: { score: paramScore, batch_size: 10 }, //user_id: 1
+        cancelToken: new axios.CancelToken(
+          (c) => (cancelAxiosRequest.current = c)
+        ),
       })
-      .catch((e) => {
-        if (axios.isCancel(e)) {
-          console.log(`previous search request cancelled for - ${term}`);
-          return;
-        }
-      });
+        .then((res) => {
+          if (res.data.result !== false && !fetchIsCancelled.current) {
+            setScore(res.data.score);
+            setHasMore(true);
+            setLoading(false);
+            setImgs((prevImgs) => {
+              return [...prevImgs, ...res.data.result];
+            });
+          } else if (!fetchIsCancelled.current) {
+            setLoading(false);
+            setHasMore(false);
+          }
+        })
+        .catch((e) => {
+          if (axios.isCancel(e)) {
+            return;
+          }
+        });
+    } else {
+      axios({
+        method: 'GET',
+        url: 'http://localhost:5000/discovery',
+        params: { query: term, batch_size: 10 }, //user_id: 1
+        cancelToken: new axios.CancelToken(
+          (c) => (cancelAxiosRequest.current = c)
+        ),
+      })
+        .then((res) => {
+          if (res.data.result !== false && !fetchIsCancelled.current) {
+            setHasMore(true);
+            setLoading(false);
+            setImgs((prevImgs) => {
+              return [...prevImgs, ...res.data.result];
+            });
+          } else if (!fetchIsCancelled.current) {
+            setLoading(false);
+            setHasMore(false);
+          }
+        })
+        .catch((e) => {
+          if (axios.isCancel(e)) {
+            return;
+          }
+        });
+    }
   };
-
-  // console.log(`LENGTH = ${imgs.length}`);
-  // console.log(`HASMORE = ${hasMore}`);
-  // console.log(`LOADING = ${loading}`);
 
   return (
     <React.Fragment>

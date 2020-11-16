@@ -147,7 +147,7 @@ export default function BookmarkModal(props) {
                       <Checkbox
                         checked={privateCollection}
                         onChange={() => {
-                          if (privateCollection == true) {
+                          if (privateCollection === true) {
                             setPrivateCollection(0);
                           } else {
                             setPrivateCollection(1);
