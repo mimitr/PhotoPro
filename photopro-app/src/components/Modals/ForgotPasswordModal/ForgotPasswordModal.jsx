@@ -90,50 +90,54 @@ export default function ForgotPassword(props) {
             e.stopPropagation();
           }}
         >
-          <form className={classes.root} noValidate autoComplete="off">
-            <div className="cart-details-grid"></div>
-            <h2>Email</h2>
-            <div>
-              <TextField
-                required
-                error={errorValue}
-                helperText={errorText}
-                // error={errorValue}
-                // helperText={errorText}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  handleEmailInput(e.target.value);
-                }}
-                id="outlined-required"
-                label="Required"
-                defaultValue={props.oldTitle}
-                variant="outlined"
-              />
-            </div>
+          <h1>Forgot Password</h1>
+          <h3>If you forgot your password, you can reset it here.</h3>
+          <h3>
+            Please enter your email and you will receive an email with further
+            instructions.
+          </h3>
+          {/* <form className={classes.root} noValidate autoComplete="off">
+            <div className="cart-details-grid"></div> */}
+          <h2>Email</h2>
+          <div>
+            <TextField
+              required
+              error={errorValue}
+              helperText={errorText}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                handleEmailInput(e.target.value);
+              }}
+              id="outlined-required"
+              label="Required"
+              defaultValue={props.oldTitle}
+              variant="outlined"
+            />
+          </div>
 
-            <div>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                onClick={handleSendEmailClicked}
-              >
-                SEND EMAIL
-              </Button>
-            </div>
-            <div>
-              <Button
-                variant="contained"
-                color="default"
-                size="large"
-                onClick={() => {
-                  props.setOpenForgotPasswordModal(false);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleSendEmailClicked}
+            >
+              SEND EMAIL
+            </Button>
+          </div>
+          <div>
+            <Button
+              variant="contained"
+              color="default"
+              size="large"
+              onClick={() => {
+                props.setOpenForgotPasswordModal(false);
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+          {/* </form> */}
         </div>
       </React.Fragment>,
       document.getElementById("toolbarPortal")
