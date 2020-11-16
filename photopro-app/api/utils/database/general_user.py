@@ -10,6 +10,8 @@ import os
 import base64
 import binascii
 import io
+import string
+import random
 from pathlib import Path
 
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
@@ -94,6 +96,48 @@ def change_password(email, password, new_password, conn, cur):
         return False
 
 
+def gen_hash():
+    return str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+
+
+def verification_email(recipient):
+    ssl_port = 587
+    email_server_password = "WeCodeNotSleep3900"
+    context = ssl.create_default_context()
+    with smtplib.SMTP("smtp.gmail.com", ssl_port) as server:
+        server.ehlo()
+        server.starttls(context=context)
+        sender = "2mjec390@gmail.com"
+
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "PhotoPro: Verify Your Account"
+        message["From"] = sender
+        message["To"] = recipient
+        reset_url = "http://localhost:3000/" + str(
+            ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+
+        html = "\
+                        <html>\
+                            <body>\
+                                <p> Verify Your PhotoPro Account <br>\
+                                You can do this easily using the link below: <br>\
+                                        <center>{}</center> <br>\
+                                If you didn't ask to create an account, please get in touch at support@photopro.com. <br>\
+                                </p>\
+                            </body>\
+                        </html>".format(
+            reset_url
+        )
+        html = MIMEText(html, "html")
+        message.attach(html)
+
+        server.login("2mjec390@gmail.com", email_server_password)
+        server.sendmail(sender, recipient, message.as_string())
+
+        # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
+        return reset_url
+
+
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
@@ -122,7 +166,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 message["Subject"] = "PhotoPro: Reset Your Password"
                 message["From"] = sender
                 message["To"] = recipient
-                reset_url = "www.photopro.com/reset-password/id"
+                reset_url = "http://localhost:3000/reset-password/"
 
                 html = "\
                     <html>\
@@ -143,7 +187,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 server.sendmail(sender, recipient, message.as_string())
 
                 # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
-                return True
+                return reset_url
         else:
             print("Email not unique")
             return False
@@ -390,12 +434,30 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
-                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                     WHERE images.image_id < {} AND uploader != {} AND '{}' ILIKE ANY(tags)\
-                      ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
-            start_point, user_id, query, batch_size
-        )
+        if ' ' in query or ',' in query:
+            query = query.replace(' ', ',')
+            tags = query.split(',')
+            query = ""
+            for tag in tags:
+                query = query + "'" + tag + "',"
+            if query[-1] == ",":
+                query = query[:-1]
+            print("============\n {} \n ================".format(query))
+            cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes \
+                        FROM num_likes_per_image RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id,\
+                        unnest(lower(array[{}]::text)::text[]) u  WHERE tags@>array[u]\
+                         AND images.image_id < {} AND uploader != {} GROUP BY images.image_id,num_likes\
+                          ORDER BY COUNT(*) DESC, created_at DESC, image_id DESC LIMIT {}".format(
+                query, start_point, user_id, batch_size
+            )
+        else:
+            cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes \
+                                    FROM num_likes_per_image RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id,\
+                                    unnest(lower(array['{}']::text)::text[]) u  WHERE tags@>array[u]\
+                                     AND images.image_id < {} AND uploader != {} GROUP BY images.image_id,num_likes\
+                                      ORDER BY COUNT(*) DESC, created_at DESC, image_id DESC LIMIT {}".format(
+                query, start_point, user_id, batch_size
+            )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -694,6 +756,15 @@ def get_uploader_id_from_img(image_id, conn, cur):
 def delete_account(user_id, email, password, conn, cur):
     cur.execute("SAVEPOINT save_point")
     try:
+
+        cmd = "select id from users where email='{}' and password='{}'".format(str(email), str(password))
+        cur.execute(cmd)
+        conn.commit()
+        result = cur.fetchone()[0]
+        print(result, user_id, password, email)
+        # if int(result) != int(user_id):
+        #     return False
+
         cmd = "select image_id from images where uploader={}".format(int(user_id))
         cur.execute(cmd)
         conn.commit()

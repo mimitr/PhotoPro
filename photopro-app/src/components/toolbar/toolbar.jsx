@@ -12,6 +12,7 @@ import logo from '../../logo/logo-new.png';
 
 import LoginModal from '../Modals/LoginModal/LoginModal';
 import SignupModal from '../Modals/SignupModal/SignupModal';
+import DeleteAccountModal from '../Modals/DeleteAccountModal/DeleteAccountModal';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,6 +34,9 @@ function Toolbar() {
 
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
   const [signupModalIsOpen, setSignupModalIsOpen] = useState(false);
+  const [deleteAcountModalIsOpen, setDeleteAccountModalIsOpen] = useState(
+    false
+  );
 
   const handleAccountClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -99,7 +103,10 @@ function Toolbar() {
     history.go(0);
   };
 
-  console.log(signupModalIsOpen);
+  const handleDeleteAccountClicked = () => {
+    setDeleteAccountModalIsOpen(true);
+    handleAccountClose();
+  };
 
   let buttons;
   if (loggedIn === 'true') {
@@ -156,6 +163,9 @@ function Toolbar() {
             <MenuItem onClick={handleMyPurchasesClicked}>My Purchases</MenuItem>
             <MenuItem onClick={handleChangePassClicked}>
               Change Password
+            </MenuItem>
+            <MenuItem onClick={handleDeleteAccountClicked}>
+              Delete My Account
             </MenuItem>
             <MenuItem onClick={handleLogoutClicked}>Logout</MenuItem>
           </Menu>
@@ -240,6 +250,20 @@ function Toolbar() {
               openSignupModal={true}
               setOpenSignupModal={setSignupModalIsOpen}
             ></SignupModal>
+          </div>
+        ) : null}
+
+        {deleteAcountModalIsOpen ? (
+          <div
+            className="toolbar-modal-wrapper"
+            onClick={() => {
+              setDeleteAccountModalIsOpen(false);
+            }}
+          >
+            <DeleteAccountModal
+              openDeleteAccountModal={true}
+              setOpenDeleteAccountModal={setDeleteAccountModalIsOpen}
+            ></DeleteAccountModal>
           </div>
         ) : null}
       </div>
