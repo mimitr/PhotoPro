@@ -34,6 +34,7 @@ from utils.database.general_user import (
     get_profile_image,
     delete_profile_image,
     verification_email,
+    reset_password,
     gen_hash
 )
 from utils.database.connect import get_conn_and_cur
@@ -197,6 +198,18 @@ def api_change_password():
     if invalid_text(email) or invalid_text(password) or invalid_text(new_password):
         return {"result": False}
     result = change_password(email, password, new_password, conn, cur)
+    conn.close()
+    return {"result": result}
+
+
+@app.route("/reset_password", methods=["GET", "POST"])
+def api_reset_password():
+    conn, cur = get_conn_and_cur()
+    email = request.args.get("email")
+    new_password = request.args.get("new_password")
+    if invalid_text(email) or invalid_text(new_password):
+        return {"result": False}
+    result = reset_password(email, new_password, conn, cur)
     conn.close()
     return {"result": result}
 

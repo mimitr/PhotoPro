@@ -96,6 +96,24 @@ def change_password(email, password, new_password, conn, cur):
         return False
 
 
+def reset_password(email, new_password, conn, cur):
+    try:
+        cur.execute("SAVEPOINT save_point")
+
+        cmd = "UPDATE users SET password = '{}' WHERE email='{}'".format(
+            new_password, email
+        )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+
 def gen_hash():
     return str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
 
@@ -113,14 +131,13 @@ def verification_email(recipient):
         message["Subject"] = "PhotoPro: Verify Your Account"
         message["From"] = sender
         message["To"] = recipient
-        reset_url = "http://localhost:3000/" + str(
-            ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+        reset_url = str(gen_hash())
 
         html = "\
                         <html>\
                             <body>\
                                 <p> Verify Your PhotoPro Account <br>\
-                                You can do this easily using the link below: <br>\
+                                You can do this easily using the confirmation code below: <br>\
                                         <center>{}</center> <br>\
                                 If you didn't ask to create an account, please get in touch at support@photopro.com. <br>\
                                 </p>\
@@ -152,7 +169,6 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
 
         if length == 0:
             # return "Incorrect email or password! Please try again."
-            print('~~~~~~~~~~~HEREEEEEEEEEEEEEEEE~~~~~~~~~~~~~~~')
 
             return False
         elif length == 1:
@@ -174,7 +190,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                     <html>\
                         <body>\
                             <p> Need to reset your password? <br>\
-                            You can do this easily using the link below: <br>\
+                            You can do this easily using the confirmation code below: <br>\
                                     <center>{}</center> <br>\
                             If you didn't ask to reset your password, please get in touch at support@photopro.com. <br>\
                             </p>\
