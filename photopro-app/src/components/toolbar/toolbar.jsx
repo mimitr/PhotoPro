@@ -168,7 +168,6 @@ function Toolbar() {
               Delete My Account
             </MenuItem>
             <MenuItem onClick={handleLogoutClicked}>Logout</MenuItem>
-            <MenuItem onClick={handleDeleteAccountClicked}>Delete</MenuItem>
           </Menu>
           <Notifications />
         </div>
