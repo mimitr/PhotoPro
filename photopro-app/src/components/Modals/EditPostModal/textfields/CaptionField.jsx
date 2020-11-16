@@ -2,22 +2,27 @@ import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 
 export default function CaptionField(props) {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(props.oldCaption);
   const [errorText, setErrorText] = useState("");
   const [errorValue, setErrorValue] = useState(false);
-  const [firstRender, setFirstRender] = useState(true);
+  //   const [firstRender, setFirstRender] = useState(true);
 
   const { saveButtonClicked } = props;
 
+  //   useEffect(() => {
+  //     setFirstRender(false);
+  //   }, []);
+
   useEffect(() => {
-    setFirstRender(false);
+    const result = handleCaptionInput(text);
+    props.setCaptionValidated([result, text]);
   }, []);
 
   useEffect(() => {
-    if (firstRender === false) {
-      const result = handleCaptionInput(text);
-      props.setCaptionValidated(result);
-    }
+    // if (firstRender === false) {
+    const result = handleCaptionInput(text);
+    props.setCaptionValidated([result, text]);
+    // }
   }, [saveButtonClicked]);
 
   const handleCaptionInput = (text) => {
@@ -38,7 +43,7 @@ export default function CaptionField(props) {
           }}
           id="outlined-required"
           label="Required"
-          defaultValue="123"
+          defaultValue={props.oldCaption}
           variant="outlined"
         />
       </div>

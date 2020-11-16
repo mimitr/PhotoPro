@@ -2,25 +2,33 @@ import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 
 export default function PriceField(props) {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(props.oldPrice);
   const [errorText, setErrorText] = useState("");
   const [errorValue, setErrorValue] = useState(false);
-  const [firstRender, setFirstRender] = useState(true);
+  //   const [firstRender, setFirstRender] = useState(true);
 
   const { saveButtonClicked } = props;
 
+  //   useEffect(() => {
+  //     setFirstRender(false);
+  //   }, []);
+
   useEffect(() => {
-    setFirstRender(false);
+    const result = handlePriceInput(text);
+    props.setPriceValidated([result, text]);
   }, []);
 
   useEffect(() => {
-    if (firstRender === false) {
-      const result = handlePriceInput(text);
-      props.setPriceValidated(result);
-    }
+    // if (firstRender === false) {
+    const result = handlePriceInput(text);
+    console.log(text);
+    props.setPriceValidated([result, text]);
+
+    // }
   }, [saveButtonClicked]);
 
   const handlePriceInput = (text) => {
+    console.log(Number.isInteger(parseInt(text)));
     if (Number.isInteger(parseInt(text))) return true;
 
     return false;
@@ -40,7 +48,7 @@ export default function PriceField(props) {
           }}
           id="outlined-required"
           label="Required"
-          defaultValue="123"
+          defaultValue={parseInt(props.oldPrice)}
           variant="outlined"
         />
       </div>
