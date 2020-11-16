@@ -22,25 +22,18 @@ export default function ForgotPassword(props) {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [errorText, setErrorText] = useState("");
+  const [hashValue, setHashValue] = useState("");
   const [errorValue, setErrorValue] = useState(false);
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [newPasswordFormOpen, setNewPasswordFormOpen] = useState(false);
+
+  const [codeVerified, setCodeVerified] = useState(false);
+
+  const [enteredCode, setEnteredCode] = useState("");
+  const [enteredEmail, setEnteredEmail] = useState("");
+  const [enteredNewPassword, setEnteredNewPassword] = useState("");
 
   const history = useHistory();
-
-  function validate_email() {
-    return email.length > 0 && email.length < 50;
-  }
-
-  async function attempt_password_change(event) {
-    event.preventDefault();
-
-    var response = await axios.get(
-      "http://localhost:5000/forgot_password_get_change_password_link",
-      {
-        params: { email: email },
-      }
-    );
-    console.log(response);
-  }
 
   const handleEmailInput = (text) => {
     if (
@@ -67,15 +60,42 @@ export default function ForgotPassword(props) {
         email: email,
       },
     }).then((response) => {
-      console.log(response);
       if (response.data.result !== false) {
         console.log(response);
+        setHashValue(response.data.result);
+        setVerifyOpen(true);
       }
     });
   };
 
   const handleSendEmailClicked = () => {
     forgotPasswordGetLink();
+  };
+
+  const forgotPasswordCodeSubmit = () => {
+    axios({
+      method: "POST",
+      url: "http://localhost:5000/change_password",
+      params: {
+        email: enteredEmail,
+        new_password: enteredNewPassword,
+      },
+    }).then((response) => {
+      if (response.data.result !== false) {
+        console.log(response);
+        setNewPasswordFormOpen(true);
+      }
+    });
+  };
+
+  const handleCodeSubmitEntered = (e) => {
+    e.stopPropagation();
+    // compare the user's code with our code
+    if (enteredCode === hashValue) {
+      console.log("code is the same!");
+    } else {
+      setCodeVerified(true);
+    }
   };
 
   if (!props.openForgotPasswordModal) {
@@ -90,54 +110,98 @@ export default function ForgotPassword(props) {
             e.stopPropagation();
           }}
         >
-          <h1>Forgot Password</h1>
-          <h3>If you forgot your password, you can reset it here.</h3>
-          <h3>
-            Please enter your email and you will receive an email with further
-            instructions.
-          </h3>
-          {/* <form className={classes.root} noValidate autoComplete="off">
-            <div className="cart-details-grid"></div> */}
-          <h2>Email</h2>
-          <div>
-            <TextField
-              required
-              error={errorValue}
-              helperText={errorText}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                handleEmailInput(e.target.value);
-              }}
-              id="outlined-required"
-              label="Required"
-              defaultValue={props.oldTitle}
-              variant="outlined"
-            />
-          </div>
+          {!verifyOpen ? (
+            <React.Fragment>
+              <h1>Forgot Password</h1>
+              <h3>If you forgot your password, you can reset it here.</h3>
+              <h3>
+                Please enter your email and you will receive an email with
+                further instructions.
+              </h3>
 
-          <div>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={handleSendEmailClicked}
-            >
-              SEND EMAIL
-            </Button>
-          </div>
-          <div>
-            <Button
-              variant="contained"
-              color="default"
-              size="large"
-              onClick={() => {
-                props.setOpenForgotPasswordModal(false);
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-          {/* </form> */}
+              <h2>Email</h2>
+              <div>
+                <TextField
+                  required
+                  error={errorValue}
+                  helperText={errorText}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    handleEmailInput(e.target.value);
+                  }}
+                  id="outlined-required"
+                  label="Required"
+                  defaultValue={props.oldTitle}
+                  variant="outlined"
+                />
+              </div>
+
+              <div>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  onClick={handleSendEmailClicked}
+                >
+                  SEND EMAIL
+                </Button>
+              </div>
+              <div>
+                <Button
+                  variant="contained"
+                  color="default"
+                  size="large"
+                  onClick={() => {
+                    props.setOpenForgotPasswordModal(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </React.Fragment>
+          ) : null}
+
+          {verifyOpen ? (
+            <React.Fragment>
+              <h1>Verify that it's you</h1>
+              <h3>
+                An email with a verification code was just sent to {email}
+              </h3>
+              <h2>Enter code</h2>
+              <div>
+                <TextField
+                  required
+                  // error={errorValue}
+                  // helperText={errorText}
+                  onChange={(e) => {
+                    setEnteredCode(e.target.value);
+                    // handleCodeInput(e.target.value);
+                  }}
+                  id="outlined-required"
+                  label="Required"
+                  defaultValue={props.oldTitle}
+                  variant="outlined"
+                />
+              </div>
+
+              <div>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  onClick={handleCodeSubmitEntered}
+                >
+                  Submit
+                </Button>
+              </div>
+            </React.Fragment>
+          ) : null}
+
+          {codeVerified ? (
+            <React.Fragment>
+              <h1>Code is verified!</h1>
+            </React.Fragment>
+          ) : null}
         </div>
       </React.Fragment>,
       document.getElementById("toolbarPortal")
