@@ -20,7 +20,9 @@ const useStyles = makeStyles((theme) => ({
 export default function DeleteAccountModal(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [showButtons, setShowButtons] = useState(true);
+  const [credentialsValidated, setCredentialsValidated] = useState("");
 
   const history = useHistory();
   const classes = useStyles();
@@ -34,17 +36,21 @@ export default function DeleteAccountModal(props) {
         password: password,
       },
     }).then((response) => {
+      console.log(response);
       if (response.data.result !== false) {
-        console.log(response);
         localStorage.clear();
         history.push("/");
         history.go(0);
+      } else {
+        setCredentialsValidated("error");
       }
     });
   };
 
   const handleDeleteAccountConfirmedClicked = () => {
     handleDeleteAccountClickedApi();
+    console.log(email);
+    console.log(password);
   };
 
   const handleDeleteButtonClicked = () => {
@@ -111,7 +117,7 @@ export default function DeleteAccountModal(props) {
                 </div>
 
                 <h2>Password</h2>
-                <div>
+                <div onClick={(e) => e.stopPropagation()}>
                   <TextField
                     required
                     // error={errorValue}
@@ -148,6 +154,10 @@ export default function DeleteAccountModal(props) {
                     Cancel
                   </Button>
                 </div>
+
+                {credentialsValidated === "error" ? (
+                  <h2>Incorect Email or Password</h2>
+                ) : null}
               </form>
             </React.Fragment>
           ) : null}
