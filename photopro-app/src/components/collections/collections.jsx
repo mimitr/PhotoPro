@@ -161,7 +161,7 @@ export default function Collections(props) {
       {componentsRender}
       <h1 style={{ textAlign: "center" }}>{loading && "Loading..."} </h1>
       <h2 style={{ textAlign: "center" }}>
-        {!hasCollections && "This user does not have any public collections"}{" "}
+        {!hasCollections && "This user does not have any public collections"}
       </h2>
     </React.Fragment>
   );
