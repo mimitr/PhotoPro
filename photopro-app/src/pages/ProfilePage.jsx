@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Toolbar from '../components/toolbar/toolbar';
 import UserPhotos from '../components/userPhotos/UserPhotos';
 import Collections from '../components/collections/collections';
@@ -12,16 +12,13 @@ function ProfilePage(props) {
       </React.Fragment>
     );
   } else {
+    // This variable helps certain components decide what information they should display.
     const displayMyProfile =
       localStorage.getItem('userID') === props.location.state.uploaderID
         ? true
         : false;
 
-    console.log(
-      `ProfilePage - props.location.state is ${props.location.state.uploaderID}`
-    );
-
-    console.log(`ProfilePage - displayMyProfile is ${displayMyProfile}`);
+    // Tries to move the page to the top when the profile page is rendered
     document.body.style.overflow = 'unset';
     return (
       <React.Fragment>

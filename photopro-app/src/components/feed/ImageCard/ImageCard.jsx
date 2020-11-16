@@ -360,28 +360,6 @@ class ImageCard extends Component {
           </div>
         ) : null}
 
-        {this.state.openPostModal ? (
-          <div
-            className="modal-wrapper"
-            onClick={() => {
-              this.setState({ openPostModal: false });
-            }}
-          >
-            <PostModal
-              openModal={this.state.openPostModal}
-              setOpenModal={this.setOpenPostModal}
-              imageID={this.props.image.id}
-              url={this.props.image.img}
-              caption={this.props.image.caption}
-              price={this.props.image.price}
-              title={this.props.image.title}
-              uploader={this.props.image.uploader}
-              setNumLikes={this.setNumLikes}
-              setRelatedImagesClicked={this.setRelatedImagesClicked}
-            />
-          </div>
-        ) : null}
-
         {this.state.openEditPostModal ? (
           <div
             className="modal-wrapper"
