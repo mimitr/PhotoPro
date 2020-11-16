@@ -10,9 +10,9 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Notifications from './notifications/notifications';
 import logo from '../../logo/logo-new.png';
 
-import LoginModal from "../Modals/LoginModal/LoginModal";
-import SignupModal from "../Modals/SignupModal/SignupModal";
-import DeleteAccountModal from "../Modals/DeleteAccountModal/DeleteAccountModal";
+import LoginModal from '../Modals/LoginModal/LoginModal';
+import SignupModal from '../Modals/SignupModal/SignupModal';
+import DeleteAccountModal from '../Modals/DeleteAccountModal/DeleteAccountModal';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,22 +68,6 @@ function Toolbar() {
     history.push('/');
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
   };
-
-  const handleDeleteAccountClicked = () => {
-    // axios({
-    //   method: "GET",
-    //   url: "http://localhost:5000/delete_user",
-    //   params: {
-    //   },
-    // }).then((response) => {
-    //   if (response.data.result !== false) {
-    //     console.log(response);
-    //     localStorage.clear();
-    //     history.push('/');
-    //     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
-    //   }
-    // });
-  }
 
   const handleDiscoveryClicked = () => {
     history.push('/recommendations');
