@@ -27,13 +27,14 @@ export default function PostModal(props) {
   const { imageID } = props;
   const history = useHistory();
 
+  console.log(`imageID is ${imageID}`);
+
   useEffect(() => {
     axios({
       url: 'http://localhost:5000/get_user_username',
       params: { user_id: props.uploader },
     }).then((response) => {
       if (response.data.result) {
-        console.log(response.data);
         setUsername(response.data.result);
       }
     });
@@ -42,9 +43,7 @@ export default function PostModal(props) {
       url: 'http://localhost:5000/item_is_in_cart',
       params: { image_id: imageID },
     }).then((response) => {
-      console.log(response);
       if (response.data.result) {
-        console.log('added to cart');
         setAddedToCart(true);
       }
     });
@@ -54,7 +53,6 @@ export default function PostModal(props) {
       params: { user_id: props.uploader },
     }).then((response) => {
       if (response.data.result) {
-        console.log(response.data);
         setEmail(response.data.result);
       }
     });
@@ -87,9 +85,7 @@ export default function PostModal(props) {
           (c) => (cancelAxiosRequest.current = c)
         ),
       }).then((res) => {
-        console.log(res);
         if (res.data.result !== false && mounted) {
-          console.log(res.data.result);
           setTags(res.data.result);
         } else if (mounted) {
           setTags([]);
@@ -106,7 +102,6 @@ export default function PostModal(props) {
           (c) => (cancelAxiosRequest.current = c)
         ),
       }).then((res) => {
-        console.log(res);
         if (res.data.result !== false && mounted) {
           setComments(res.data.result);
         } else if (mounted) {
@@ -135,7 +130,6 @@ export default function PostModal(props) {
     }).then((response) => {
       if (response.data.result !== false) {
         setAddedToCart(true);
-        console.log(response);
       } else {
         setAddedToCart(false);
       }
@@ -152,7 +146,6 @@ export default function PostModal(props) {
     }).then((response) => {
       if (response.data.result !== false) {
         setAddedToCart(false);
-        console.log(response);
       } else {
         setAddedToCart(true);
       }
@@ -170,10 +163,6 @@ export default function PostModal(props) {
   const handleBookmarkClicked = () => {
     setBookmarkModalIsOpen(true);
   };
-
-  console.log(
-    `first ${localStorage.getItem('userID')} second ${props.uploader}`
-  );
 
   if (!props.openModal) {
     return null;
@@ -229,9 +218,6 @@ export default function PostModal(props) {
                         <div key={index} className="recImage">
                           <img
                             onClick={() => {
-                              console.log(
-                                `image with caption ${images.caption}`
-                              );
                               props.setRelatedImagesClicked(images);
                             }}
                             src={`data:image/jpg;base64,${images.img}`}

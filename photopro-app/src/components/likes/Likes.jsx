@@ -32,14 +32,14 @@ function Likes(props) {
       url: 'http://localhost:5000/get_num_likes_of_image',
       params: { image_id: imageID },
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
       if (response.data.result !== false) {
         set_num_likes(response.data.result);
       } else {
         set_num_likes(0);
       }
     });
-  }, []);
+  }, [imageID]);
 
   useEffect(() => {
     props.setNumLikes(num_likes);
@@ -48,17 +48,14 @@ function Likes(props) {
   useEffect(() => {
     const checkIfLiked = () => {
       axios({
-        method: 'GET',
-        url: 'http://localhost:5000/get_likers_of_image',
-        params: { image_id: imageID, batch_size: 50 },
+        url: 'http://localhost:5000/check_if_user_liked_photo',
+        params: { image_id: imageID },
       }).then((response) => {
         console.log(response);
-        if (response.data.result.length > 0) {
-          for (let i = 0; i < response.data.result.length; i++) {
-            if (parseInt(userID) === response.data.result[i].user_id) {
-              setPostLiked(true);
-            }
-          }
+        if (response.data.result) {
+          setPostLiked(true);
+        } else {
+          setPostLiked(false);
         }
       });
     };

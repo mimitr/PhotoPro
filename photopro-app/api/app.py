@@ -50,7 +50,13 @@ import PIL
 for i in sys.path:
     print(i)
 
-from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
+from utils.database.likes import (
+    post_like,
+    get_num_likes,
+    get_likers,
+    delete_like,
+    check_if_user_liked,
+)
 from utils.database.watermark import apply_watermark
 from utils.database.notifications import (
     send_notification,
@@ -1629,6 +1635,18 @@ def api_get_post_title():
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = get_post_title_by_id(int(image_id), conn, cur)
+    conn.close()
+    return jsonify({"result": result})
+
+
+@app.route("/check_if_user_liked_photo", methods=["GET", "POST"])
+def api_get_if_liked():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is None:
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = check_if_user_liked(int(image_id), int(user_id), conn, cur)
     conn.close()
     return jsonify({"result": result})
 

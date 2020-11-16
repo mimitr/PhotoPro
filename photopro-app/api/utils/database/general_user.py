@@ -97,7 +97,9 @@ def change_password(email, password, new_password, conn, cur):
 
 
 def gen_hash():
-    return str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+    return str(
+        "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+    )
 
 
 def verification_email(recipient):
@@ -114,7 +116,10 @@ def verification_email(recipient):
         message["From"] = sender
         message["To"] = recipient
         reset_url = "http://localhost:3000/" + str(
-            ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+            "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(8)
+            )
+        )
 
         html = "\
                         <html>\
@@ -434,9 +439,9 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        if ' ' in query or ',' in query:
-            query = query.replace(' ', ',')
-            tags = query.split(',')
+        if " " in query or "," in query:
+            query = query.replace(" ", ",")
+            tags = query.split(",")
             query = ""
             for tag in tags:
                 query = query + "'" + tag + "',"
@@ -757,7 +762,9 @@ def delete_account(user_id, email, password, conn, cur):
     cur.execute("SAVEPOINT save_point")
     try:
 
-        cmd = "select id from users where email='{}' and password='{}'".format(str(email), str(password))
+        cmd = "select id from users where email='{}' and password='{}'".format(
+            str(email), str(password)
+        )
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchone()[0]
@@ -819,3 +826,4 @@ def delete_account(user_id, email, password, conn, cur):
         print(error)
         conn.rollback()
         return False
+
