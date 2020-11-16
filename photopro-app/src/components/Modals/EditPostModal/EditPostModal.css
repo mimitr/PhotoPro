@@ -1,17 +1,18 @@
 .grid-container-editpost {
   display: grid;
   grid-template-columns: 50% 50%;
-  grid-auto-rows: minmax(100px, auto);
+  grid-auto-rows: minmax(90px, auto);
 
   align-content: center;
-  height: 100vh;
+  /* height: 50vh; */
+  justify-content: center;
 }
 
 .grid-item-form {
-  grid-column: 1 / 2;
-  grid-row: 2 / 3;
+  /* grid-column: 2;
+  grid-row: 2 / 3; */
 
-  justify-self: center;
+  /* justify-self: center; */
   align-self: center;
 }
 
@@ -26,8 +27,8 @@
 }
 
 .grid-item-image > img {
-  max-width: 50%;
-  max-height: 50%;
+  max-width: 70%;
+  max-height: auto;
   margin-left: auto;
   margin-right: auto;
   display: block;
@@ -43,7 +44,7 @@
   padding: 50px;
   z-index: 1001;
   width: 110vh;
-  height: 70vh;
+  max-height: 70vh;
 }
 
 .overlayStyles {

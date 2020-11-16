@@ -219,6 +219,11 @@ export default function PostModal(props) {
                       return (
                         <div key={index} className="recImage">
                           <img
+                            onClick={() => {
+                              console.log(
+                                `image with caption ${images.caption}`
+                              );
+                            }}
                             src={`data:image/jpg;base64,${images.img}`}
                             alt={images.caption}
                           />
@@ -260,7 +265,7 @@ export default function PostModal(props) {
                 </div>
                 <p
                   className="roboto"
-                  style={{ textAlign: "center", fontSize: "70%" }}
+                  style={{ fontSize: "70%", textAlign: "center" }}
                 >
                   email: {email}
                 </p>

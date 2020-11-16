@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./CheckoutPage.css";
 import ToolBar from "../../components/toolbar/toolbar";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
 import CheckoutItem from "./checkoutItem/CheckoutItem";

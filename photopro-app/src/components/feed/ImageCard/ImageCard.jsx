@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
 import "./ImageCard.css";
-import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import { withStyles } from "@material-ui/core";
 import FavoriteIcon from "@material-ui/icons/Favorite";
@@ -221,8 +220,6 @@ class ImageCard extends Component {
 
     let uploaderID = String(this.props.image.uploader);
     let userID = localStorage.getItem("userID");
-
-    console.log(`uploaderID = ${uploaderID}, userID = ${userID}`);
 
     let deleteButton =
       uploaderID === userID ? (
