@@ -119,7 +119,12 @@ export default function CapturePhotoPage(props) {
             uploadButtonClicked={uploadButtonClicked}
             setTagsValidated={setTagsValidated}
           />
-
+          <h4>
+            Tags are important to allow our system to match users with your
+            photos. We encourage the use of tags but they are not optional. Upon
+            submission our system will auto-tag your image to improve its search
+            appearance but you may choose to remove these by editing your post.
+          </h4>
           <div className="capture-form-buttons">
             <Button
               variant="contained"
