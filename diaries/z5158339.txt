@@ -54,5 +54,13 @@ Managed to create the user's personal collection page, so that when you click on
 Managed to show if the collection is private or public, how many photos are in the collection, the name of the collection and the creator of the collection.
 Managed to edit and make the collection public/ private as well as deleting it.
 Managed to create modals for login and signup pages.
+Next week planning on finishing the shopping cart and checkout pages.
 
 Week 9 
+Managed to style and finish the functionalities of both shopping cart and checkout pages.
+Struggled with designing using CSS grids and flexboxes, but manages to solve those issues.
+Managed to add the functionality of having the "Save for Later" section in the shopping cart page.
+Managed to update the websites UI: added a randomised background bar for the main page, created more modals for some pages, changed fonts and designed the look of Collections page and User's Profile page.
+Managed to create a new Logo, and be able to click on the Logo in order to go back to the main page.
+Managed to develop the "Delete My Account functionality", so that if the user wants to delete his/ her account, a modal pops up asking for confirmation and details.
+Finished the project (yay! :3)
