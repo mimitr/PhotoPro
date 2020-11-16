@@ -166,7 +166,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 message["Subject"] = "PhotoPro: Reset Your Password"
                 message["From"] = sender
                 message["To"] = recipient
-                reset_url = "http://localhost:3000/reset-password/"
+                reset_url = "http://localhost:3000/reset-password/"+str(gen_hash())
 
                 html = "\
                     <html>\
