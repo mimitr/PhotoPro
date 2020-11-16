@@ -40,8 +40,6 @@ const Feed = (props) => {
     }, 150);
 
     return () => {
-      console.log('CLEAN UP - Feed');
-
       if (cancelAxiosRequest.current != null) cancelAxiosRequest.current();
 
       fetchIsCancelled.current = true;
@@ -60,7 +58,6 @@ const Feed = (props) => {
       ),
     })
       .then((res) => {
-        console.log(res);
         if (res.data.result !== false && !fetchIsCancelled.current) {
           setHasMore(true);
           setLoading(false);
@@ -68,22 +65,16 @@ const Feed = (props) => {
             return [...prevImgs, ...res.data.result];
           });
         } else if (!fetchIsCancelled.current) {
-          console.log('no more images to return');
           setLoading(false);
           setHasMore(false);
         }
       })
       .catch((e) => {
         if (axios.isCancel(e)) {
-          console.log(`previous search request cancelled for - ${term}`);
           return;
         }
       });
   };
-
-  // console.log(`LENGTH = ${imgs.length}`);
-  // console.log(`HASMORE = ${hasMore}`);
-  // console.log(`LOADING = ${loading}`);
 
   return (
     <React.Fragment>

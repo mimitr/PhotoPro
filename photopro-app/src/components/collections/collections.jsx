@@ -56,9 +56,7 @@ export default function Collections(props) {
           batch_size: 20,
         },
       }).then((response) => {
-        console.log(response);
         if (response.data.result !== false) {
-          console.log(response);
           setAllCollections(response.data.result);
           setHasCollections(true);
         } else {
@@ -72,7 +70,6 @@ export default function Collections(props) {
   }, [userID]);
 
   const collectionsComponents = allCollections.map((collection) => {
-    console.log(collection);
     if (displayMyProfile === true || collection.private === false) {
       return (
         <Collection
@@ -155,7 +152,6 @@ export default function Collections(props) {
     );
   }
 
-  console.log('RENDERED');
   return (
     <React.Fragment>
       {componentsRender}
