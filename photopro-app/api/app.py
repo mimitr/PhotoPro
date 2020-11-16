@@ -90,6 +90,7 @@ from utils.database.user_purchases import (
     item_is_in_cart,
     get_user_purchases,
     update_user_purchases_details,
+    send_user_purchase
 )
 
 app = Flask(__name__)
@@ -1286,6 +1287,8 @@ def api_update_user_purchases_details():
             int(uploader_id), int(user_id), "purchased", int(image_id), conn, cur
         )
 
+        send_user_purchase(int(user_id), int(image_id), conn, cur)
+
         result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
         if result_terms:
             for term, value in result_terms:
@@ -1409,6 +1412,7 @@ def api_update_likes_recommendation():
         else:
             return jsonify({"result": False})
     return jsonify({"result": False})
+
 
 @app.route("/get_related_images")
 def api_get_related_images():
