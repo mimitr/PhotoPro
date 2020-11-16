@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
-import ReactDom from "react-dom";
-import Button from "@material-ui/core/Button";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
-import "./EditPostModal.css";
+import React, { useState, useEffect } from 'react';
+import ReactDom from 'react-dom';
+import Button from '@material-ui/core/Button';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
+import './EditPostModal.css';
 
-import TitleField from "./textfields/TitleField";
-import CaptionField from "./textfields/CaptionField";
-import TagsField from "./textfields/TagsField";
-import PriceField from "./textfields/PriceField";
+import TitleField from './textfields/TitleField';
+import CaptionField from './textfields/CaptionField';
+import TagsField from './textfields/TagsField';
+import PriceField from './textfields/PriceField';
 
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& .MuiTextField-root": {
+    '& .MuiTextField-root': {
       margin: theme.spacing(1),
-      width: "ch",
+      width: 'ch',
     },
   },
 }));
@@ -29,12 +29,12 @@ export default function EditPostPage(props) {
     props.caption,
   ]);
   const [priceValidated, setPriceValidated] = useState([false, props.price]);
-  const [tagsValidated, setTagsValidated] = useState([false, props.tags]);
+  const [tagsValidated, setTagsValidated] = useState([false, []]);
   const [oldTags, setOldTags] = useState([]);
 
   useEffect(() => {
     axios({
-      url: "http://localhost:5000/get_tags",
+      url: 'http://localhost:5000/get_tags',
       params: { image_id: props.imageID },
     }).then((res) => {
       console.log(res);
@@ -52,7 +52,7 @@ export default function EditPostPage(props) {
   async function edit_post(event) {
     // event.preventDefault();
 
-    var response = await axios.get("http://localhost:5000/edit_post", {
+    var response = await axios.get('http://localhost:5000/edit_post', {
       params: {
         image_id: props.imageID,
         title: titleValidated[1],
@@ -61,11 +61,7 @@ export default function EditPostPage(props) {
         tags: tagsValidated[1],
       },
     });
-    console.log(response);
-
-    // if (response.data.result) {
-    //   history.goBack();
-    // }
+    return response;
   }
 
   useEffect(() => {
@@ -80,16 +76,20 @@ export default function EditPostPage(props) {
       priceValidated[0] &&
       tagsValidated[0]
     ) {
-      console.log("APPROVED");
-      edit_post();
+      console.log('APPROVED');
+      const response = edit_post();
+      response.then((res) => {
+        console.log(res);
+        if (res.data.result) {
+          history.go(0);
+        }
+      });
     }
   }, [titleValidated, captionValidated, priceValidated, tagsValidated]);
 
   const handleSaveButton = () => {
     setSaveButtonClicked(!saveButtonClicked);
   };
-
-  const handleCancelButton = () => {};
 
   if (!props.openModal) {
     return null;
@@ -145,7 +145,9 @@ export default function EditPostPage(props) {
                   variant="contained"
                   color="primary"
                   size="large"
-                  onClick={handleCancelButton}
+                  onClick={() => {
+                    props.setOpenModal(false);
+                  }}
                 >
                   Cancel
                 </Button>
@@ -233,7 +235,7 @@ export default function EditPostPage(props) {
           </div>
         </div>
       </React.Fragment>,
-      document.getElementById("editPostPortal")
+      document.getElementById('editPostPortal')
     );
   }
 }

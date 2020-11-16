@@ -69,7 +69,7 @@ from utils.database.recommendation import (
     get_related_images,
     get_recommendation_photos,
     init_user_recommendation,
-    get_global_recommendations
+    get_global_recommendations,
 )
 from utils.database.collections import (
     create_collection,
@@ -101,7 +101,7 @@ def invalid_text(text):
 
 
 def clean_text(text):
-    return str(text).replace("'", "").replace('"', '')
+    return str(text).replace("'", "").replace('"', "")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -137,8 +137,13 @@ def api_create_user():
         username = str(str(first) + " " + str(last))
     print(username)
 
-    if invalid_text(email) or invalid_text(password) or invalid_text(first) \
-            or invalid_text(last) or invalid_text(username):
+    if (
+        invalid_text(email)
+        or invalid_text(password)
+        or invalid_text(first)
+        or invalid_text(last)
+        or invalid_text(username)
+    ):
         return jsonify({"result": False})
 
     result = create_user(first, last, email, password, username, conn, cur)
@@ -208,7 +213,9 @@ def api_post_image():
         price = str(request.form["price"])
         title = request.form["title"]
         tags = str(request.form["tags"])
-        tags = tags.split(",")
+
+        if tags is not None:
+            tags = tags.split(",")
 
         print(price, title)
 
@@ -303,7 +310,7 @@ def api_discovery():
 
     if query is not None:
         query = clean_text(query)
-        terms = query.split(' ')
+        terms = query.split(" ")
         print(terms)
 
     print(
@@ -316,7 +323,9 @@ def api_discovery():
         print("------------------ last query === query ----------------------")
         start_point = app.start_point
     else:
-        print("---------------------- app.start_point reset to 1000000 ------------------")
+        print(
+            "---------------------- app.start_point reset to 1000000 ------------------"
+        )
         app.start_point = 1000000
     app.last_query = query
     if query is not None:
@@ -536,9 +545,12 @@ def api_edit_post():
     tags = request.args.get("tags")
     if invalid_text(title) or invalid_text(caption):
         return jsonify({"result": False})
-    for t in tags:
-        if invalid_text(t):
-            return jsonify({"result": False})
+
+    if tags is not None:
+        for t in tags:
+            if invalid_text(t):
+                return jsonify({"result": False})
+
     conn, cur = get_conn_and_cur()
     result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
     conn.close()
@@ -1125,10 +1137,10 @@ def api_add_purchase():
     user_id = app.user_id
 
     if (
-            user_id is None
-            or purchased is None
-            or image_id is None
-            or save_for_later is None
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1232,10 +1244,10 @@ def api_update_user_purchases_details():
     user_id = app.user_id
 
     if (
-            user_id is None
-            or purchased is None
-            or image_id is None
-            or save_for_later is None
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1269,7 +1281,7 @@ def api_get_user_username():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_username_by_id(int(uid), conn, cur, )
+    result = get_username_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
 
@@ -1281,7 +1293,7 @@ def api_get_user_email():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_email_by_id(int(uid), conn, cur, )
+    result = get_email_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
 

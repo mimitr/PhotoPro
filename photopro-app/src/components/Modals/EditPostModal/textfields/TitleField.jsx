@@ -1,32 +1,35 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
 
 export default function TitleField(props) {
   const [text, setText] = useState(props.oldTitle);
-  const [errorText, setErrorText] = useState("");
+  const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
-  //   const [firstRender, setFirstRender] = useState(true);
+  const [firstRender, setFirstRender] = useState(true);
 
   const { saveButtonClicked } = props;
 
-  //   useEffect(() => {
-  //     setFirstRender(false);
-  //   }, []);
-
   useEffect(() => {
-    const result = handleTitleInput(text);
-    props.setTitleValidated([result, text]);
+    setFirstRender(false);
+    props.setTitleValidated([false, text]);
   }, []);
 
   useEffect(() => {
-    // if (firstRender === false) {
-    const result = handleTitleInput(text);
-    props.setTitleValidated([result, text]);
-    // }
+    if (firstRender === false) {
+      const result = handleTitleInput(text);
+      props.setTitleValidated([result, text]);
+    }
   }, [saveButtonClicked]);
 
   const handleTitleInput = (text) => {
-    return text.length > 0 && text.length < 50;
+    if (text.length > 0 && text.length < 50) {
+      setErrorValue(false);
+      return true;
+    } else {
+      setErrorValue(true);
+      setErrorText('A title must be included');
+      return false;
+    }
   };
 
   return (

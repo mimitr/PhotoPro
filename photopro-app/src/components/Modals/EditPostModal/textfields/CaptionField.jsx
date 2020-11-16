@@ -1,32 +1,35 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
 
 export default function CaptionField(props) {
   const [text, setText] = useState(props.oldCaption);
-  const [errorText, setErrorText] = useState("");
+  const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
-  //   const [firstRender, setFirstRender] = useState(true);
+  const [firstRender, setFirstRender] = useState(true);
 
   const { saveButtonClicked } = props;
 
-  //   useEffect(() => {
-  //     setFirstRender(false);
-  //   }, []);
-
   useEffect(() => {
-    const result = handleCaptionInput(text);
-    props.setCaptionValidated([result, text]);
+    setFirstRender(false);
+    props.setCaptionValidated([false, text]);
   }, []);
 
   useEffect(() => {
-    // if (firstRender === false) {
-    const result = handleCaptionInput(text);
-    props.setCaptionValidated([result, text]);
-    // }
+    if (firstRender === false) {
+      const result = handleCaptionInput(text);
+      props.setCaptionValidated([result, text]);
+    }
   }, [saveButtonClicked]);
 
   const handleCaptionInput = (text) => {
-    return text.length > 0 && text.length < 50;
+    if (text.length < 50) {
+      setErrorValue(false);
+      return true;
+    } else {
+      setErrorValue(true);
+      setErrorText('Caption too long');
+      return false;
+    }
   };
 
   return (
@@ -34,7 +37,6 @@ export default function CaptionField(props) {
       <h3>Caption</h3>
       <div>
         <TextField
-          required
           error={errorValue}
           helperText={errorText}
           onChange={(e) => {
@@ -42,7 +44,6 @@ export default function CaptionField(props) {
             handleCaptionInput(e.target.value);
           }}
           id="outlined-required"
-          label="Required"
           defaultValue={props.oldCaption}
           variant="outlined"
         />
