@@ -10,9 +10,9 @@ import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import Notifications from "./notifications/notifications";
 import logo from "../../logo/logo-new.png";
 
-import LoginModal from "../Modals/LoginModal/LoginModal";
-import SignupModal from "../Modals/SignupModal/SignupModal";
-import DeleteAccountModal from "../Modals/DeleteAccountModal/DeleteAccountModal";
+import LoginModal from '../Modals/LoginModal/LoginModal';
+import SignupModal from '../Modals/SignupModal/SignupModal';
+import DeleteAccountModal from '../Modals/DeleteAccountModal/DeleteAccountModal';
 
 const useStyles = makeStyles((theme) => ({
   root: {
