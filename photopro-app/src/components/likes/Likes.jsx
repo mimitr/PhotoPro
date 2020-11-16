@@ -32,7 +32,6 @@ function Likes(props) {
       url: 'http://localhost:5000/get_num_likes_of_image',
       params: { image_id: imageID },
     }).then((response) => {
-      // console.log(response);
       if (response.data.result !== false) {
         set_num_likes(response.data.result);
       } else {

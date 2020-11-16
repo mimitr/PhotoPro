@@ -27,8 +27,6 @@ export default function PostModal(props) {
   const { imageID } = props;
   const history = useHistory();
 
-  console.log(`imageID is ${imageID}`);
-
   useEffect(() => {
     axios({
       url: 'http://localhost:5000/get_user_username',
