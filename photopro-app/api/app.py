@@ -529,7 +529,7 @@ def api_profile_photos():
 
             if last_id is None:
                 last_id = id
-            elif last_id < id:
+            elif int(last_id) < id:
                 last_id = id
 
             processed_result.append(
