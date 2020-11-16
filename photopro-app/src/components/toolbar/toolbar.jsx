@@ -9,6 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import Notifications from "./notifications/notifications";
 import logo from "../../logo/logo-new.png";
+import ForgotPasswordModal from "../Modals/ForgotPasswordModal/ForgotPasswordModal";
 
 import LoginModal from "../Modals/LoginModal/LoginModal";
 import SignupModal from "../Modals/SignupModal/SignupModal";
@@ -33,6 +34,14 @@ function Toolbar() {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
+  const [forgotPasswordModalIsOpen, setForgotPasswordModalIsOpen] = useState(
+    false
+  );
+  const [
+    forgotPasswordButtonClicked,
+    setForgotPasswordButtonClicked,
+  ] = useState(false);
+
   const [signupModalIsOpen, setSignupModalIsOpen] = useState(false);
   const [deleteAcountModalIsOpen, setDeleteAccountModalIsOpen] = useState(
     false
@@ -107,6 +116,12 @@ function Toolbar() {
     setDeleteAccountModalIsOpen(true);
     handleAccountClose();
   };
+
+  if (forgotPasswordButtonClicked) {
+    setForgotPasswordModalIsOpen(true);
+  }
+
+  console.log();
 
   let buttons;
   if (loggedIn === "true") {
@@ -235,7 +250,22 @@ function Toolbar() {
             <LoginModal
               openLoginModal={true}
               setOpenLoginModal={setLoginModalIsOpen}
+              setForgotPasswordModalIsOpen={setForgotPasswordModalIsOpen}
             ></LoginModal>
+          </div>
+        ) : null}
+
+        {forgotPasswordModalIsOpen ? (
+          <div
+            className="toolbar-modal-wrapper"
+            onClick={() => {
+              setForgotPasswordModalIsOpen(false);
+            }}
+          >
+            <ForgotPasswordModal
+              openForgotPasswordModal={true}
+              setOpenForgotPasswordModal={setForgotPasswordModalIsOpen}
+            ></ForgotPasswordModal>
           </div>
         ) : null}
 
