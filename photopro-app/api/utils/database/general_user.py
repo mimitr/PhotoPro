@@ -678,6 +678,15 @@ def get_post_title_by_id(image_id, conn, cur):
 def delete_account(user_id, email, password, conn, cur):
     cur.execute("SAVEPOINT save_point")
     try:
+
+        cmd = "select id from users where email='{}' and password='{}'".format(str(email), str(password))
+        cur.execute(cmd)
+        conn.commit()
+        result = cur.fetchone()[0]
+        print(result, user_id, password, email)
+        # if int(result) != int(user_id):
+        #     return False
+
         cmd = "select image_id from images where uploader={}".format(int(user_id))
         cur.execute(cmd)
         conn.commit()
