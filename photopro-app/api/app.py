@@ -34,7 +34,7 @@ from utils.database.general_user import (
     get_profile_image,
     delete_profile_image,
     verification_email,
-    gen_hash
+    gen_hash,
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -90,7 +90,7 @@ from utils.database.user_purchases import (
     item_is_in_cart,
     get_user_purchases,
     update_user_purchases_details,
-    send_user_purchase
+    send_user_purchase,
 )
 
 app = Flask(__name__)
@@ -149,11 +149,11 @@ def api_create_user():
     print(username)
 
     if (
-            invalid_text(email)
-            or invalid_text(password)
-            or invalid_text(first)
-            or invalid_text(last)
-            or invalid_text(username)
+        invalid_text(email)
+        or invalid_text(password)
+        or invalid_text(first)
+        or invalid_text(last)
+        or invalid_text(username)
     ):
         return jsonify({"result": False})
 
@@ -1160,10 +1160,10 @@ def api_add_purchase():
     user_id = app.user_id
 
     if (
-            user_id is None
-            or purchased is None
-            or image_id is None
-            or save_for_later is None
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1269,10 +1269,10 @@ def api_update_user_purchases_details():
     user_id = app.user_id
 
     if (
-            user_id is None
-            or purchased is None
-            or image_id is None
-            or save_for_later is None
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1327,7 +1327,7 @@ def api_get_user_username():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_username_by_id(int(uid), conn, cur, )
+    result = get_username_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
 
@@ -1339,7 +1339,7 @@ def api_get_user_email():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_email_by_id(int(uid), conn, cur, )
+    result = get_email_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
 
@@ -1626,3 +1626,16 @@ def api_get_post_title():
     result = get_post_title_by_id(int(image_id), conn, cur)
     conn.close()
     return jsonify({"result": result})
+
+
+# @app.route("/get_followers", methods=["GET", "POST"])
+# def api_get_post_title():
+#     user_id = app.user_id
+
+#     if user_id is None:
+#         return jsonify({"result": False})
+#     conn, cur = get_conn_and_cur()
+#     result = get_followers
+#     conn.close()
+#     return jsonify({"result": result})
+
