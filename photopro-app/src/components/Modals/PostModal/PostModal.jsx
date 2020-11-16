@@ -233,13 +233,16 @@ export default function PostModal(props) {
                       );
                     })
                   ) : (
-                    <div
-                      style={{
-                        marginTop: '20vh',
-                        marginRight: '20vh',
-                        marginLeft: '20vh',
-                      }}
-                    ></div>
+                    <React.Fragment>
+                      <h1>No related images could be found</h1>
+                      <div
+                        style={{
+                          marginTop: '20vh',
+                          marginRight: '20vh',
+                          marginLeft: '20vh',
+                        }}
+                      ></div>
+                    </React.Fragment>
                   )}
                 </div>
               </div>
