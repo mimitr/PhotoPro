@@ -3,7 +3,6 @@ import ReactDom from 'react-dom';
 import './AddedToCartModal.css';
 
 export default function AddedToCartModal(props) {
-  console.log(props.cartStatus);
   if (!props.openModal) {
     return null;
   } else {

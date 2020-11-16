@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
+import React, { useState, useEffect } from "react";
+import TextField from "@material-ui/core/TextField";
 
 export default function Password(props) {
-  const [text, setText] = useState('');
-  const [errorText, setErrorText] = useState('');
+  const [text, setText] = useState("");
+  const [errorText, setErrorText] = useState("");
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
@@ -23,10 +23,10 @@ export default function Password(props) {
   const handlePasswordInput = (text) => {
     if (text.length >= 8 && text.length < 16) {
       setErrorValue(false);
-      setErrorText('');
+      setErrorText("");
       return true;
     } else {
-      setErrorText('Password must be between 8 and 16 characters long');
+      setErrorText("Password must be between 8 and 16 characters long");
       setErrorValue(true);
       return false;
     }
@@ -35,6 +35,7 @@ export default function Password(props) {
     <React.Fragment>
       <h1></h1>
       <TextField
+        type="password"
         required
         error={errorValue}
         helperText={errorText}

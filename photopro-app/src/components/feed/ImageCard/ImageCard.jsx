@@ -381,6 +381,7 @@ class ImageCard extends Component {
               title={this.props.image.title}
               uploader={this.props.image.uploader}
               setNumLikes={this.setNumLikes}
+              setRelatedImagesClicked={this.setRelatedImagesClicked}
             />
           </div>
         ) : null}
