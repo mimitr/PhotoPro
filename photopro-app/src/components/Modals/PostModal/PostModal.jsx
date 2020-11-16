@@ -171,6 +171,10 @@ export default function PostModal(props) {
     setBookmarkModalIsOpen(true);
   };
 
+  console.log(
+    `first ${localStorage.getItem('userID')} second ${props.uploader}`
+  );
+
   if (!props.openModal) {
     return null;
   } else {
@@ -188,7 +192,8 @@ export default function PostModal(props) {
               <div className="username">
                 {localStorage.getItem('userLoggedIn') ? (
                   <React.Fragment>
-                    {localStorage.getItem('userID') !== props.uploader ? (
+                    {parseInt(localStorage.getItem('userID')) !==
+                    props.uploader ? (
                       <FollowButton uploader={props.uploader} />
                     ) : null}
                     <div className="bookmark-wrapper">
@@ -303,19 +308,22 @@ export default function PostModal(props) {
               <div className="postPrice">
                 <h2 className="roboto">Price: ${props.price}</h2>
                 {localStorage.getItem('userLoggedIn') ? (
-                  addedToCart ? (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleBuyButton}
-                    >
-                      Added to Cart
-                    </Button>
-                  ) : (
-                    <Button variant="contained" onClick={handleBuyButton}>
-                      Add to Cart
-                    </Button>
-                  )
+                  parseInt(localStorage.getItem('userID')) !==
+                  props.uploader ? (
+                    addedToCart ? (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleBuyButton}
+                      >
+                        Added to Cart
+                      </Button>
+                    ) : (
+                      <Button variant="contained" onClick={handleBuyButton}>
+                        Add to Cart
+                      </Button>
+                    )
+                  ) : null
                 ) : null}
               </div>
               <div className="postComments">
