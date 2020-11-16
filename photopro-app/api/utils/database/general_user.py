@@ -434,12 +434,30 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes FROM num_likes_per_image\
-                    RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id\
-                     WHERE images.image_id < {} AND uploader != {} AND '{}' ILIKE ANY(tags)\
-                      ORDER BY created_at DESC, image_id DESC LIMIT {}".format(
-            start_point, user_id, query, batch_size
-        )
+        if ' ' in query or ',' in query:
+            query = query.replace(' ', ',')
+            tags = query.split(',')
+            query = ""
+            for tag in tags:
+                query = query + "'" + tag + "',"
+            if query[-1] == ",":
+                query = query[:-1]
+            print("============\n {} \n ================".format(query))
+            cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes \
+                        FROM num_likes_per_image RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id,\
+                        unnest(lower(array[{}]::text)::text[]) u  WHERE tags@>array[u]\
+                         AND images.image_id < {} AND uploader != {} GROUP BY images.image_id,num_likes\
+                          ORDER BY COUNT(*) DESC, created_at DESC, image_id DESC LIMIT {}".format(
+                query, start_point, user_id, batch_size
+            )
+        else:
+            cmd = "SELECT images.image_id, caption, uploader, file, title, price, created_at, tags, num_likes \
+                                    FROM num_likes_per_image RIGHT JOIN images ON num_likes_per_image.image_id=images.image_id,\
+                                    unnest(lower(array['{}']::text)::text[]) u  WHERE tags@>array[u]\
+                                     AND images.image_id < {} AND uploader != {} GROUP BY images.image_id,num_likes\
+                                      ORDER BY COUNT(*) DESC, created_at DESC, image_id DESC LIMIT {}".format(
+                query, start_point, user_id, batch_size
+            )
         print(cmd)
         cur.execute(cmd)
         conn.commit()
