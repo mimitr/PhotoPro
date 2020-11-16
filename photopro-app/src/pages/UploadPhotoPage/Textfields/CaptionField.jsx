@@ -7,7 +7,7 @@ export default function Password(props) {
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { submitFormClicked } = props;
+  const { uploadButtonClicked } = props;
 
   useEffect(() => {
     setFirstRender(false);
@@ -15,34 +15,27 @@ export default function Password(props) {
 
   useEffect(() => {
     if (firstRender === false) {
-      const result = handlePasswordInput(text);
-      props.setPasswordValidated([result, text]);
+      const result = handleCaptionText(text);
+      props.setCaptionValidated([result, text]);
     }
-  }, [submitFormClicked]);
+  }, [uploadButtonClicked]);
 
-  const handlePasswordInput = (text) => {
-    if (text.length >= 8 && text.length < 16) {
-      setErrorValue(false);
-      setErrorText('');
-      return true;
-    } else {
-      setErrorText('Password must be between 8 and 16 characters long');
-      setErrorValue(true);
-      return false;
-    }
+  const handleCaptionText = (text) => {
+    setErrorValue(false);
+    setErrorText('');
+    return true;
   };
   return (
     <React.Fragment>
       <h1></h1>
       <TextField
-        required
         error={errorValue}
         helperText={errorText}
         onChange={(e) => {
           setText(e.target.value);
-          handlePasswordInput(e.target.value);
+          handleCaptionText(e.target.value);
         }}
-        label="Password"
+        label="Caption"
         InputLabelProps={{
           shrink: true,
         }}

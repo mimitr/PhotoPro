@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 
-export default function Email(props) {
+export default function FirstName(props) {
   const [text, setText] = useState('');
   const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { submitFormClicked } = props;
+  const { uploadButtonClicked } = props;
 
   useEffect(() => {
     setFirstRender(false);
@@ -15,40 +15,27 @@ export default function Email(props) {
 
   useEffect(() => {
     if (firstRender === false) {
-      const result = handleEmailInput(text);
-      props.setEmailValidated([result, text]);
+      const result = handleTagsText(text);
+      props.setTagsValidated([result, text]);
     }
-  }, [submitFormClicked]);
+  }, [uploadButtonClicked]);
 
-  const handleEmailInput = (text) => {
-    if (
-      text.length > 10 &&
-      text.length < 50 &&
-      text.includes('@') &&
-      text.includes('.com')
-    ) {
-      setErrorValue(false);
-      setErrorText('');
-      return true;
-    } else {
-      setErrorText('Email must be entered and include an @ and .com');
-      setErrorValue(true);
-      return false;
-    }
+  const handleTagsText = (text) => {
+    setErrorValue(false);
+    setErrorText('');
+    return true;
   };
-
   return (
     <React.Fragment>
       <h1></h1>
       <TextField
-        required
         error={errorValue}
         helperText={errorText}
         onChange={(e) => {
           setText(e.target.value);
-          handleEmailInput(e.target.value);
+          handleTagsText(e.target.value);
         }}
-        label="Email"
+        label="Tags - Must be comma seperated (e.g. 'nature','trees','green')"
         InputLabelProps={{
           shrink: true,
         }}

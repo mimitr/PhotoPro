@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 
-export default function FirstName(props) {
+export default function Title(props) {
   const [text, setText] = useState('');
   const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { submitFormClicked } = props;
+  const { uploadButtonClicked } = props;
 
   useEffect(() => {
     setFirstRender(false);
@@ -15,22 +15,23 @@ export default function FirstName(props) {
 
   useEffect(() => {
     if (firstRender === false) {
-      const result = handleFirstNameInput(text);
-      props.setFirstNameValidated([result, text]);
+      const result = handleTitleInput(text);
+      props.setTitleValidated([result, text]);
     }
-  }, [submitFormClicked]);
+  }, [uploadButtonClicked]);
 
-  const handleFirstNameInput = (text) => {
+  const handleTitleInput = (text) => {
     if (text.length > 0) {
       setErrorValue(false);
       setErrorText('');
       return true;
     } else {
-      setErrorText('First name must be included');
+      setErrorText('Title must be included');
       setErrorValue(true);
       return false;
     }
   };
+
   return (
     <React.Fragment>
       <h1></h1>
@@ -40,9 +41,9 @@ export default function FirstName(props) {
         helperText={errorText}
         onChange={(e) => {
           setText(e.target.value);
-          handleFirstNameInput(e.target.value);
+          handleTitleInput(e.target.value);
         }}
-        label="First name"
+        label="Title"
         InputLabelProps={{
           shrink: true,
         }}

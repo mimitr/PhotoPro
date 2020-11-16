@@ -7,7 +7,7 @@ export default function LastName(props) {
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
-  const { submitFormClicked } = props;
+  const { uploadButtonClicked } = props;
 
   useEffect(() => {
     setFirstRender(false);
@@ -15,18 +15,18 @@ export default function LastName(props) {
 
   useEffect(() => {
     if (firstRender === false) {
-      const result = handleLastNameInput(text);
-      props.setLastNameValidated([result, text]);
+      const result = handlePriceInput(text);
+      props.setPriceValidated([result, text]);
     }
-  }, [submitFormClicked]);
+  }, [uploadButtonClicked]);
 
-  const handleLastNameInput = (text) => {
-    if (text.length > 0) {
+  const handlePriceInput = (text) => {
+    if (parseInt(text) > 0) {
       setErrorValue(false);
       setErrorText('');
       return true;
     } else {
-      setErrorText('Last name must be included');
+      setErrorText('Price must be included');
       setErrorValue(true);
       return false;
     }
@@ -41,9 +41,10 @@ export default function LastName(props) {
           helperText={errorText}
           onChange={(e) => {
             setText(e.target.value);
-            handleLastNameInput(e.target.value);
+            handlePriceInput(e.target.value);
           }}
-          label="Last name"
+          label="Price"
+          type="number"
           InputLabelProps={{
             shrink: true,
           }}

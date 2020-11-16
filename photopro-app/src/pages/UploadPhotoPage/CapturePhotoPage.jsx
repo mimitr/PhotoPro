@@ -1,23 +1,18 @@
-import React from 'react';
-import ImageUploader from 'react-images-upload';
-import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import ReactDom from 'react-dom';
+import Button from '@material-ui/core/Button';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
+import './CapturePhotoPage.css';
+
+import TitleField from './Textfields/TitleField';
+import CaptionField from './Textfields/CaptionField';
+import TagsField from './Textfields/TagsField';
+import PriceField from './Textfields/PriceField';
+import ImageUploader from 'react-images-upload';
 import PostConfirmationModal from './PostConfirmationModal/PostConfirmationModal';
 
-var caption = '';
-var title = '';
-var tags = '';
-var price = '0';
-var img = null;
-
-function isValid() {
-  if (img == null) {
-    return true;
-  }
-  return false;
-}
-
-async function attempt_login() {
+async function attemptPost(img, title, caption, price, tags) {
   const form_data = new FormData();
   form_data.append('image', img);
   form_data.append('caption', caption);
@@ -26,100 +21,129 @@ async function attempt_login() {
   form_data.append('tags', tags);
 
   const response = await axios.post('http://localhost:5000/post', form_data);
-  console.log(response);
   return response;
 }
 
-class CapturePhotoPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      postConfirmationModalOpen: false,
-      pictures: [],
-      caption: '',
-    };
-    this.onDrop = this.onDrop.bind(this);
-    this.formSubmit = this.formSubmit.bind(this);
-  }
+export default function CapturePhotoPage(props) {
+  const [img, setImg] = useState(null);
+  const [pictures, setPictures] = useState([]);
+  const [uploadButtonClicked, setUploadButtonClicked] = useState(false);
+  const [titleValidated, setTitleValidated] = useState(false);
+  const [captionValidated, setCaptionValidated] = useState(false);
+  const [priceValidated, setPriceValidated] = useState(false);
+  const [tagsValidated, setTagsValidated] = useState(false);
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
-  onDrop(pictureFiles, pictureDataURLs) {
-    this.setState({
-      pictures: this.state.pictures.concat(pictureFiles),
-    });
-    // console.log(pictureFiles[0]);
-    // console.log(pictureDataURLs[0]);
-    img = pictureDataURLs[0];
-  }
+  const history = useHistory();
 
-  formSubmit(event) {
-    event.preventDefault();
-    const post = attempt_login();
-    post.then((response) => {
-      console.log(response);
-      if (response.data.result !== false) {
-        this.setState({ postConfirmationModalOpen: true });
-      }
-    });
-  }
+  const onDrop = (pictureFiles, pictureDataURLs) => {
+    setPictures(pictures.concat(pictureFiles));
+    setImg(pictureDataURLs[0]);
+  };
 
-  render() {
-    return (
-      <React.Fragment>
-        <ImageUploader
-          withIcon={true}
-          buttonText="Choose image"
-          onChange={this.onDrop}
-          imgExtension={['.jpg', '.png']}
-          maxFileSize={5242880}
-          withPreview={true}
-          singleImage={true}
-          withLabel={true}
-        />
-        <form onSubmit={this.formSubmit}>
-          <FormGroup bsSize="large">
-            <FormLabel>Title:</FormLabel>
-            <FormControl autoFocus onChange={(e) => (title = e.target.value)} />
-          </FormGroup>
-          <FormGroup bsSize="large">
-            <FormLabel>Caption:</FormLabel>
-            <FormControl
-              autoFocus
-              onChange={(e) => (caption = e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup bsSize="large">
-            <FormLabel>Price: $</FormLabel>
-            <FormControl
-              autoFocus
-              type="number"
-              step="0.01"
-              onChange={(e) => (price = e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup bsSize="large">
-            <FormLabel>Tags: </FormLabel>
-            <FormControl autoFocus onChange={(e) => (tags = e.target.value)} />
-          </FormGroup>
-          <Button block bsSize="large" disabled={isValid()} type="submit">
-            Post
-          </Button>
-        </form>
-        <Button
-          block
-          bsSize="large"
-          type="submit"
-          onClick={() => {
-            this.props.history.goBack();
-          }}
-        >
-          Cancel
-        </Button>
-        {this.state.postConfirmationModalOpen ? (
-          <PostConfirmationModal isOpen={true} />
-        ) : null}
-      </React.Fragment>
-    );
-  }
+  useEffect(() => {
+    console.log('called');
+
+    if (
+      titleValidated[0] &&
+      captionValidated[0] &&
+      priceValidated[0] &&
+      tagsValidated[0] &&
+      img !== null
+    ) {
+      console.log('approved');
+
+      const response = attemptPost(
+        img,
+        titleValidated[1],
+        captionValidated[1],
+        priceValidated[1],
+        tagsValidated[1]
+      );
+
+      response.then((res) => {
+        console.log(res);
+        if (res.data.result) {
+          setConfirmationModalOpen(true);
+        }
+      });
+    }
+  }, [titleValidated, captionValidated, priceValidated, tagsValidated]);
+
+  const formSubmit = (event) => {
+    setUploadButtonClicked(!uploadButtonClicked);
+  };
+
+  // function validate_title() {
+  //   return title.length > 0 && title.length < 50;
+  // }
+  // function validate_caption() {
+  //   return caption.length > 0 && caption.length < 50;
+  // }
+  // function validate_price() {
+  //   return parseInt(price) > 0 && price.length > 0;
+  // }
+  // function validate_tags() {
+  //   return tags.length > 0 && tags.length < 100;
+  // }
+
+  return ReactDom.createPortal(
+    <React.Fragment>
+      <div className="grid-container-editpost">
+        <div className="grid-item-image">
+          <ImageUploader
+            withIcon={true}
+            buttonText="Choose image"
+            onChange={onDrop}
+            imgExtension={['.jpg', '.png']}
+            maxFileSize={5242880}
+            withPreview={true}
+            singleImage={true}
+            withLabel={true}
+          />
+        </div>
+        <div className="edit-post-details">
+          <TitleField
+            uploadButtonClicked={uploadButtonClicked}
+            setTitleValidated={setTitleValidated}
+          />
+          <CaptionField
+            uploadButtonClicked={uploadButtonClicked}
+            setCaptionValidated={setCaptionValidated}
+          />
+          <PriceField
+            uploadButtonClicked={uploadButtonClicked}
+            setPriceValidated={setPriceValidated}
+          />
+          <TagsField
+            uploadButtonClicked={uploadButtonClicked}
+            setTagsValidated={setTagsValidated}
+          />
+
+          <div className="capture-form-buttons">
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={formSubmit}
+            >
+              SAVE
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={() => {
+                history.goBack();
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </div>
+      {confirmationModalOpen ? <PostConfirmationModal isOpen={true} /> : null}
+    </React.Fragment>,
+    document.getElementById('editPostPortal')
+  );
 }
-
-export default CapturePhotoPage;
