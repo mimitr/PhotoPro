@@ -10,13 +10,11 @@ const UserPhotos = (props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [photoIdBookmarked, setPhotoIdBookmarked] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [hasPhotos, setHasPhotos] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-
+  const [hasPhotos, setHasPhotos] = useState(true);
   const { userID } = props;
   const displayMyProfile =
     localStorage.getItem('userID') == userID ? true : false;
-
   const userLoggedIn = localStorage.getItem('userLoggedIn');
   const [lastID, setLastID] = useState(null);
   const fetchIsCancelled = useRef(false);
@@ -40,6 +38,12 @@ const UserPhotos = (props) => {
     },
     [loading, hasMore]
   );
+
+  useEffect(() => {
+    if (profileImgs.length === 0) {
+      setHasPhotos(false);
+    }
+  }, [profileImgs]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -91,7 +95,6 @@ const UserPhotos = (props) => {
           });
         } else if (!fetchIsCancelled.current) {
           setLoading(false);
-          setHasPhotos(false);
           setHasMore(false);
         }
       })
@@ -156,13 +159,15 @@ const UserPhotos = (props) => {
         })}
       </div>
       <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
-      {!hasPhotos ? (
+      {hasPhotos ? (
         <h2 style={{ textAlign: 'center' }}>
           You haven't uploaded any photos!
         </h2>
       ) : (
         <React.Fragment>
-          <h2>{!hasMore && 'No more images to display'}</h2>
+          <h2 style={{ textAlign: 'center' }}>
+            {!hasMore && 'No more images to display'}
+          </h2>
         </React.Fragment>
       )}
 
