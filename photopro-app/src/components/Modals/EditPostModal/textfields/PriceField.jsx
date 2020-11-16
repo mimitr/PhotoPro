@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
 
 export default function PriceField(props) {
-  const [text, setText] = useState("");
-  const [errorText, setErrorText] = useState("");
+  const [text, setText] = useState(props.oldPrice);
+  const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
@@ -11,19 +11,26 @@ export default function PriceField(props) {
 
   useEffect(() => {
     setFirstRender(false);
+    props.setPriceValidated([false, text]);
   }, []);
 
   useEffect(() => {
     if (firstRender === false) {
       const result = handlePriceInput(text);
-      props.setPriceValidated(result);
+      console.log(text);
+      props.setPriceValidated([result, text]);
     }
   }, [saveButtonClicked]);
 
   const handlePriceInput = (text) => {
-    if (Number.isInteger(parseInt(text))) return true;
-
-    return false;
+    if (parseInt(text) > 0) {
+      setErrorValue(false);
+      return true;
+    } else {
+      setErrorValue(true);
+      setErrorText('A price must be included');
+      return false;
+    }
   };
 
   return (
@@ -40,7 +47,8 @@ export default function PriceField(props) {
           }}
           id="outlined-required"
           label="Required"
-          defaultValue="123"
+          type="number"
+          defaultValue={parseInt(props.oldPrice)}
           variant="outlined"
         />
       </div>
