@@ -10,6 +10,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import PostModal from '../../Modals/PostModal/PostModal';
 import AddedToCartModal from '../../Modals/AddedToCartModal/AddedToCartModal';
+import EditPostModal from '../../Modals/EditPostModal/EditPostModal';
 
 const deletePostRequest = async function (imageID) {
   const response = await axios.get('http://localhost:5000/delete_image_post', {
@@ -74,6 +75,7 @@ class ImageCard extends Component {
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
     this.setOpenPostModal = this.setOpenPostModal.bind(this);
+    this.setOpenEditPostModal = this.setOpenEditPostModal.bind(this);
     this.setAddedToCartModal = this.setAddedToCartModal.bind(this);
     this.setCartStatus = this.setCartStatus.bind(this);
     this.setNumLikesDummy = this.setNumLikesDummy.bind(this);
@@ -83,6 +85,7 @@ class ImageCard extends Component {
 
     this.state = {
       openPostModal: false,
+      openEditPostModal: false,
       openRelatedPostModal: false,
       openCartAddedModal: false,
       cartStatus: '',
@@ -120,6 +123,10 @@ class ImageCard extends Component {
 
   setOpenPostModal = (newState) => {
     this.setState({ openPostModal: newState });
+  };
+
+  setOpenEditPostModal = (newState) => {
+    this.setState({ openEditPostModal: newState });
   };
 
   setNumLikes = (newState) => {
@@ -217,9 +224,9 @@ class ImageCard extends Component {
   };
 
   handleEditClicked = (e) => {
-    this.setState({ redirect: `/editpost/${this.props.image.id}` });
-
     e.stopPropagation();
+    console.log('edit clicked');
+    this.setState({ openEditPostModal: true });
   };
 
   render() {
@@ -353,6 +360,47 @@ class ImageCard extends Component {
               uploader={this.state.relatedImageClicked.uploader}
               setNumLikes={this.setNumLikesDummy}
               setRelatedImagesClicked={this.setRelatedImagesClicked}
+            />
+          </div>
+        ) : null}
+
+        {this.state.openPostModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openPostModal: false });
+            }}
+          >
+            <PostModal
+              openModal={this.state.openPostModal}
+              setOpenModal={this.setOpenPostModal}
+              imageID={this.props.image.id}
+              url={this.props.image.img}
+              caption={this.props.image.caption}
+              price={this.props.image.price}
+              title={this.props.image.title}
+              uploader={this.props.image.uploader}
+              setNumLikes={this.setNumLikes}
+            />
+          </div>
+        ) : null}
+
+        {this.state.openEditPostModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openEditPostModal: false });
+            }}
+          >
+            <EditPostModal
+              openModal={this.state.openEditPostModal}
+              setOpenModal={this.setOpenEditPostModal}
+              imageID={this.props.image.id}
+              url={this.props.image.img}
+              caption={this.props.image.caption}
+              price={this.props.image.price}
+              title={this.props.image.title}
+              uploader={this.props.image.uploader}
             />
           </div>
         ) : null}

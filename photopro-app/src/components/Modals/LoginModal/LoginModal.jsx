@@ -109,7 +109,7 @@ export default function LoginModal(props) {
               </Button>
             </div>
             {loginFailed ? (
-              <p style={{ color: 'red' }}>Incorrect username or password</p>
+              <p style={{ color: 'red' }}>Incorrect email or password</p>
             ) : (
               <p></p>
             )}
