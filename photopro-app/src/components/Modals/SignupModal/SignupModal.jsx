@@ -21,6 +21,7 @@ export default function RegistrationPage(props) {
   const history = useHistory();
 
   useEffect(() => {
+
     const registerUser = () => {
       axios({
         method: 'POST',
@@ -41,6 +42,21 @@ export default function RegistrationPage(props) {
       });
     };
 
+    const verifyUser = () => {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:5000/verify_email',
+        params: {
+          email: emailValidated[1]
+        },
+      }).then((response) => {
+        console.log(response);
+        if (response.data.result) {
+          registerUser();
+        }
+      });
+    };
+
     if (
       firstNameValidated[0] &&
       lastNameValidated[0] &&
@@ -48,7 +64,7 @@ export default function RegistrationPage(props) {
       passwordValidated[0] &&
       usernameValidated[0]
     ) {
-      registerUser();
+      verifyUser();
     }
   }, [
     firstNameValidated,

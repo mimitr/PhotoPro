@@ -121,6 +121,7 @@ def gen_hash():
 
 
 def verification_email(recipient):
+    print("VERIFY EMAIL")
     ssl_port = 587
     email_server_password = "WeCodeNotSleep3900"
     context = ssl.create_default_context()

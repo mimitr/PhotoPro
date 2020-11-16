@@ -137,6 +137,7 @@ def api_login():
 
 @app.route("/verify_email", methods=["GET", "POST"])
 def api_verify_email():
+    print("\n\n\napi_verify_email\n\n\n")
     email = request.args.get("email")
     result = verification_email(email)
     return jsonify({"result": result})
