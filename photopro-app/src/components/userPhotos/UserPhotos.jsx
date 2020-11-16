@@ -113,11 +113,6 @@ const UserPhotos = (props) => {
           Uploads: {profileImgs.length}
         </h2>
       )}
-      {hasPhotos ? null : (
-        <h2 style={{ textAlign: 'center' }}>
-          You haven't uploaded any photos!
-        </h2>
-      )}
 
       <div className="image-grid">
         {profileImgs.map((image, index) => {
@@ -161,11 +156,12 @@ const UserPhotos = (props) => {
         })}
       </div>
       <h2 style={{ textAlign: 'center' }}>{loading && 'Loading...'}</h2>
-      {hasPhotos ? null : (
+      {!hasPhotos ? (
+        <h2 style={{ textAlign: 'center' }}>
+          You haven't uploaded any photos!
+        </h2>
+      ) : (
         <React.Fragment>
-          <h2 style={{ textAlign: 'center' }}>
-            You haven't uploaded any photos!
-          </h2>
           <h2>{!hasMore && 'No more images to display'}</h2>
         </React.Fragment>
       )}
