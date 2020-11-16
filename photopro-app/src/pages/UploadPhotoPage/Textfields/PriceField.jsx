@@ -21,7 +21,7 @@ export default function LastName(props) {
   }, [uploadButtonClicked]);
 
   const handlePriceInput = (text) => {
-    if (parseInt(text) > 0) {
+    if (parseFloat(text) > 0) {
       setErrorValue(false);
       setErrorText('');
       return true;
