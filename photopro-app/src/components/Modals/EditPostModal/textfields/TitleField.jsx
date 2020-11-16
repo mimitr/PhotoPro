@@ -2,22 +2,27 @@ import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 
 export default function TitleField(props) {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(props.oldTitle);
   const [errorText, setErrorText] = useState("");
   const [errorValue, setErrorValue] = useState(false);
-  const [firstRender, setFirstRender] = useState(true);
+  //   const [firstRender, setFirstRender] = useState(true);
 
   const { saveButtonClicked } = props;
 
+  //   useEffect(() => {
+  //     setFirstRender(false);
+  //   }, []);
+
   useEffect(() => {
-    setFirstRender(false);
+    const result = handleTitleInput(text);
+    props.setTitleValidated([result, text]);
   }, []);
 
   useEffect(() => {
-    if (firstRender === false) {
-      const result = handleTitleInput(text);
-      props.setTitleValidated(result);
-    }
+    // if (firstRender === false) {
+    const result = handleTitleInput(text);
+    props.setTitleValidated([result, text]);
+    // }
   }, [saveButtonClicked]);
 
   const handleTitleInput = (text) => {
@@ -38,7 +43,7 @@ export default function TitleField(props) {
           }}
           id="outlined-required"
           label="Required"
-          defaultValue="123"
+          defaultValue={props.oldTitle}
           variant="outlined"
         />
       </div>
