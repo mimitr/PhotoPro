@@ -5,6 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PhotoModal from '../../../../components/Modals/PhotoModal/PhotoModal';
+import DownloadConfirmationModal from '../../../../components/Modals/DownloadConfirmationModal/DownloadConfirmation';
 
 // matrial-ui component style override
 const styles = {
@@ -52,6 +53,7 @@ class PurchasedImage extends Component {
     this.imageRef = React.createRef();
     this.state = {
       openPhotoModal: false,
+      openDownloadConfirmationModal: false,
       spans: 0,
       animateImages: '',
     };
@@ -88,6 +90,9 @@ class PurchasedImage extends Component {
         params: { image_id: this.props.image.image_id },
       }).then((res) => {
         console.log(res);
+        if (res.data.result) {
+          this.setState({ openDownloadConfirmationModal: true });
+        }
       });
     };
 
@@ -139,6 +144,17 @@ class PurchasedImage extends Component {
               image={this.props.image.img}
               caption={this.props.caption}
             />
+          </div>
+        ) : null}
+
+        {this.state.openDownloadConfirmationModal ? (
+          <div
+            className="photo-modal-wrapper"
+            onClick={() => {
+              this.setState({ openDownloadConfirmationModal: false });
+            }}
+          >
+            <DownloadConfirmationModal openModal={true} />
           </div>
         ) : null}
       </React.Fragment>
