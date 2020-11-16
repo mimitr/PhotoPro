@@ -1555,18 +1555,20 @@ def api_get_recommended_images():
 @app.route("/get_global_recommendations")
 def api_get_global_recommendations():
     print("\n=================RECOMMENDED IMAGES=================\n")
-    score = request.args.get("score")
+    max_score = request.args.get("score")
     batch_size = request.args.get("batch_size")
     if batch_size is None:
         batch_size = 10
 
     conn, cur = get_conn_and_cur()
-    result = get_global_recommendations(score, batch_size, conn, cur)
+    result = get_global_recommendations(max_score, batch_size, conn, cur)
     conn.close()
 
     if result:
         processed_result = []
-        min_score = None
+
+        if max_score is not None:
+            max_score = float(max_score)
 
         for tup in result:
             (
@@ -1591,12 +1593,12 @@ def api_get_global_recommendations():
             img = base64.encodebytes(img).decode("utf-8")
             if os.path.exists(file):
                 os.remove(file)
-            if min_score is None:
-                min_score = float(score)
-            elif float(score) < min_score:
-                min_score = float(score)
-
-            print(tup)
+            print(max_score, score)
+            if max_score is None:
+                max_score = float(score)
+            elif float(score) < float(max_score):
+                max_score = float(score)
+            # print(tup)
 
             processed_result.append(
                 {
@@ -1612,7 +1614,7 @@ def api_get_global_recommendations():
                 }
             )
 
-        retval = jsonify({"result": processed_result, "score": float(min_score) - 0.01})
+        retval = jsonify({"result": processed_result, "score": float(max_score) - 0.01})
         print(retval)
         return retval
     else:
