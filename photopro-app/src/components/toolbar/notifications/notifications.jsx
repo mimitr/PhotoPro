@@ -83,6 +83,8 @@ export default function Notifications() {
               notifMessage = `@${notification.sender} commented on your post - '${notification.image_id}'`;
             } else if (notification.type === 'posted') {
               notifMessage = `@${notification.sender} has uploaded a new post - '${notification.image_id}'`;
+            } else if (notification.type === 'purchased') {
+              notifMessage = `@${notification.sender} has purchased your photo - '${notification.image_id}'`;
             } else {
               notifMessage = `@${notification.sender} started following you`;
             }
