@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './ImageCard.css';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -77,14 +76,20 @@ class ImageCard extends Component {
     this.setOpenPostModal = this.setOpenPostModal.bind(this);
     this.setAddedToCartModal = this.setAddedToCartModal.bind(this);
     this.setCartStatus = this.setCartStatus.bind(this);
+    this.setNumLikesDummy = this.setNumLikesDummy.bind(this);
     this.setNumLikes = this.setNumLikes.bind(this);
+
+    this.setRelatedImagesClicked = this.setRelatedImagesClicked.bind(this);
+
     this.state = {
       openPostModal: false,
+      openRelatedPostModal: false,
       openCartAddedModal: false,
       cartStatus: '',
       spans: 0,
       animateImages: '',
       numLikes: this.props.image.num_likes,
+      relatedImageClicked: {},
     };
   }
 
@@ -118,8 +123,20 @@ class ImageCard extends Component {
   };
 
   setNumLikes = (newState) => {
-    console.log(`set num likes called with value ${newState}`);
     this.setState({ numLikes: newState });
+  };
+
+  setNumLikesDummy = (newState) => {
+    console.log('dummy like for related image');
+  };
+
+  setRelatedImagesClicked = (newState) => {
+    console.log(newState);
+    this.setState({
+      relatedImageClicked: newState,
+      openPostModal: false,
+      openRelatedPostModal: true,
+    });
   };
 
   handleImageClicked = (e) => {
@@ -201,6 +218,7 @@ class ImageCard extends Component {
 
   handleEditClicked = (e) => {
     this.setState({ redirect: `/editpost/${this.props.image.id}` });
+
     e.stopPropagation();
   };
 
@@ -213,6 +231,7 @@ class ImageCard extends Component {
 
     let uploaderID = String(this.props.image.uploader);
     let userID = localStorage.getItem('userID');
+
     let deleteButton =
       uploaderID === userID ? (
         <IconButton
@@ -224,9 +243,7 @@ class ImageCard extends Component {
         >
           <DeleteIcon />
         </IconButton>
-      ) : (
-        <Button></Button>
-      );
+      ) : null;
 
     let editButton =
       uploaderID === userID ? (
@@ -239,9 +256,7 @@ class ImageCard extends Component {
         >
           <EditIcon />
         </IconButton>
-      ) : (
-        <Button></Button>
-      );
+      ) : null;
 
     component = (
       <React.Fragment>
@@ -251,14 +266,12 @@ class ImageCard extends Component {
           onClick={this.handleImageClicked}
         >
           <div className="icon-bar"></div>
-
           <img
             className="image-size"
             ref={this.imageRef}
             src={`data:image/jpg;base64,${this.props.image.img}`}
             alt={this.props.caption}
           />
-
           <IconButton
             classes={{
               root: `${this.props.classes.root} ${this.props.classes.like}`,
@@ -269,29 +282,31 @@ class ImageCard extends Component {
             <FavoriteIcon classes={{ root: this.props.classes.likeSize }} />
             <div className="num-likes">{this.state.numLikes}</div>
           </IconButton>
-
           {this.props.userLoggedIn ? (
             <React.Fragment>
-              <IconButton
-                classes={{
-                  root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
-                }}
-                variant="contained"
-                onClick={this.handleBookmarkClicked}
-              >
-                <BookmarkIcon />
-              </IconButton>
+              {!this.props.displayMyProfile ? (
+                <React.Fragment>
+                  <IconButton
+                    classes={{
+                      root: `${this.props.classes.root} ${this.props.classes.bookmark}`,
+                    }}
+                    variant="contained"
+                    onClick={this.handleBookmarkClicked}
+                  >
+                    <BookmarkIcon />
+                  </IconButton>
 
-              <IconButton
-                classes={{
-                  root: `${this.props.classes.root} ${this.props.classes.buy}`,
-                }}
-                variant="contained"
-                onClick={this.handleBuyClicked}
-              >
-                <ShoppingCartIcon />
-              </IconButton>
-
+                  <IconButton
+                    classes={{
+                      root: `${this.props.classes.root} ${this.props.classes.buy}`,
+                    }}
+                    variant="contained"
+                    onClick={this.handleBuyClicked}
+                  >
+                    <ShoppingCartIcon />
+                  </IconButton>
+                </React.Fragment>
+              ) : null}
               {deleteButton}
               {editButton}
             </React.Fragment>
@@ -305,7 +320,7 @@ class ImageCard extends Component {
             }}
           >
             <PostModal
-              openModal={this.state.openPostModal}
+              openModal={true}
               setOpenModal={this.setOpenPostModal}
               imageID={this.props.image.id}
               url={this.props.image.img}
@@ -314,6 +329,30 @@ class ImageCard extends Component {
               title={this.props.image.title}
               uploader={this.props.image.uploader}
               setNumLikes={this.setNumLikes}
+              setRelatedImagesClicked={this.setRelatedImagesClicked}
+            />
+          </div>
+        ) : null}
+
+        {this.state.openRelatedPostModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openRelatedPostModal: false });
+            }}
+          >
+            this.state.relatedImageClicked ?
+            <PostModal
+              openModal={true}
+              setOpenModal={this.setOpenPostModal}
+              imageID={this.state.relatedImageClicked.id}
+              url={this.state.relatedImageClicked.img}
+              caption={this.state.relatedImageClicked.caption}
+              price={this.state.relatedImageClicked.price}
+              title={this.state.relatedImageClicked.title}
+              uploader={this.state.relatedImageClicked.uploader}
+              setNumLikes={this.setNumLikesDummy}
+              setRelatedImagesClicked={this.setRelatedImagesClicked}
             />
           </div>
         ) : null}

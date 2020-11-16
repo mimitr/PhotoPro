@@ -239,7 +239,9 @@ def post_image(uploader, caption, image, title, price, tags, conn, cur):
             label_to_add = label_to_add.rstrip('"').lower()
             print(label_to_add)
             if len(label_to_add) < 32:
-                cmd = "INSERT INTO auto_tags (image_id, term, value) VALUES (%s, %s, %s)"
+                cmd = (
+                    "INSERT INTO auto_tags (image_id, term, value) VALUES (%s, %s, %s)"
+                )
                 cur.execute(cmd, (result, label_to_add, label.score))
                 tags.append(label_to_add)
         cmd = "UPDATE images SET tags=%s WHERE image_id=%s"
@@ -282,8 +284,7 @@ def post_profile_image(uploader, image, conn, cur):
 def get_profile_image(uploader, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "select file from profile_photos WHERE user_id={}".format(
-            int(uploader))
+        cmd = "select file from profile_photos WHERE user_id={}".format(int(uploader))
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchone()[0]
@@ -301,8 +302,7 @@ def get_profile_image(uploader, conn, cur):
 def delete_profile_image(uploader, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(
-            int(uploader))
+        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(int(uploader))
         cur.execute(cmd)
         conn.commit()
         return True
@@ -607,8 +607,7 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (
-            int(image_id))
+        cmd = """select tags from images where image_id=%d """ % (int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -641,8 +640,7 @@ def set_user_timestamp(user_id, conn, cur):
 
 def download_image(image_id, conn, cur):
     try:
-        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(
-            image_id)
+        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(image_id)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -668,8 +666,7 @@ def download_image(image_id, conn, cur):
 def get_username_by_id(user_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT email, username from users where id={}".format(
-            int(user_id))
+        cmd = "SELECT email, username from users where id={}".format(int(user_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -692,8 +689,7 @@ def get_username_by_id(user_id, conn, cur):
 def get_email_by_id(user_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT email, username from users where id={}".format(
-            int(user_id))
+        cmd = "SELECT email, username from users where id={}".format(int(user_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -716,8 +712,7 @@ def get_email_by_id(user_id, conn, cur):
 def get_post_title_by_id(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT title from images WHERE image_id={}".format(
-            int(image_id))
+        cmd = "SELECT title from images WHERE image_id={}".format(int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -737,6 +732,27 @@ def get_post_title_by_id(image_id, conn, cur):
         return False
 
 
+def get_uploader_id_from_img(image_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = "SELECT uploader from images where image_id={}".format(int(image_id))
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchone()
+        uploader = query_result[0]
+        if uploader is None:
+            return False
+        return uploader
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False
+
+
 def delete_account(user_id, email, password, conn, cur):
     cur.execute("SAVEPOINT save_point")
     try:
@@ -747,23 +763,31 @@ def delete_account(user_id, email, password, conn, cur):
         for i in result:
             (image_id,) = i
             delete_image_post(image_id, user_id, conn, cur)
-        cmd = "select collection_id from collections where creator_id={}".format(int(user_id))
+        cmd = "select collection_id from collections where creator_id={}".format(
+            int(user_id)
+        )
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
         for i in result:
             (collection_id,) = i
-            cmd = "DELETE FROM collection_photos WHERE collection_id={}".format(collection_id)
+            cmd = "DELETE FROM collection_photos WHERE collection_id={}".format(
+                collection_id
+            )
             cur.execute(cmd)
         cmd = "DELETE FROM likes WHERE liker={}".format(int(user_id))
         cur.execute(cmd)
-        cmd = "DELETE FROM notifications WHERE uploader={} OR sender={}".format(int(user_id), int(user_id))
+        cmd = "DELETE FROM notifications WHERE uploader={} OR sender={}".format(
+            int(user_id), int(user_id)
+        )
         cur.execute(cmd)
         cmd = "DELETE FROM collections WHERE creator_id={}".format(int(user_id))
         cur.execute(cmd)
         cmd = "DELETE FROM comments WHERE commenter={}".format(int(user_id))
         cur.execute(cmd)
-        cmd = "DELETE FROM follows WHERE followee={} OR follower={}".format(int(user_id), int(user_id))
+        cmd = "DELETE FROM follows WHERE followee={} OR follower={}".format(
+            int(user_id), int(user_id)
+        )
         cur.execute(cmd)
         cmd = "DELETE FROM profile_photos WHERE user_id={}".format(int(user_id))
         cur.execute(cmd)

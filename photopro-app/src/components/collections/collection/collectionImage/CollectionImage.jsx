@@ -7,6 +7,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import PostModal from '../../../Modals/PostModal/PostModal';
+import AddedToCartModal from '../../../Modals/AddedToCartModal/AddedToCartModal';
 
 // matrial-ui component style override
 const styles = {
@@ -53,12 +54,21 @@ class CollectionImage extends Component {
     // after accessing the DOM, we can get the height of each ImageCard
     this.imageRef = React.createRef();
     this.setOpenPostModal = this.setOpenPostModal.bind(this);
+    this.setAddedToCartModal = this.setAddedToCartModal.bind(this);
+    this.setCartStatus = this.setCartStatus.bind(this);
+    this.setNumLikesDummy = this.setNumLikesDummy.bind(this);
     this.setNumLikes = this.setNumLikes.bind(this);
+    this.setRelatedImagesClicked = this.setRelatedImagesClicked.bind(this);
+
     this.state = {
       openPostModal: false,
+      openRelatedPostModal: false,
+      openCartAddedModal: false,
+      cartStatus: '',
       spans: 0,
       animateImages: '',
       numLikes: this.props.image.num_likes,
+      relatedImageClicked: {},
     };
 
     this.collection_id = props.image.collection_id;
@@ -84,6 +94,14 @@ class CollectionImage extends Component {
     }
   };
 
+  setAddedToCartModal = (newState) => {
+    this.setState({ openCartAddedModal: newState });
+  };
+
+  setCartStatus = (newState) => {
+    this.setState({ cartStatus: newState });
+  };
+
   setOpenPostModal = (newState) => {
     this.setState({ openPostModal: newState });
   };
@@ -92,16 +110,77 @@ class CollectionImage extends Component {
     this.setState({ numLikes: newState });
   };
 
-  handleImageClicked = () => {
-    this.setState({ openPostModal: true });
+  setNumLikesDummy = () => {
+    console.log('dummy like for related image');
   };
 
-  handleLikeClicked = (e) => {
-    e.stopPropagation();
+  setRelatedImagesClicked = (newState) => {
+    console.log(newState);
+    this.setState({
+      relatedImageClicked: newState,
+      openPostModal: false,
+      openRelatedPostModal: true,
+    });
   };
 
   handleBuyClicked = (e) => {
     e.stopPropagation();
+
+    const apiAddToCart = (imageID, setModal, setCartStatus) => {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:5000/add_purchase',
+        params: {
+          save_for_later: 0,
+          purchased: 0,
+          image_id: String(imageID),
+        },
+      }).then((response) => {
+        if (response.data.result !== false) {
+          setModal(true);
+          setCartStatus('added');
+        }
+      });
+    };
+
+    const apiRemoveFromCart = (imageID, setModal, setCartStatus) => {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:5000/delete_item_from_cart',
+        params: {
+          image_id: String(imageID),
+        },
+      }).then((response) => {
+        if (response.data.result !== false) {
+          setModal(true);
+          setCartStatus('removed');
+        }
+      });
+    };
+
+    axios({
+      url: 'http://localhost:5000/item_is_in_cart',
+      params: { image_id: this.props.image.id },
+    }).then((response) => {
+      console.log(response);
+      if (!response.data.result) {
+        apiAddToCart(
+          this.props.image.id,
+          this.setAddedToCartModal,
+          this.setCartStatus
+        );
+      } else {
+        apiRemoveFromCart(
+          this.props.image.id,
+          this.setAddedToCartModal,
+          this.setCartStatus
+        );
+      }
+    });
+  };
+
+  handleImageClicked = (e) => {
+    this.setState({ openPostModal: true });
   };
 
   handleDeleteClicked = (e) => {
@@ -181,7 +260,7 @@ class CollectionImage extends Component {
             }}
           >
             <PostModal
-              openModal={this.state.openPostModal}
+              openModal={true}
               setOpenModal={this.setOpenPostModal}
               imageID={this.props.image.id}
               url={this.props.image.img}
@@ -190,6 +269,44 @@ class CollectionImage extends Component {
               title={this.props.image.title}
               uploader={this.props.image.uploader}
               setNumLikes={this.setNumLikes}
+              setRelatedImagesClicked={this.setRelatedImagesClicked}
+            />
+          </div>
+        ) : null}
+
+        {this.state.openRelatedPostModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openRelatedPostModal: false });
+            }}
+          >
+            this.state.relatedImageClicked ?
+            <PostModal
+              openModal={true}
+              setOpenModal={this.setOpenPostModal}
+              imageID={this.state.relatedImageClicked.id}
+              url={this.state.relatedImageClicked.img}
+              caption={this.state.relatedImageClicked.caption}
+              price={this.state.relatedImageClicked.price}
+              title={this.state.relatedImageClicked.title}
+              uploader={this.state.relatedImageClicked.uploader}
+              setNumLikes={this.setNumLikesDummy}
+              setRelatedImagesClicked={this.setRelatedImagesClicked}
+            />
+          </div>
+        ) : null}
+
+        {this.state.openCartAddedModal ? (
+          <div
+            className="modal-wrapper"
+            onClick={() => {
+              this.setState({ openCartAddedModal: false });
+            }}
+          >
+            <AddedToCartModal
+              openModal={true}
+              cartStatus={this.state.cartStatus}
             />
           </div>
         ) : null}

@@ -20,6 +20,8 @@ export default function PostModal(props) {
   const [tags, setTags] = useState([]);
   const [commentUpdated, updateComments] = useState('');
   const [bookmarkModalIsOpen, setBookmarkModalIsOpen] = useState(false);
+  const [relatedImages, setRelatedImages] = useState([]);
+  const [relatedImagesLoading, setRelatedImagesLoading] = useState(true);
   const cancelAxiosRequest = useRef();
   const { imageID } = props;
   const history = useHistory();
@@ -54,6 +56,18 @@ export default function PostModal(props) {
         console.log(response.data);
         setEmail(response.data.result);
       }
+    });
+
+    axios({
+      url: 'http://localhost:5000/get_related_images',
+      params: { image_id: imageID },
+    }).then((response) => {
+      console.log('~~~~~~~~~~~~Get Related Images~~~~~~~~~~~');
+      console.log(response);
+      if (response.data.result) {
+        setRelatedImages(response.data.result);
+      }
+      setRelatedImagesLoading(false);
     });
   }, []);
 
@@ -196,14 +210,46 @@ export default function PostModal(props) {
                   src={`data:image/jpg;base64,${props.url}`}
                   alt={props.caption}
                 />
+
+                <div className="recImages-nested">
+                  <h1 className="roboto"> Related Photos:</h1>
+
+                  {relatedImages.length > 0 ? (
+                    relatedImages.map((images, index) => {
+                      return (
+                        <div key={index} className="recImage">
+                          <img
+                            onClick={() => {
+                              console.log(
+                                `image with caption ${images.caption}`
+                              );
+                              props.setRelatedImagesClicked(images);
+                            }}
+                            src={`data:image/jpg;base64,${images.img}`}
+                            alt={images.caption}
+                          />
+                          <img />
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <React.Fragment>
+                      <h1>No related images could be found</h1>
+                      <div
+                        style={{
+                          marginTop: '20vh',
+                          marginRight: '20vh',
+                          marginLeft: '20vh',
+                        }}
+                      ></div>
+                    </React.Fragment>
+                  )}
+                </div>
               </div>
 
-              <div className="recImages-nested">
-                <h1 className="roboto"> Related Photos:</h1>
-                <div className="recImage"></div>
-                <div className="recImage"></div>
-                <div className="recImage"></div>
-              </div>
+              <h2 style={{ textAlign: 'center' }}>
+                {relatedImagesLoading && 'Loading...'}
+              </h2>
             </div>
             <div className="postFeed-nested">
               <div className="title">
