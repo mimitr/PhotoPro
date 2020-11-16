@@ -245,13 +245,13 @@ def get_global_recommendations(score, batch_size, conn, cur):
         #         GROUP BY images.image_id,num_likes ORDER BY score DESC,created_at DESC".format(user_id)
         if score is not None:
             cmd = "select image_id, caption, uploader, file, title, price, created_at, tags, num_likes, score from \
-                    get_recommendation_scores WHERE score < {} ORDER BY score DESC, created_at DESC LIMIT {}".format(
+                    get_global_recommendation_scores WHERE score < {} ORDER BY score DESC, created_at DESC LIMIT {}".format(
                 float(score), int(batch_size)
             )
         else:
             print("~~~~~~~~~~~~~~ SCORE IS NONE ~~~~~~~~~~~~~~~~~~")
             cmd = "select image_id, caption, uploader, file, title, price, created_at, tags, num_likes, score from \
-                                get_recommendation_scores ORDER BY score DESC, created_at DESC LIMIT {}".format(
+                                get_global_recommendation_scores ORDER BY score DESC, created_at DESC LIMIT {}".format(
                 int(batch_size)
             )
 
