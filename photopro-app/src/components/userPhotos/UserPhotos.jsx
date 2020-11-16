@@ -32,7 +32,7 @@ const UserPhotos = (props) => {
           console.log(`called with last_id of ${lastID}`);
           setTimeout(() => {
             fetchProfilePhotos(lastID);
-          }, 2000);
+          }, 1000);
         }
       });
 
