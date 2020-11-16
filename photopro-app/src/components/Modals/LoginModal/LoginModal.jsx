@@ -40,8 +40,6 @@ export default function LoginModal(props) {
     history.push('/forgotpassword');
   }
 
-  console.log(props.openLoginModal);
-
   if (!props.openLoginModal) {
     return null;
   } else {
@@ -55,7 +53,6 @@ export default function LoginModal(props) {
           }}
         >
           <div className="login-wrapper">
-            {' '}
             <h1>Login</h1>
             <form onSubmit={attempt_login}>
               <FormGroup controlId="email" bsSize="large">
@@ -102,7 +99,7 @@ export default function LoginModal(props) {
                 bsSize="large"
                 type="submit"
                 onClick={() => {
-                  history.go('/');
+                  props.setOpenLoginModal(false);
                 }}
               >
                 Cancel
