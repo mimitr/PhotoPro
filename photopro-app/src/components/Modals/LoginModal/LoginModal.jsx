@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import ReactDom from "react-dom";
-import "./LoginModal.css";
-import { Button, FormGroup, FormControl, FormLabel } from "react-bootstrap";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import ReactDom from 'react-dom';
+import './LoginModal.css';
+import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 export default function LoginModal(props) {
-  const [email, set_email] = useState("");
-  const [password, set_password] = useState("");
+  const [email, set_email] = useState('');
+  const [password, set_password] = useState('');
   const [loginFailed, setLoginFailed] = useState(false);
   let history = useHistory(); // router hook which provides access to dom history (allows for page transitions)
 
@@ -22,14 +22,14 @@ export default function LoginModal(props) {
   async function attempt_login(event) {
     event.preventDefault();
 
-    const response = await axios.get("http://localhost:5000/login", {
+    const response = await axios.get('http://localhost:5000/login', {
       params: { email: email, password: password },
     });
 
     if (response.data.result) {
-      localStorage.setItem("userLoggedIn", true);
-      localStorage.setItem("userID", response.data.user_id);
-      history.push("/");
+      localStorage.setItem('userLoggedIn', true);
+      localStorage.setItem('userID', response.data.user_id);
+      history.push('/');
       history.go(0);
     } else {
       setLoginFailed(true);
@@ -41,8 +41,6 @@ export default function LoginModal(props) {
     props.setForgotPasswordModalIsOpen(true);
     props.setOpenLoginModal(false);
   }
-
-  console.log(props.openLoginModal);
 
   if (!props.openLoginModal) {
     return null;
@@ -57,7 +55,6 @@ export default function LoginModal(props) {
           }}
         >
           <div className="login-wrapper">
-            {" "}
             <h1>Login</h1>
             <form onSubmit={attempt_login}>
               <FormGroup controlId="email" bsSize="large">
@@ -104,21 +101,21 @@ export default function LoginModal(props) {
                 bsSize="large"
                 type="submit"
                 onClick={() => {
-                  history.go("/");
+                  props.setOpenLoginModal(false);
                 }}
               >
                 Cancel
               </Button>
             </div>
             {loginFailed ? (
-              <p style={{ color: "red" }}>Incorrect email or password</p>
+              <p style={{ color: 'red' }}>Incorrect email or password</p>
             ) : (
               <p></p>
             )}
           </div>
         </div>
       </React.Fragment>,
-      document.getElementById("toolbarPortal")
+      document.getElementById('toolbarPortal')
     );
   }
 }

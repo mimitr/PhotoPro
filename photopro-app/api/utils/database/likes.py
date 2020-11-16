@@ -104,3 +104,25 @@ def get_likers(image_id, limit, conn, cur):
 
         # cur.execute("ROLLBACK TO SAVEPOINT save_point")
         return False
+
+
+def check_if_user_liked(image_id, user_id, conn, cur):
+    try:
+        # If you want to test, change 'images' to 'test_images' in cmd query
+        cmd = """SELECT COUNT(*) FROM likes WHERE image_id={} AND liker={}""".format(
+            int(image_id), int(user_id)
+        )
+
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        query_result = cur.fetchone()
+        result = bool(int(query_result[0]))
+        return result
+    except Exception as e:
+        print(e)
+        return False
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        return False

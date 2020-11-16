@@ -115,7 +115,9 @@ def reset_password(email, new_password, conn, cur):
 
 
 def gen_hash():
-    return str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+    return str(
+        "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+    )
 
 
 def verification_email(recipient):
@@ -210,7 +212,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
             print("~~~~~~~~~~~~~~~~~~~~~Email not unique~~~~~~~~~~~~~~~")
             return False
     except psycopg2.Error as e:
-        print('~~~~~~~~~~ERROR IN PASSWORD CHANGE~~~~~~~~~~~~~~~~~')
+        print("~~~~~~~~~~ERROR IN PASSWORD CHANGE~~~~~~~~~~~~~~~~~")
         error = e.pgcode
         print(error)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
@@ -303,8 +305,7 @@ def post_profile_image(uploader, image, conn, cur):
 def get_profile_image(uploader, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "select file from profile_photos WHERE user_id={}".format(
-            int(uploader))
+        cmd = "select file from profile_photos WHERE user_id={}".format(int(uploader))
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchone()[0]
@@ -322,8 +323,7 @@ def get_profile_image(uploader, conn, cur):
 def delete_profile_image(uploader, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
-        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(
-            int(uploader))
+        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(int(uploader))
         cur.execute(cmd)
         conn.commit()
         return True
@@ -348,8 +348,7 @@ def delete_image_post(image_id, uploader, conn, cur):
         cur.execute(cmd)
         cmd = "DELETE FROM notifications WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
-        cmd = "DELETE FROM collection_photos WHERE image_id = {}".format(
-            image_id)
+        cmd = "DELETE FROM collection_photos WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
         cmd = "DELETE FROM user_purchases WHERE image_id = {}".format(image_id)
         cur.execute(cmd)
@@ -456,9 +455,9 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        if ' ' in query or ',' in query:
-            query = query.replace(' ', ',')
-            tags = query.split(',')
+        if " " in query or "," in query:
+            query = query.replace(" ", ",")
+            tags = query.split(",")
             query = ""
             for tag in tags:
                 query = query + "'" + tag + "',"
@@ -629,8 +628,7 @@ def remove_tag(user_id, image_id, tag, conn, cur):
 def get_tags(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = """select tags from images where image_id=%d """ % (
-            int(image_id))
+        cmd = """select tags from images where image_id=%d """ % (int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -663,8 +661,7 @@ def set_user_timestamp(user_id, conn, cur):
 
 def download_image(image_id, conn, cur):
     try:
-        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(
-            image_id)
+        cmd = "SELECT image_id, file FROM images WHERE image_id = {}".format(image_id)
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -690,8 +687,7 @@ def download_image(image_id, conn, cur):
 def get_username_by_id(user_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT email, username from users where id={}".format(
-            int(user_id))
+        cmd = "SELECT email, username from users where id={}".format(int(user_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -714,8 +710,7 @@ def get_username_by_id(user_id, conn, cur):
 def get_email_by_id(user_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT email, username from users where id={}".format(
-            int(user_id))
+        cmd = "SELECT email, username from users where id={}".format(int(user_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -738,8 +733,7 @@ def get_email_by_id(user_id, conn, cur):
 def get_post_title_by_id(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT title from images WHERE image_id={}".format(
-            int(image_id))
+        cmd = "SELECT title from images WHERE image_id={}".format(int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -762,8 +756,7 @@ def get_post_title_by_id(image_id, conn, cur):
 def get_uploader_id_from_img(image_id, conn, cur):
     try:
         # If you want to test, change 'images' to 'test_images' in cmd query
-        cmd = "SELECT uploader from images where image_id={}".format(
-            int(image_id))
+        cmd = "SELECT uploader from images where image_id={}".format(int(image_id))
         print(cmd)
         cur.execute(cmd)
         conn.commit()
@@ -786,7 +779,8 @@ def delete_account(user_id, email, password, conn, cur):
     try:
 
         cmd = "select id from users where email='{}' and password='{}'".format(
-            str(email), str(password))
+            str(email), str(password)
+        )
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchone()[0]
@@ -794,8 +788,7 @@ def delete_account(user_id, email, password, conn, cur):
         # if int(result) != int(user_id):
         #     return False
 
-        cmd = "select image_id from images where uploader={}".format(
-            int(user_id))
+        cmd = "select image_id from images where uploader={}".format(int(user_id))
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
@@ -820,8 +813,7 @@ def delete_account(user_id, email, password, conn, cur):
             int(user_id), int(user_id)
         )
         cur.execute(cmd)
-        cmd = "DELETE FROM collections WHERE creator_id={}".format(
-            int(user_id))
+        cmd = "DELETE FROM collections WHERE creator_id={}".format(int(user_id))
         cur.execute(cmd)
         cmd = "DELETE FROM comments WHERE commenter={}".format(int(user_id))
         cur.execute(cmd)
@@ -829,14 +821,11 @@ def delete_account(user_id, email, password, conn, cur):
             int(user_id), int(user_id)
         )
         cur.execute(cmd)
-        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(
-            int(user_id))
+        cmd = "DELETE FROM profile_photos WHERE user_id={}".format(int(user_id))
         cur.execute(cmd)
-        cmd = "DELETE FROM recommendations WHERE user_id={}".format(
-            int(user_id))
+        cmd = "DELETE FROM recommendations WHERE user_id={}".format(int(user_id))
         cur.execute(cmd)
-        cmd = "DELETE FROM user_purchases WHERE user_id = {}".format(
-            int(user_id))
+        cmd = "DELETE FROM user_purchases WHERE user_id = {}".format(int(user_id))
         cur.execute(cmd)
         cmd = "DELETE FROM users WHERE id={}".format(int(user_id))
         cur.execute(cmd)
@@ -853,3 +842,4 @@ def delete_account(user_id, email, password, conn, cur):
         print(error)
         conn.rollback()
         return False
+
