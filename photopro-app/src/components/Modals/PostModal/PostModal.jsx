@@ -1,24 +1,24 @@
-import ReactDom from 'react-dom';
-import React, { useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
-import './PostModal.css';
-import '../../../pages/PostInfo/PostInfo.css';
-import FollowButton from '../../follow/followButton';
-import Likes from '../../likes/Likes';
-import Comments from '../../comments/Comments';
-import axios from 'axios';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
-import BookmarkModal from '../BookmarkModal/BookmarkModal';
+import ReactDom from "react-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom";
+import "./PostModal.css";
+import "../../../pages/PostInfo/PostInfo.css";
+import FollowButton from "../../follow/followButton";
+import Likes from "../../likes/Likes";
+import Comments from "../../comments/Comments";
+import axios from "axios";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import BookmarkIcon from "@material-ui/icons/Bookmark";
+import BookmarkModal from "../BookmarkModal/BookmarkModal";
 
 export default function PostModal(props) {
   const [username, setUsername] = useState(props.uploader);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [comments, setComments] = useState([]);
   const [addedToCart, setAddedToCart] = useState(false);
   const [tags, setTags] = useState([]);
-  const [commentUpdated, updateComments] = useState('');
+  const [commentUpdated, updateComments] = useState("");
   const [bookmarkModalIsOpen, setBookmarkModalIsOpen] = useState(false);
   const [relatedImages, setRelatedImages] = useState([]);
   const [relatedImagesLoading, setRelatedImagesLoading] = useState(true);
@@ -28,7 +28,7 @@ export default function PostModal(props) {
 
   useEffect(() => {
     axios({
-      url: 'http://localhost:5000/get_user_username',
+      url: "http://localhost:5000/get_user_username",
       params: { user_id: props.uploader },
     }).then((response) => {
       if (response.data.result) {
@@ -38,18 +38,18 @@ export default function PostModal(props) {
     });
 
     axios({
-      url: 'http://localhost:5000/item_is_in_cart',
+      url: "http://localhost:5000/item_is_in_cart",
       params: { image_id: imageID },
     }).then((response) => {
       console.log(response);
       if (response.data.result) {
-        console.log('added to cart');
+        console.log("added to cart");
         setAddedToCart(true);
       }
     });
 
     axios({
-      url: 'http://localhost:5000/get_user_email',
+      url: "http://localhost:5000/get_user_email",
       params: { user_id: props.uploader },
     }).then((response) => {
       if (response.data.result) {
@@ -59,10 +59,10 @@ export default function PostModal(props) {
     });
 
     axios({
-      url: 'http://localhost:5000/get_related_images',
+      url: "http://localhost:5000/get_related_images",
       params: { image_id: imageID },
     }).then((response) => {
-      console.log('~~~~~~~~~~~~Get Related Images~~~~~~~~~~~');
+      console.log("~~~~~~~~~~~~Get Related Images~~~~~~~~~~~");
       console.log(response);
       if (response.data.result) {
         setRelatedImages(response.data.result);
@@ -76,8 +76,8 @@ export default function PostModal(props) {
 
     const fetchTags = (id) => {
       axios({
-        method: 'GET',
-        url: 'http://localhost:5000/get_tags',
+        method: "GET",
+        url: "http://localhost:5000/get_tags",
         params: { image_id: id },
         cancelToken: new axios.CancelToken(
           (c) => (cancelAxiosRequest.current = c)
@@ -95,8 +95,8 @@ export default function PostModal(props) {
 
     const fetchComments = (id) => {
       axios({
-        method: 'GET',
-        url: 'http://localhost:5000/get_comments_to_image',
+        method: "GET",
+        url: "http://localhost:5000/get_comments_to_image",
         params: { image_id: id, batch_size: 20 },
         cancelToken: new axios.CancelToken(
           (c) => (cancelAxiosRequest.current = c)
@@ -121,8 +121,8 @@ export default function PostModal(props) {
 
   const apiAddPurchase = (imageID) => {
     axios({
-      method: 'POST',
-      url: 'http://localhost:5000/add_purchase',
+      method: "POST",
+      url: "http://localhost:5000/add_purchase",
       params: {
         save_for_later: 0,
         purchased: 0,
@@ -140,8 +140,8 @@ export default function PostModal(props) {
 
   const apiRemovePurchase = (imageID) => {
     axios({
-      method: 'POST',
-      url: 'http://localhost:5000/delete_item_from_cart',
+      method: "POST",
+      url: "http://localhost:5000/delete_item_from_cart",
       params: {
         image_id: String(imageID),
       },
@@ -182,9 +182,9 @@ export default function PostModal(props) {
           <div className="postWrapper">
             <div className="postInfo">
               <div className="username">
-                {localStorage.getItem('userLoggedIn') ? (
+                {localStorage.getItem("userLoggedIn") ? (
                   <React.Fragment>
-                    {localStorage.getItem('userID') !== props.uploader ? (
+                    {localStorage.getItem("userID") !== props.uploader ? (
                       <FollowButton uploader={props.uploader} />
                     ) : null}
                     <div className="bookmark-wrapper">
@@ -237,9 +237,9 @@ export default function PostModal(props) {
                       <h1>No related images could be found</h1>
                       <div
                         style={{
-                          marginTop: '20vh',
-                          marginRight: '20vh',
-                          marginLeft: '20vh',
+                          marginTop: "20vh",
+                          marginRight: "20vh",
+                          marginLeft: "20vh",
                         }}
                       ></div>
                     </React.Fragment>
@@ -247,8 +247,8 @@ export default function PostModal(props) {
                 </div>
               </div>
 
-              <h2 style={{ textAlign: 'center' }}>
-                {relatedImagesLoading && 'Loading...'}
+              <h2 style={{ textAlign: "center" }}>
+                {relatedImagesLoading && "Loading..."}
               </h2>
             </div>
             <div className="postFeed-nested">
@@ -267,16 +267,19 @@ export default function PostModal(props) {
                     @{username}
                   </Button>
                 </div>
-                <p className="roboto" style={{ fontSize: '70%' }}>
-                  Email: {email}
+                <p
+                  className="roboto"
+                  style={{ fontSize: "70%", textAlign: "center" }}
+                >
+                  email: {email}
                 </p>
               </div>
 
               <h2 className="roboto">{props.caption}</h2>
               <div className="postTags">
                 <h3>
-                  Tags:{' '}
-                  {tags.length < 1 ? 'this post has no tags to display' : null}
+                  Tags:{" "}
+                  {tags.length < 1 ? "this post has no tags to display" : null}
                 </h3>
                 <div className="flexbox-tags">
                   {tags.length > 0
@@ -292,7 +295,7 @@ export default function PostModal(props) {
               </div>
               <div className="postPrice">
                 <h2 className="roboto">Price: ${props.price}</h2>
-                {localStorage.getItem('userLoggedIn') ? (
+                {localStorage.getItem("userLoggedIn") ? (
                   addedToCart ? (
                     <Button
                       variant="contained"
@@ -332,7 +335,7 @@ export default function PostModal(props) {
         </div>
       </React.Fragment>,
 
-      document.getElementById('postPortal')
+      document.getElementById("postPortal")
     );
   }
 }

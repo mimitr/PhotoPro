@@ -26,6 +26,7 @@ export default function BookmarkModal(props) {
   );
   const [privateCollection, setPrivateCollection] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [hasCollections, setHasCollections] = useState(false);
 
   useEffect(() => {
     const getUsersCollections = () => {
@@ -40,8 +41,9 @@ export default function BookmarkModal(props) {
       }).then((response) => {
         if (response.data.result !== false) {
           setUsersCollections(response.data.result);
-          setLoading(false);
+          setHasCollections(true);
         }
+        setLoading(false);
       });
     };
     getUsersCollections();
@@ -116,6 +118,7 @@ export default function BookmarkModal(props) {
           {showCreateCollectionButton ? (
             <div className="collection-folders">
               {loading && 'Loading...'}
+              {!hasCollections && 'You have not created any collections yet'}
               {usersCollections.map((collection) => {
                 return (
                   <CollectionFolder

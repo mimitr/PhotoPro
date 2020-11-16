@@ -224,7 +224,9 @@ def api_post_image():
         price = str(request.form["price"])
         title = request.form["title"]
         tags = str(request.form["tags"])
-        tags = tags.split(",")
+
+        if tags is not None:
+            tags = tags.split(",")
 
         print(price, title)
 
@@ -562,9 +564,12 @@ def api_edit_post():
     tags = request.args.get("tags")
     if invalid_text(title) or invalid_text(caption):
         return jsonify({"result": False})
-    for t in tags:
-        if invalid_text(t):
-            return jsonify({"result": False})
+
+    if tags is not None:
+        for t in tags:
+            if invalid_text(t):
+                return jsonify({"result": False})
+
     conn, cur = get_conn_and_cur()
     result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
     conn.close()
