@@ -39,6 +39,9 @@ export default function RegistrationPage() {
       params: { email: email, password: password, first:first_name, last:last_name, username:username },
     });
     console.log(response);
+    // const verify_response = await axios.get('http://localhost:5000/verify_email', {
+    //   params: { email: email },
+    // });
 
     if (response.data.result !== false) {
       history.push('/');

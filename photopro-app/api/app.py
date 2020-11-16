@@ -32,6 +32,8 @@ from utils.database.general_user import (
     post_profile_image,
     get_profile_image,
     delete_profile_image,
+    verification_email,
+    gen_hash
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -122,6 +124,13 @@ def api_login():
     conn.close()
 
     return jsonify({"result": result, "user_id": user_id})
+
+
+@app.route("/verify_email", methods=["GET", "POST"])
+def api_verify_email():
+    email = request.args.get("email")
+    result = verification_email(email)
+    return jsonify({"result": result})
 
 
 @app.route("/create_user", methods=["GET", "POST"])
@@ -269,11 +278,13 @@ def api_get_profile_photo():
     else:
         conn, cur = get_conn_and_cur()
         img = get_profile_image(int(user_id), conn, cur)
-        file = "image.jpeg"
+        file = "{}.jpeg".format(gen_hash())
         photo = open(file, "wb")
         photo.write(img)
         photo.close()
         result = base64.encodebytes(img).decode("utf-8")
+        if os.path.exists(file):
+            os.remove(file)
         conn.close()
         print("get_profile_photo", result, "\nget_profile_photo")
         return jsonify({"result": result})
@@ -366,12 +377,14 @@ def api_discovery():
                 if not num_likes:
                     num_likes = 0
                 print(num_likes)
-                file = "image.jpeg"
+                file = "{}.jpeg".format(gen_hash())
                 photo = open(file, "wb")
                 photo.write(img)
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
+                if os.path.exists(file):
+                    os.remove(file)
 
                 print("id - %d, start_point - %d" % (id, app.start_point))
                 if id < app.start_point:
@@ -432,12 +445,14 @@ def api_discovery():
                 if not num_likes:
                     num_likes = 0
                 print(num_likes)
-                file = "image.jpeg"
+                file = "{}.jpeg".format(gen_hash())
                 photo = open(file, "wb")
                 photo.write(img)
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
+                if os.path.exists(file):
+                    os.remove(file)
                 if id < app.start_point:
                     app.start_point = id
 
@@ -493,12 +508,14 @@ def api_profile_photos():
             id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
 
             if last_id is None:
                 last_id = id
@@ -983,11 +1000,13 @@ def api_get_users_collection():
                 num_photos = 0
             num_photos = int(num_photos)
             if img:
-                file = "image.jpeg"
+                file = "{}.jpeg".format(gen_hash())
                 photo = open(file, "wb")
                 photo.write(img)
                 photo.close()
                 img = base64.encodebytes(img).decode("utf-8")
+                if os.path.exists(file):
+                    os.remove(file)
             else:
                 img = ""
             processed_result.append(
@@ -1046,12 +1065,14 @@ def api_get_collection_data():
             ) = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
 
             processed_result.append(
                 {
@@ -1200,12 +1221,14 @@ def api_get_user_purchases():
                 price,
                 img,
             ) = tup
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
             processed_result.append(
                 {
                     "user_id": user_id,
@@ -1387,14 +1410,15 @@ def api_get_related_images():
             id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
             print(tup)
-
+            if os.path.exists(file):
+                os.remove(file)
             processed_result.append(
                 {
                     "id": id,
@@ -1454,12 +1478,14 @@ def api_get_recommended_images():
             ) = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
             if min_score is None:
                 min_score = float(score)
             elif float(score) < min_score:
@@ -1521,12 +1547,14 @@ def api_get_global_recommendations():
             ) = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
             if min_score is None:
                 min_score = float(score)
             elif float(score) < min_score:
