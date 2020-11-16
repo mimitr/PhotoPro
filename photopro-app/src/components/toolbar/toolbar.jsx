@@ -65,6 +65,22 @@ function Toolbar() {
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
   };
 
+  const handleDeleteAccountClicked = () => {
+    axios({
+      method: "GET",
+      url: "http://localhost:5000/delete_user",
+      params: {
+      },
+    }).then((response) => {
+      if (response.data.result !== false) {
+        console.log(response);
+        localStorage.clear();
+        history.push('/');
+        history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
+      }
+    });
+  }
+
   const handleDiscoveryClicked = () => {
     history.push('/recommendations');
   };
@@ -158,6 +174,7 @@ function Toolbar() {
               Change Password
             </MenuItem>
             <MenuItem onClick={handleLogoutClicked}>Logout</MenuItem>
+            <MenuItem onClick={handleDeleteAccountClicked}>Delete</MenuItem>
           </Menu>
           <Notifications />
         </div>
