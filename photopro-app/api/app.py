@@ -503,6 +503,8 @@ def api_profile_photos():
     if user_id is None:
         return jsonify({"result": False})
 
+    print("last_id", last_id)
+
     if batch_size is None or batch_size <= 0:
         batch_size = 90
 
@@ -527,10 +529,11 @@ def api_profile_photos():
             if os.path.exists(file):
                 os.remove(file)
 
-            if last_id is None:
+            if last_id is None or last_id == 1000000:
                 last_id = id
-            elif int(last_id) < id:
+            elif int(last_id) > id:
                 last_id = id
+            print("last_id: ", last_id)
 
             processed_result.append(
                 {
