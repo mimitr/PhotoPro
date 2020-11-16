@@ -138,7 +138,6 @@ class ImageCard extends Component {
   };
 
   setRelatedImagesClicked = (newState) => {
-    console.log(newState);
     this.setState({
       relatedImageClicked: newState,
       openPostModal: false,
@@ -199,7 +198,6 @@ class ImageCard extends Component {
       url: 'http://localhost:5000/item_is_in_cart',
       params: { image_id: this.props.image.id },
     }).then((response) => {
-      console.log(response);
       if (!response.data.result) {
         apiAddToCart(
           this.props.image.id,
@@ -218,14 +216,12 @@ class ImageCard extends Component {
 
   handleDeleteClicked = (e) => {
     let response = deletePostRequest(this.props.image.id);
-    console.log(response);
     e.stopPropagation();
     window.location.reload();
   };
 
   handleEditClicked = (e) => {
     e.stopPropagation();
-    console.log('edit clicked');
     this.setState({ openEditPostModal: true });
   };
 
