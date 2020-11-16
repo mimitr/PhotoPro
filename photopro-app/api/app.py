@@ -1301,6 +1301,7 @@ def api_update_user_purchases_details():
                     result = update_recommendation_term(
                         int(user_id), term, float(value), 1.75, conn, cur
                     )
+            conn.close()
             return jsonify({"result": True})
 
     conn.close()
