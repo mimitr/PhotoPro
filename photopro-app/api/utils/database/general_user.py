@@ -10,6 +10,8 @@ import os
 import base64
 import binascii
 import io
+import string
+import random
 from pathlib import Path
 
 vision_api_credentials_file_name = "utils/database/PhotoPro-fe2b1d6e8742.json"
@@ -94,6 +96,48 @@ def change_password(email, password, new_password, conn, cur):
         return False
 
 
+def gen_hash():
+    return str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+
+
+def verification_email(recipient):
+    ssl_port = 587
+    email_server_password = "WeCodeNotSleep3900"
+    context = ssl.create_default_context()
+    with smtplib.SMTP("smtp.gmail.com", ssl_port) as server:
+        server.ehlo()
+        server.starttls(context=context)
+        sender = "2mjec390@gmail.com"
+
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "PhotoPro: Verify Your Account"
+        message["From"] = sender
+        message["To"] = recipient
+        reset_url = "http://localhost:3000/" + str(
+            ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+
+        html = "\
+                        <html>\
+                            <body>\
+                                <p> Verify Your PhotoPro Account <br>\
+                                You can do this easily using the link below: <br>\
+                                        <center>{}</center> <br>\
+                                If you didn't ask to create an account, please get in touch at support@photopro.com. <br>\
+                                </p>\
+                            </body>\
+                        </html>".format(
+            reset_url
+        )
+        html = MIMEText(html, "html")
+        message.attach(html)
+
+        server.login("2mjec390@gmail.com", email_server_password)
+        server.sendmail(sender, recipient, message.as_string())
+
+        # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
+        return reset_url
+
+
 def forgot_password_get_change_password_link(recipient, conn, cur):
     try:
         cur.execute("SAVEPOINT save_point")
@@ -122,7 +166,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 message["Subject"] = "PhotoPro: Reset Your Password"
                 message["From"] = sender
                 message["To"] = recipient
-                reset_url = "www.photopro.com/reset-password/id"
+                reset_url = "http://localhost:3000/reset-password/"
 
                 html = "\
                     <html>\
@@ -143,7 +187,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 server.sendmail(sender, recipient, message.as_string())
 
                 # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
-                return True
+                return reset_url
         else:
             print("Email not unique")
             return False
