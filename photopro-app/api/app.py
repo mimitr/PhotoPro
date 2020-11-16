@@ -1643,7 +1643,7 @@ def api_get_post_title():
 def api_get_if_liked():
     image_id = request.args.get("image_id")
     user_id = app.user_id
-    if image_id is None:
+    if image_id is None or user_id is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
     result = check_if_user_liked(int(image_id), int(user_id), conn, cur)
