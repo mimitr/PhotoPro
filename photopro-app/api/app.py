@@ -34,7 +34,8 @@ from utils.database.general_user import (
     get_profile_image,
     delete_profile_image,
     verification_email,
-    gen_hash
+    reset_password,
+    gen_hash,
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -50,7 +51,13 @@ import PIL
 for i in sys.path:
     print(i)
 
-from utils.database.likes import post_like, get_num_likes, get_likers, delete_like
+from utils.database.likes import (
+    post_like,
+    get_num_likes,
+    get_likers,
+    delete_like,
+    check_if_user_liked,
+)
 from utils.database.watermark import apply_watermark
 from utils.database.notifications import (
     send_notification,
@@ -90,7 +97,7 @@ from utils.database.user_purchases import (
     item_is_in_cart,
     get_user_purchases,
     update_user_purchases_details,
-    send_user_purchase
+    send_user_purchase,
 )
 
 app = Flask(__name__)
@@ -149,11 +156,11 @@ def api_create_user():
     print(username)
 
     if (
-            invalid_text(email)
-            or invalid_text(password)
-            or invalid_text(first)
-            or invalid_text(last)
-            or invalid_text(username)
+        invalid_text(email)
+        or invalid_text(password)
+        or invalid_text(first)
+        or invalid_text(last)
+        or invalid_text(username)
     ):
         return jsonify({"result": False})
 
@@ -197,6 +204,18 @@ def api_change_password():
     if invalid_text(email) or invalid_text(password) or invalid_text(new_password):
         return {"result": False}
     result = change_password(email, password, new_password, conn, cur)
+    conn.close()
+    return {"result": result}
+
+
+@app.route("/reset_password", methods=["GET", "POST"])
+def api_reset_password():
+    conn, cur = get_conn_and_cur()
+    email = request.args.get("email")
+    new_password = request.args.get("new_password")
+    if invalid_text(email) or invalid_text(new_password):
+        return {"result": False}
+    result = reset_password(email, new_password, conn, cur)
     conn.close()
     return {"result": result}
 
@@ -503,6 +522,8 @@ def api_profile_photos():
     if user_id is None:
         return jsonify({"result": False})
 
+    print("last_id", last_id)
+
     if batch_size is None or batch_size <= 0:
         batch_size = 90
 
@@ -527,10 +548,11 @@ def api_profile_photos():
             if os.path.exists(file):
                 os.remove(file)
 
-            if last_id is None:
+            if last_id is None or last_id == 1000000:
                 last_id = id
-            elif last_id < id:
+            elif int(last_id) > id:
                 last_id = id
+            print("last_id: ", last_id)
 
             processed_result.append(
                 {
@@ -1160,10 +1182,10 @@ def api_add_purchase():
     user_id = app.user_id
 
     if (
-            user_id is None
-            or purchased is None
-            or image_id is None
-            or save_for_later is None
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1269,10 +1291,10 @@ def api_update_user_purchases_details():
     user_id = app.user_id
 
     if (
-            user_id is None
-            or purchased is None
-            or image_id is None
-            or save_for_later is None
+        user_id is None
+        or purchased is None
+        or image_id is None
+        or save_for_later is None
     ):
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
@@ -1327,7 +1349,7 @@ def api_get_user_username():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_username_by_id(int(uid), conn, cur, )
+    result = get_username_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
 
@@ -1339,7 +1361,7 @@ def api_get_user_email():
     if uid is None:
         return jsonify({"result": False})
     conn, cur = get_conn_and_cur()
-    result = get_email_by_id(int(uid), conn, cur, )
+    result = get_email_by_id(int(uid), conn, cur,)
     conn.close()
     return jsonify({"result": result})
 
@@ -1552,18 +1574,20 @@ def api_get_recommended_images():
 @app.route("/get_global_recommendations")
 def api_get_global_recommendations():
     print("\n=================RECOMMENDED IMAGES=================\n")
-    score = request.args.get("score")
+    max_score = request.args.get("score")
     batch_size = request.args.get("batch_size")
     if batch_size is None:
         batch_size = 10
 
     conn, cur = get_conn_and_cur()
-    result = get_global_recommendations(score, batch_size, conn, cur)
+    result = get_global_recommendations(max_score, batch_size, conn, cur)
     conn.close()
 
     if result:
         processed_result = []
-        min_score = None
+
+        if max_score is not None:
+            max_score = float(max_score)
 
         for tup in result:
             (
@@ -1588,12 +1612,12 @@ def api_get_global_recommendations():
             img = base64.encodebytes(img).decode("utf-8")
             if os.path.exists(file):
                 os.remove(file)
-            if min_score is None:
-                min_score = float(score)
-            elif float(score) < min_score:
-                min_score = float(score)
-
-            print(tup)
+            print(max_score, score)
+            if max_score is None:
+                max_score = float(score)
+            elif float(score) < float(max_score):
+                max_score = float(score)
+            # print(tup)
 
             processed_result.append(
                 {
@@ -1609,7 +1633,7 @@ def api_get_global_recommendations():
                 }
             )
 
-        retval = jsonify({"result": processed_result, "score": float(min_score) - 0.01})
+        retval = jsonify({"result": processed_result, "score": float(max_score) - 0.01})
         print(retval)
         return retval
     else:
@@ -1626,3 +1650,28 @@ def api_get_post_title():
     result = get_post_title_by_id(int(image_id), conn, cur)
     conn.close()
     return jsonify({"result": result})
+
+
+@app.route("/check_if_user_liked_photo", methods=["GET", "POST"])
+def api_get_if_liked():
+    image_id = request.args.get("image_id")
+    user_id = app.user_id
+    if image_id is None or user_id is None:
+        return jsonify({"result": False})
+    conn, cur = get_conn_and_cur()
+    result = check_if_user_liked(int(image_id), int(user_id), conn, cur)
+    conn.close()
+    return jsonify({"result": result})
+
+
+# @app.route("/get_followers", methods=["GET", "POST"])
+# def api_get_post_title():
+#     user_id = app.user_id
+
+#     if user_id is None:
+#         return jsonify({"result": False})
+#     conn, cur = get_conn_and_cur()
+#     result = get_followers
+#     conn.close()
+#     return jsonify({"result": result})
+

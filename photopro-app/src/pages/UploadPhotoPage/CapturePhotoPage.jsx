@@ -33,6 +33,7 @@ export default function CapturePhotoPage(props) {
   const [priceValidated, setPriceValidated] = useState(false);
   const [tagsValidated, setTagsValidated] = useState(false);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const history = useHistory();
 
@@ -52,7 +53,7 @@ export default function CapturePhotoPage(props) {
       img !== null
     ) {
       console.log('approved');
-
+      setLoading(true);
       const response = attemptPost(
         img,
         titleValidated[1],
@@ -66,6 +67,7 @@ export default function CapturePhotoPage(props) {
         if (res.data.result) {
           setConfirmationModalOpen(true);
         }
+        setLoading(false);
       });
     }
   }, [titleValidated, captionValidated, priceValidated, tagsValidated]);
@@ -73,19 +75,6 @@ export default function CapturePhotoPage(props) {
   const formSubmit = (event) => {
     setUploadButtonClicked(!uploadButtonClicked);
   };
-
-  // function validate_title() {
-  //   return title.length > 0 && title.length < 50;
-  // }
-  // function validate_caption() {
-  //   return caption.length > 0 && caption.length < 50;
-  // }
-  // function validate_price() {
-  //   return parseInt(price) > 0 && price.length > 0;
-  // }
-  // function validate_tags() {
-  //   return tags.length > 0 && tags.length < 100;
-  // }
 
   return ReactDom.createPortal(
     <React.Fragment>
@@ -145,6 +134,9 @@ export default function CapturePhotoPage(props) {
               Cancel
             </Button>
           </div>
+          <h2 style={{ textAlign: 'center' }}>
+            {loading && 'Upload in progress, please wait...'}
+          </h2>
         </div>
       </div>
       {confirmationModalOpen ? <PostConfirmationModal isOpen={true} /> : null}

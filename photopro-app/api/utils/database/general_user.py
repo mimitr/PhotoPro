@@ -96,8 +96,28 @@ def change_password(email, password, new_password, conn, cur):
         return False
 
 
+def reset_password(email, new_password, conn, cur):
+    try:
+        cur.execute("SAVEPOINT save_point")
+
+        cmd = "UPDATE users SET password = '{}' WHERE email='{}'".format(
+            new_password, email
+        )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+
 def gen_hash():
-    return str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+    return str(
+        "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+    )
 
 
 def verification_email(recipient):
@@ -113,14 +133,13 @@ def verification_email(recipient):
         message["Subject"] = "PhotoPro: Verify Your Account"
         message["From"] = sender
         message["To"] = recipient
-        reset_url = "http://localhost:3000/" + str(
-            ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
+        reset_url = str(gen_hash())
 
         html = "\
                         <html>\
                             <body>\
                                 <p> Verify Your PhotoPro Account <br>\
-                                You can do this easily using the link below: <br>\
+                                You can do this easily using the confirmation code below: <br>\
                                         <center>{}</center> <br>\
                                 If you didn't ask to create an account, please get in touch at support@photopro.com. <br>\
                                 </p>\
@@ -152,6 +171,7 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
 
         if length == 0:
             # return "Incorrect email or password! Please try again."
+
             return False
         elif length == 1:
             ssl_port = 587
@@ -166,13 +186,13 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 message["Subject"] = "PhotoPro: Reset Your Password"
                 message["From"] = sender
                 message["To"] = recipient
-                reset_url = "http://localhost:3000/reset-password/"
+                reset_url = str(gen_hash())
 
                 html = "\
                     <html>\
                         <body>\
                             <p> Need to reset your password? <br>\
-                            You can do this easily using the link below: <br>\
+                            You can do this easily using the confirmation code below: <br>\
                                     <center>{}</center> <br>\
                             If you didn't ask to reset your password, please get in touch at support@photopro.com. <br>\
                             </p>\
@@ -189,9 +209,10 @@ def forgot_password_get_change_password_link(recipient, conn, cur):
                 # return "Your email has just sent a link to change your password. Make sure to check your spam folder!"
                 return reset_url
         else:
-            print("Email not unique")
+            print("~~~~~~~~~~~~~~~~~~~~~Email not unique~~~~~~~~~~~~~~~")
             return False
     except psycopg2.Error as e:
+        print("~~~~~~~~~~ERROR IN PASSWORD CHANGE~~~~~~~~~~~~~~~~~")
         error = e.pgcode
         print(error)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
@@ -434,9 +455,9 @@ def search_by_tag(user_id, batch_size, query, start_point, conn, cur):
     try:
         user_id = int(user_id)
         batch_size = int(batch_size)
-        if ' ' in query or ',' in query:
-            query = query.replace(' ', ',')
-            tags = query.split(',')
+        if " " in query or "," in query:
+            query = query.replace(" ", ",")
+            tags = query.split(",")
             query = ""
             for tag in tags:
                 query = query + "'" + tag + "',"
@@ -757,7 +778,9 @@ def delete_account(user_id, email, password, conn, cur):
     cur.execute("SAVEPOINT save_point")
     try:
 
-        cmd = "select id from users where email='{}' and password='{}'".format(str(email), str(password))
+        cmd = "select id from users where email='{}' and password='{}'".format(
+            str(email), str(password)
+        )
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchone()[0]
@@ -819,3 +842,4 @@ def delete_account(user_id, email, password, conn, cur):
         print(error)
         conn.rollback()
         return False
+

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
 
 export default function (props) {
-  const [text, setText] = useState("");
-  const [errorText, setErrorText] = useState("");
+  const [text, setText] = useState('');
+  const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
 
@@ -24,10 +24,10 @@ export default function (props) {
     let patt = /\d+/;
     if ((parseInt(text.length) === 3) & patt.test(text)) {
       setErrorValue(false);
-      setErrorText("");
+      setErrorText('');
       return true;
     } else {
-      setErrorText("Input the correct CVV [3 digits]");
+      setErrorText('Input the correct CVV [3 digits]');
       setErrorValue(true);
       return false;
     }
@@ -35,7 +35,7 @@ export default function (props) {
   return (
     <React.Fragment>
       <h3>CVC</h3>
-      <div style={{ marginBottom: "10%" }}>
+      <div style={{ marginBottom: '10%' }}>
         <TextField
           required
           error={errorValue}
@@ -46,7 +46,6 @@ export default function (props) {
           }}
           id="outlined-required"
           label="Required"
-          defaultValue="123"
           variant="outlined"
         />
       </div>

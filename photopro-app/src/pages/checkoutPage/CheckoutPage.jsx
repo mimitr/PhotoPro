@@ -33,6 +33,7 @@ export default function CheckoutPage(props) {
   const [cardYearValidated, setCardYearValidated] = useState(false);
   const [cardCvvValidated, setCardCvvValidated] = useState(false);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const classes = useStyles();
   const history = useHistory();
@@ -69,10 +70,10 @@ export default function CheckoutPage(props) {
       }).then((response) => {
         console.log(response);
         setConfirmationModalOpen(true);
+        setLoading(false);
       });
     };
 
-    console.log('CALLED');
     if (
       cardNumValidated &&
       cardYearValidated &&
@@ -80,7 +81,7 @@ export default function CheckoutPage(props) {
       cardNameValidated &&
       cardCvvValidated
     ) {
-      console.log('APPROVED');
+      setLoading(true);
       shoppingCartItems.map((item) => {
         console.log(item.image_id);
         updatePurchase(item.image_id);
@@ -154,6 +155,7 @@ export default function CheckoutPage(props) {
                 >
                   PLACE ORDER
                 </Button>
+                <h2>{loading && 'Purchase in progress, please wait...'}</h2>
               </div>
             </form>
           </div>

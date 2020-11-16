@@ -61,9 +61,7 @@ def is_following(user_id, followee, conn, cur):
 
 def get_followers(followee, conn, cur):
     try:
-        cmd = "select follower FROM follows WHERE followee={}".format(
-            int(followee)
-        )
+        cmd = "select follower FROM follows WHERE followee={}".format(int(followee))
         cur.execute(cmd)
         conn.commit()
         result = cur.fetchall()
@@ -76,3 +74,21 @@ def get_followers(followee, conn, cur):
         print(e)
         # cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False
+
+
+def get_followees(follower, conn, cur):
+    try:
+        cmd = "select followee FROM follows WHERE follower={}".format(int(follower))
+        cur.execute(cmd)
+        conn.commit()
+        result = cur.fetchall()
+        return result
+    except psycopg2.Error as e:
+        print(e)
+        # cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except Exception as e:
+        print(e)
+        # cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+

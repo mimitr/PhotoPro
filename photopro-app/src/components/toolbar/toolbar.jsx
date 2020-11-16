@@ -1,14 +1,15 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "./toolbar.css";
-import { useHistory } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { makeStyles } from "@material-ui/core/styles";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import Notifications from "./notifications/notifications";
-import logo from "../../logo/logo-new.png";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './toolbar.css';
+import { useHistory } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles } from '@material-ui/core/styles';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Notifications from './notifications/notifications';
+import logo from '../../logo/logo-new.png';
+import ForgotPasswordModal from '../Modals/ForgotPasswordModal/ForgotPasswordModal';
 
 import LoginModal from '../Modals/LoginModal/LoginModal';
 import SignupModal from '../Modals/SignupModal/SignupModal';
@@ -17,26 +18,43 @@ import DeleteAccountModal from '../Modals/DeleteAccountModal/DeleteAccountModal'
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
-    border: "3px solid red",
-    margin: "auto",
+    border: '3px solid red',
+    margin: 'auto',
   },
   button: {
-    color: "rgb(83, 85, 89)",
+    color: 'rgb(83, 85, 89)',
   },
 }));
 
 function Toolbar() {
   const history = useHistory();
   const classes = useStyles();
-  const loggedIn = localStorage.getItem("userLoggedIn");
+  const loggedIn = localStorage.getItem('userLoggedIn');
+  const [username, setUsername] = useState('');
 
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);
+  const [forgotPasswordModalIsOpen, setForgotPasswordModalIsOpen] = useState(
+    false
+  );
+
   const [signupModalIsOpen, setSignupModalIsOpen] = useState(false);
   const [deleteAcountModalIsOpen, setDeleteAccountModalIsOpen] = useState(
     false
   );
+
+  useEffect(() => {
+    axios({
+      url: 'http://localhost:5000/get_user_username',
+      params: { user_id: localStorage.getItem('userID') },
+    }).then((response) => {
+      if (response.data.result) {
+        console.log(response);
+        setUsername(response.data.result);
+      }
+    });
+  }, []);
 
   const handleAccountClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -55,7 +73,7 @@ function Toolbar() {
   };
 
   const handleProfileClicked = function () {
-    const userID = localStorage.getItem("userID");
+    const userID = localStorage.getItem('userID');
     console.log(`In toolbar the userID = ${userID}`);
     history.push({
       pathname: `/profile/${userID}`,
@@ -65,24 +83,24 @@ function Toolbar() {
 
   const handleLogoutClicked = () => {
     localStorage.clear();
-    history.push("/");
+    history.push('/');
     history.go(0); // forces the page to re-render if you are already on it which causes it to display the right information
   };
 
   const handleDiscoveryClicked = () => {
-    history.push("/recommendations");
+    history.push('/recommendations');
   };
 
   const handleUploadClicked = () => {
-    history.push("/uploadphoto");
+    history.push('/uploadphoto');
   };
 
   const handleChangePassClicked = () => {
-    history.push("/changepassword");
+    history.push('/changepassword');
   };
 
   const handleCollectionsClicked = () => {
-    const userID = localStorage.getItem("userID");
+    const userID = localStorage.getItem('userID');
     console.log(`In toolbar the userID = ${userID}`);
     history.push({
       pathname: `/collections/${userID}`,
@@ -91,15 +109,15 @@ function Toolbar() {
   };
 
   const handleCartClicked = () => {
-    history.push("/shopping-cart");
+    history.push('/shopping-cart');
   };
 
   const handleMyPurchasesClicked = () => {
-    history.push("/my-purchases");
+    history.push('/my-purchases');
   };
 
   const handleLogoClicked = () => {
-    history.push("/");
+    history.push('/');
     history.go(0);
   };
 
@@ -108,11 +126,13 @@ function Toolbar() {
     handleAccountClose();
   };
 
+  console.log();
+
   let buttons;
-  if (loggedIn === "true") {
+  if (loggedIn === 'true') {
     buttons = (
       <React.Fragment>
-        <div className={"flex-container-buttons-2"}>
+        <div className={'flex-container-buttons-2'}>
           <Button
             variant="outlined"
             size="large"
@@ -150,7 +170,7 @@ function Toolbar() {
             aria-haspopup="true"
             onClick={handleAccountClick}
           >
-            Account
+            @{username}
           </Button>
           <Menu
             id="simple-menu"
@@ -235,7 +255,22 @@ function Toolbar() {
             <LoginModal
               openLoginModal={true}
               setOpenLoginModal={setLoginModalIsOpen}
+              setForgotPasswordModalIsOpen={setForgotPasswordModalIsOpen}
             ></LoginModal>
+          </div>
+        ) : null}
+
+        {forgotPasswordModalIsOpen ? (
+          <div
+            className="toolbar-modal-wrapper"
+            onClick={() => {
+              setForgotPasswordModalIsOpen(false);
+            }}
+          >
+            <ForgotPasswordModal
+              openForgotPasswordModal={true}
+              setOpenForgotPasswordModal={setForgotPasswordModalIsOpen}
+            ></ForgotPasswordModal>
           </div>
         ) : null}
 
