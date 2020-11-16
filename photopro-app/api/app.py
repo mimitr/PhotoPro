@@ -176,7 +176,7 @@ def api_delete_user():
     password = request.args.get("password")
     user_id = app.user_id
 
-    if invalid_text(email) or invalid_text(password) or user_id is None:
+    if user_id is None:
         return jsonify({"result": False})
 
     result = delete_account(user_id, email, password, conn, cur)
