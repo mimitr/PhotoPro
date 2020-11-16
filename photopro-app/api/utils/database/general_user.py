@@ -96,6 +96,24 @@ def change_password(email, password, new_password, conn, cur):
         return False
 
 
+def reset_password(email, new_password, conn, cur):
+    try:
+        cur.execute("SAVEPOINT save_point")
+
+        cmd = "UPDATE users SET password = '{}' WHERE email='{}'".format(
+            new_password, email
+        )
+        print(cmd)
+        cur.execute(cmd)
+        conn.commit()
+        return True
+    except psycopg2.Error as e:
+        error = e.pgcode
+        print(error)
+        cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+
 def gen_hash():
     return str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8)))
 
