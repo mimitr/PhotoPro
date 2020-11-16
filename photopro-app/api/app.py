@@ -555,11 +555,11 @@ def api_profile_photos():
         return jsonify({"result": False})
 
 
-@app.route("/edit_post")
+@app.route("/edit_post", methods=["GET", "POST"])
 def api_edit_post():
     image_id = request.args.get("image_id")
     title = request.args.get("title")
-    price = int(request.args.get("price"))
+    price = str(request.args.get("price"))
     caption = request.args.get("caption")
     tags = request.args.get("tags")
     if invalid_text(title) or invalid_text(caption):
