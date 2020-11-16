@@ -112,20 +112,22 @@ export default function Collections(props) {
   } else {
     componentsRender = (
       <div className="collectionsPageWrapper">
-        <div
-          className="userpage-username"
-          style={{
-            backgroundImage: `url(${Userbackground})`,
-          }}
-        >
-          {!props.displayMyProfile ? (
-            <h1 style={{ textAlign: "center" }}>{username}</h1>
-          ) : null}
+        {!props.displayMyProfile ? (
+          <div
+            className="userpage-username"
+            style={{
+              backgroundImage: `url(${Userbackground})`,
+            }}
+          >
+            {!props.displayMyProfile ? (
+              <h1 style={{ textAlign: "center" }}>{username}</h1>
+            ) : null}
 
-          {!props.displayMyProfile ? (
-            <h3 style={{ textAlign: "center" }}>Email: {email}</h3>
-          ) : null}
-        </div>
+            {!props.displayMyProfile ? (
+              <h3 style={{ textAlign: "center" }}>Email: {email}</h3>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="title">
           {props.displayMyProfile ? (
@@ -159,7 +161,11 @@ export default function Collections(props) {
       {componentsRender}
       <h1 style={{ textAlign: "center" }}>{loading && "Loading..."} </h1>
       <h2 style={{ textAlign: "center" }}>
+<<<<<<< HEAD
         {!hasCollections && "This user does not have any public collections"}
+=======
+        {!hasCollections && "This user does not have any public collections"}{" "}
+>>>>>>> master
       </h2>
     </React.Fragment>
   );

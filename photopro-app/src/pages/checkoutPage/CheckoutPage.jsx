@@ -1,26 +1,25 @@
-import React, { useState, useEffect, useRef } from "react";
-import "./CheckoutPage.css";
-import ToolBar from "../../components/toolbar/toolbar";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import axios from "axios";
-import CheckoutItem from "./checkoutItem/CheckoutItem";
-import { useHistory } from "react-router-dom";
-import ConfirmationModal from "./ConfirmationModal/ConfirmationModal";
+import React, { useState, useEffect } from 'react';
+import './CheckoutPage.css';
+import ToolBar from '../../components/toolbar/toolbar';
+import Button from '@material-ui/core/Button';
+import axios from 'axios';
+import CheckoutItem from './checkoutItem/CheckoutItem';
+import { useHistory } from 'react-router-dom';
+import ConfirmationModal from './ConfirmationModal/ConfirmationModal';
 
-import CardName from "./textfields/CardName";
-import CardNum from "./textfields/CardNum";
-import CardMonth from "./textfields/CardMonth";
-import CardYear from "./textfields/CardYear";
-import CardCvv from "./textfields/CardCvv";
+import CardName from './textfields/CardName';
+import CardNum from './textfields/CardNum';
+import CardMonth from './textfields/CardMonth';
+import CardYear from './textfields/CardYear';
+import CardCvv from './textfields/CardCvv';
 
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& .MuiTextField-root": {
+    '& .MuiTextField-root': {
       margin: theme.spacing(1),
-      width: "ch",
+      width: 'ch',
     },
   },
 }));
@@ -36,14 +35,13 @@ export default function CheckoutPage(props) {
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
   const classes = useStyles();
-
   const history = useHistory();
 
   useEffect(() => {
     const getUserNotPurchasedItems = () => {
       axios({
-        method: "GET",
-        url: "http://localhost:5000/get_user_purchases",
+        method: 'GET',
+        url: 'http://localhost:5000/get_user_purchases',
         params: {
           save_for_later: 0,
           purchased: 0,
@@ -61,8 +59,8 @@ export default function CheckoutPage(props) {
   useEffect(() => {
     const updatePurchase = (img_id) => {
       axios({
-        method: "POST",
-        url: "http://localhost:5000/update_user_purchases_details",
+        method: 'POST',
+        url: 'http://localhost:5000/update_user_purchases_details',
         params: {
           save_for_later: 0,
           purchased: 1,
@@ -74,7 +72,7 @@ export default function CheckoutPage(props) {
       });
     };
 
-    console.log("CALLED");
+    console.log('CALLED');
     if (
       cardNumValidated &&
       cardYearValidated &&
@@ -82,7 +80,7 @@ export default function CheckoutPage(props) {
       cardNameValidated &&
       cardCvvValidated
     ) {
-      console.log("APPROVED");
+      console.log('APPROVED');
       shoppingCartItems.map((item) => {
         console.log(item.image_id);
         updatePurchase(item.image_id);
@@ -101,7 +99,7 @@ export default function CheckoutPage(props) {
   };
 
   const handleEditButton = () => {
-    history.push("/shopping-cart");
+    history.push('/shopping-cart');
   };
 
   const checkoutItemsComponents = shoppingCartItems.map((item) => {
@@ -120,7 +118,7 @@ export default function CheckoutPage(props) {
   return (
     <React.Fragment>
       <ToolBar />
-      <div className="checkout-wrapper" style={{ marginTop: "15%" }}>
+      <div className="checkout-wrapper" style={{ marginTop: '15%' }}>
         <h1>Checkout</h1>
         <div className="checkout-grid">
           <div className="payment-info">

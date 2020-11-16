@@ -104,7 +104,7 @@ def get_user_purchases(user_id, save_for_later, purchased, conn, cur):
 
 
 def update_user_purchases_details(
-    user_id, image_id, save_for_later, purchased, conn, cur
+        user_id, image_id, save_for_later, purchased, conn, cur
 ):
     try:
         cur.execute("SAVEPOINT save_point")
@@ -122,4 +122,85 @@ def update_user_purchases_details(
     except Exception as e:
         print(e)
         cur.execute("ROLLBACK TO SAVEPOINT save_point")
+        return False
+
+
+import ssl
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+import string
+import random
+import os
+
+
+def send_user_purchase(user_id, image_id, conn, cur):
+    try:
+
+        cmd = "SELECT title,file from images where image_id={}".format(
+            int(image_id)
+        )
+        cur.execute(cmd)
+        conn.commit()
+        (title, img) = cur.fetchone()
+        print(img, '\n send_user_img', title)
+
+        file = "{}.jpg".format(str(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))))
+        photo = open(file, "wb")
+        photo.write(img)
+        photo.close()
+
+        img_data = open(file, 'rb').read()
+
+        if os.path.exists(file):
+            os.remove(file)
+
+        title = title.replace(' ', '-').replace('.', '-').replace(',', '-')
+
+        cmd = "SELECT email from users where id={}".format(
+            int(user_id)
+        )
+        cur.execute(cmd)
+        conn.commit()
+        recipient = cur.fetchone()[0]
+        print(recipient)
+
+        ssl_port = 587
+        email_server_password = "WeCodeNotSleep3900"
+        context = ssl.create_default_context()
+        with smtplib.SMTP("smtp.gmail.com", ssl_port) as server:
+            server.ehlo()
+            server.starttls(context=context)
+            sender = "2mjec390@gmail.com"
+
+            message = MIMEMultipart("alternative")
+            message["Subject"] = "PhotoPro: Latest Purchase"
+            message["From"] = sender
+            message["To"] = recipient
+
+            html = "\
+                                    <html>\
+                                        <body>\
+                                            <p> Review your latest purchase. <br>\
+                                            </p>\
+                                        </body>\
+                                    </html>"
+            html = MIMEText(html, "html")
+            message.attach(html)
+            image = MIMEImage(img_data, name=os.path.basename(title+'.jpg'))
+            message.attach(image)
+
+            server.login("2mjec390@gmail.com", email_server_password)
+            server.sendmail(sender, recipient, message.as_string())
+
+            return True
+    except psycopg2.Error as e:
+        print(e)
+        # cur.execute('ROLLBACK TO SAVEPOINT save_point')
+        return False
+    except Exception as e:
+        print(e)
+        # cur.execute('ROLLBACK TO SAVEPOINT save_point')
         return False

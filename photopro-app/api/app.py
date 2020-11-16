@@ -25,6 +25,7 @@ from utils.database.general_user import (
     get_username_by_id,
     get_email_by_id,
     get_post_title_by_id,
+    get_uploader_id_from_img,
     remove_tag,
     delete_image_post,
     set_user_timestamp,
@@ -32,6 +33,8 @@ from utils.database.general_user import (
     post_profile_image,
     get_profile_image,
     delete_profile_image,
+    verification_email,
+    gen_hash
 )
 from utils.database.connect import get_conn_and_cur
 from utils.database.follows import follow, unfollow, is_following, get_followers
@@ -69,7 +72,7 @@ from utils.database.recommendation import (
     get_related_images,
     get_recommendation_photos,
     init_user_recommendation,
-    get_global_recommendations
+    get_global_recommendations,
 )
 from utils.database.collections import (
     create_collection,
@@ -87,6 +90,7 @@ from utils.database.user_purchases import (
     item_is_in_cart,
     get_user_purchases,
     update_user_purchases_details,
+    send_user_purchase
 )
 
 app = Flask(__name__)
@@ -101,7 +105,7 @@ def invalid_text(text):
 
 
 def clean_text(text):
-    return str(text).replace("'", "").replace('"', '')
+    return str(text).replace("'", "").replace('"', "")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -124,6 +128,13 @@ def api_login():
     return jsonify({"result": result, "user_id": user_id})
 
 
+@app.route("/verify_email", methods=["GET", "POST"])
+def api_verify_email():
+    email = request.args.get("email")
+    result = verification_email(email)
+    return jsonify({"result": result})
+
+
 @app.route("/create_user", methods=["GET", "POST"])
 def api_create_user():
     conn, cur = get_conn_and_cur()
@@ -137,8 +148,13 @@ def api_create_user():
         username = str(str(first) + " " + str(last))
     print(username)
 
-    if invalid_text(email) or invalid_text(password) or invalid_text(first) \
-            or invalid_text(last) or invalid_text(username):
+    if (
+            invalid_text(email)
+            or invalid_text(password)
+            or invalid_text(first)
+            or invalid_text(last)
+            or invalid_text(username)
+    ):
         return jsonify({"result": False})
 
     result = create_user(first, last, email, password, username, conn, cur)
@@ -161,7 +177,7 @@ def api_delete_user():
     password = request.args.get("password")
     user_id = app.user_id
 
-    if invalid_text(email) or invalid_text(password) or user_id is None:
+    if user_id is None:
         return jsonify({"result": False})
 
     result = delete_account(user_id, email, password, conn, cur)
@@ -208,7 +224,9 @@ def api_post_image():
         price = str(request.form["price"])
         title = request.form["title"]
         tags = str(request.form["tags"])
-        tags = tags.split(",")
+
+        if tags is not None:
+            tags = tags.split(",")
 
         print(price, title)
 
@@ -269,11 +287,13 @@ def api_get_profile_photo():
     else:
         conn, cur = get_conn_and_cur()
         img = get_profile_image(int(user_id), conn, cur)
-        file = "image.jpeg"
+        file = "{}.jpeg".format(gen_hash())
         photo = open(file, "wb")
         photo.write(img)
         photo.close()
         result = base64.encodebytes(img).decode("utf-8")
+        if os.path.exists(file):
+            os.remove(file)
         conn.close()
         print("get_profile_photo", result, "\nget_profile_photo")
         return jsonify({"result": result})
@@ -303,7 +323,7 @@ def api_discovery():
 
     if query is not None:
         query = clean_text(query)
-        terms = query.split(' ')
+        terms = query.split(" ")
         print(terms)
 
     print(
@@ -316,7 +336,9 @@ def api_discovery():
         print("------------------ last query === query ----------------------")
         start_point = app.start_point
     else:
-        print("---------------------- app.start_point reset to 1000000 ------------------")
+        print(
+            "---------------------- app.start_point reset to 1000000 ------------------"
+        )
         app.start_point = 1000000
     app.last_query = query
     if query is not None:
@@ -324,11 +346,10 @@ def api_discovery():
         result = search_by_tag(
             user_id, batch_size, query, start_point, connImages, curImages
         )
-        if result:
-            connImages.close()
+        connImages.close()
     else:
-        connImages2, curImages2 = get_conn_and_cur()
         print("==================== QUERY IS NONE =======================")
+        connImages2, curImages2 = get_conn_and_cur()
         result = discovery(user_id, batch_size, start_point, connImages2, curImages2)
         connImages2.close()
     start_point_before_iteration = app.start_point
@@ -366,12 +387,14 @@ def api_discovery():
                 if not num_likes:
                     num_likes = 0
                 print(num_likes)
-                file = "image.jpeg"
+                file = "{}.jpeg".format(gen_hash())
                 photo = open(file, "wb")
                 photo.write(img)
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
+                if os.path.exists(file):
+                    os.remove(file)
 
                 print("id - %d, start_point - %d" % (id, app.start_point))
                 if id < app.start_point:
@@ -432,12 +455,14 @@ def api_discovery():
                 if not num_likes:
                     num_likes = 0
                 print(num_likes)
-                file = "image.jpeg"
+                file = "{}.jpeg".format(gen_hash())
                 photo = open(file, "wb")
                 photo.write(img)
                 photo.close()
                 img = apply_watermark(file).getvalue()
                 img = base64.encodebytes(img).decode("utf-8")
+                if os.path.exists(file):
+                    os.remove(file)
                 if id < app.start_point:
                     app.start_point = id
 
@@ -493,12 +518,14 @@ def api_profile_photos():
             id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
 
             if last_id is None:
                 last_id = id
@@ -528,18 +555,21 @@ def api_profile_photos():
         return jsonify({"result": False})
 
 
-@app.route("/edit_post")
+@app.route("/edit_post", methods=["GET", "POST"])
 def api_edit_post():
     image_id = request.args.get("image_id")
     title = request.args.get("title")
-    price = int(request.args.get("price"))
+    price = str(request.args.get("price"))
     caption = request.args.get("caption")
     tags = request.args.get("tags")
     if invalid_text(title) or invalid_text(caption):
         return jsonify({"result": False})
-    for t in tags:
-        if invalid_text(t):
-            return jsonify({"result": False})
+
+    if tags is not None:
+        for t in tags:
+            if invalid_text(t):
+                return jsonify({"result": False})
+
     conn, cur = get_conn_and_cur()
     result = edit_post(app.user_id, image_id, title, price, caption, tags, conn, cur)
     conn.close()
@@ -983,11 +1013,13 @@ def api_get_users_collection():
                 num_photos = 0
             num_photos = int(num_photos)
             if img:
-                file = "image.jpeg"
+                file = "{}.jpeg".format(gen_hash())
                 photo = open(file, "wb")
                 photo.write(img)
                 photo.close()
                 img = base64.encodebytes(img).decode("utf-8")
+                if os.path.exists(file):
+                    os.remove(file)
             else:
                 img = ""
             processed_result.append(
@@ -1046,12 +1078,14 @@ def api_get_collection_data():
             ) = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
 
             processed_result.append(
                 {
@@ -1200,12 +1234,14 @@ def api_get_user_purchases():
                 price,
                 img,
             ) = tup
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
             processed_result.append(
                 {
                     "user_id": user_id,
@@ -1248,7 +1284,28 @@ def api_update_user_purchases_details():
         conn,
         cur,
     )
+
+    uploader_id = get_uploader_id_from_img(int(image_id), conn, cur)
+    if uploader_id is not False and bool(int(purchased)):
+        print("~~~~~~~~~~~~~Notification sent in user purchases~~~~~~~~~~~~~~")
+        send_notification(
+            int(uploader_id), int(user_id), "purchased", int(image_id), conn, cur
+        )
+
+        send_user_purchase(int(user_id), int(image_id), conn, cur)
+
+        result_terms = get_terms_and_values_for_image(int(image_id), conn, cur)
+        if result_terms:
+            for term, value in result_terms:
+                if term is not None:
+                    result = update_recommendation_term(
+                        int(user_id), term, float(value), 1.75, conn, cur
+                    )
+            conn.close()
+            return jsonify({"result": True})
+
     conn.close()
+
     return jsonify({"result": result})
 
 
@@ -1350,7 +1407,6 @@ def api_update_likes_recommendation():
                 print("terms and value:")
                 print(term, value)
                 if term is not None:
-                    print("eep")
                     result = update_recommendation_term(
                         int(user_id), term, float(value), 0.75, conn, cur
                     )
@@ -1387,14 +1443,15 @@ def api_get_related_images():
             id, caption, uploader, img, title, price, created_at, tags, num_likes = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
             print(tup)
-
+            if os.path.exists(file):
+                os.remove(file)
             processed_result.append(
                 {
                     "id": id,
@@ -1454,12 +1511,14 @@ def api_get_recommended_images():
             ) = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
             if min_score is None:
                 min_score = float(score)
             elif float(score) < min_score:
@@ -1521,12 +1580,14 @@ def api_get_global_recommendations():
             ) = tup
             if not num_likes:
                 num_likes = 0
-            file = "image.jpeg"
+            file = "{}.jpeg".format(gen_hash())
             photo = open(file, "wb")
             photo.write(img)
             photo.close()
             img = apply_watermark(file).getvalue()
             img = base64.encodebytes(img).decode("utf-8")
+            if os.path.exists(file):
+                os.remove(file)
             if min_score is None:
                 min_score = float(score)
             elif float(score) < min_score:
