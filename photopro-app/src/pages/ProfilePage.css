@@ -1,0 +1,17 @@
+.dp-photo {
+  display: flex;
+  align-items: center;
+  /* border-color: rgb(255, 255, 255); */
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  border: solid;
+  text-align: center;
+  margin: 30px;
+  padding: 2%;
+}
+
+.dp-photo-wrapper {
+  display: flex;
+  justify-content: center;
+}
