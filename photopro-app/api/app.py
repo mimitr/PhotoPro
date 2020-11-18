@@ -584,6 +584,8 @@ def api_edit_post():
     price = str(request.args.get("price"))
     caption = request.args.get("caption")
     tags = request.args.get("tags")
+    print("~~~~~~~~~~~~~~EDIT POST TAGS~~~~~~~~~~~~~~~")
+    print(tags)
     if invalid_text(title) or invalid_text(caption):
         return jsonify({"result": False})
 

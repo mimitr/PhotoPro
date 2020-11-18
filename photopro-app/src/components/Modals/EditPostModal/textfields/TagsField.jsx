@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TextField from '@material-ui/core/TextField';
 
 export default function TagsField(props) {
@@ -6,11 +6,8 @@ export default function TagsField(props) {
   const [errorText, setErrorText] = useState('');
   const [errorValue, setErrorValue] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
-
+  const textFieldRef = useRef();
   const { saveButtonClicked } = props;
-
-  console.log('old tags');
-  console.log(props.oldTags.toString());
 
   useEffect(() => {
     setFirstRender(false);
@@ -19,6 +16,7 @@ export default function TagsField(props) {
 
   useEffect(() => {
     setText(props.oldTags);
+    props.setTagsValidated([false, props.oldTags]);
   }, [props.oldTags]);
 
   useEffect(() => {
@@ -44,6 +42,7 @@ export default function TagsField(props) {
       <h3>Tags</h3>
       <div>
         <TextField
+          ref={textFieldRef}
           error={errorValue}
           helperText={errorText}
           onChange={(e) => {
