@@ -194,7 +194,9 @@ export default function RegistrationPage(props) {
 
           {userRegistered === true ? (
             <React.Fragment>
-              <h1>Email verified, welcome to PhotoPro! </h1>
+              <h1 style={{ color: "grey" }}>
+                Your email is verified, welcome to PhotoPro!
+              </h1>
               <h2> Sign in with your details.</h2>
             </React.Fragment>
           ) : null}
