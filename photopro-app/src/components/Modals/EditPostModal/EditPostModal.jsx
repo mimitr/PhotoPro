@@ -40,6 +40,7 @@ export default function EditPostPage(props) {
       console.log(res);
       if (res.data.result) {
         setOldTags(res.data.result);
+        setTagsValidated([false, res.data.result]);
       }
     });
   }, []);
@@ -49,7 +50,7 @@ export default function EditPostPage(props) {
 
   const classes = useStyles();
 
-  async function edit_post(event) {
+  async function edit_post() {
     // event.preventDefault();
 
     var response = await axios.get('http://localhost:5000/edit_post', {
@@ -58,7 +59,7 @@ export default function EditPostPage(props) {
         title: titleValidated[1],
         price: priceValidated[1],
         caption: captionValidated[1],
-        tags: tagsValidated[1],
+        tags: tagsValidated[1].toString(),
       },
     });
     return response;
