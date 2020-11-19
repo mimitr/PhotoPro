@@ -79,7 +79,7 @@ const UserPhotos = (props) => {
     axios({
       method: 'GET',
       url: 'http://localhost:5000/profile_photos',
-      params: { user_id: userID, batch_size: 10, last_id: last_id },
+      params: { user_id: userID, batch_size: 5, last_id: last_id },
       cancelToken: new axios.CancelToken(
         (c) => (cancelAxiosRequest.current = c)
       ),

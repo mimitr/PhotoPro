@@ -26,7 +26,7 @@ const RecommendationFeed = () => {
 
           setTimeout(() => {
             fetchRecommendations();
-          }, 2000);
+          }, 1500);
         }
       });
 
