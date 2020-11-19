@@ -15,6 +15,7 @@ import ShoppingCartPage from './pages/shoppingCartPage/ShoppingCartPage';
 import CheckoutPage from './pages/checkoutPage/CheckoutPage';
 import MyPurchases from './pages/myPurchases/MyPurchases';
 import RecommendationsPage from './pages/RecommendationsPage/RecommendationsPage';
+import UploadProfilePage from './pages/uploadProfilePage/UploadProfilePage';
 
 import { Switch, Route } from 'react-router-dom';
 
@@ -43,6 +44,7 @@ function App() {
         <Route path="/checkout" component={CheckoutPage} />
         <Route path="/my-purchases" component={MyPurchases} />
         <Route path="/recommendations" component={RecommendationsPage} />
+        <Route path="/upload-profile-photo" component={UploadProfilePage} />
       </Switch>
     </React.Fragment>
   );

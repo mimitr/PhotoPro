@@ -25,9 +25,10 @@ h3 {
 .userpage-username {
   display: flex;
   flex-direction: column;
+  /* justify-content: flex-end; */
   justify-content: center;
   align-items: center;
-  height: 300px;
+  height: 65000px;
   background-size: auto;
   background-repeat: no-repeat;
   opacity: 0.8;

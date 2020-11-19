@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import ReactDom from 'react-dom';
-import './ForgotPasswordModal.css';
-import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import ReactDom from "react-dom";
+import "./ForgotPasswordModal.css";
+import axios from "axios";
+import { useHistory } from "react-router-dom";
 
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    '& .MuiTextField-root': {
+    "& .MuiTextField-root": {
       margin: theme.spacing(1),
-      width: 'ch',
+      width: "ch",
     },
   },
 }));
 
 export default function ForgotPassword(props) {
   const classes = useStyles();
-  const [email, setEmail] = useState('');
-  const [errorText, setErrorText] = useState('');
-  const [hashValue, setHashValue] = useState('');
+  const [email, setEmail] = useState("");
+  const [errorText, setErrorText] = useState("");
+  const [hashValue, setHashValue] = useState("");
   const [errorValue, setErrorValue] = useState(false);
   const [enterEmailToVerifyOpen, setEnterEmailToVerifyOpen] = useState(true);
   const [verifyOpen, setVerifyOpen] = useState(false);
@@ -34,9 +34,9 @@ export default function ForgotPassword(props) {
 
   const [codeVerified, setCodeVerified] = useState(null);
 
-  const [enteredCode, setEnteredCode] = useState('');
-  const [enteredEmail, setEnteredEmail] = useState('');
-  const [enteredNewPassword, setEnteredNewPassword] = useState('');
+  const [enteredCode, setEnteredCode] = useState("");
+  const [enteredEmail, setEnteredEmail] = useState("");
+  const [enteredNewPassword, setEnteredNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const history = useHistory();
@@ -45,14 +45,14 @@ export default function ForgotPassword(props) {
     if (
       text.length > 10 &&
       text.length < 50 &&
-      text.includes('@') &&
-      text.includes('.com')
+      text.includes("@") &&
+      text.includes(".com")
     ) {
       setErrorValue(false);
-      setErrorText('');
+      setErrorText("");
       return true;
     } else {
-      setErrorText('Email must be entered and include an @ and .com');
+      setErrorText("Email must be entered and include an @ and .com");
       setErrorValue(true);
       return false;
     }
@@ -61,8 +61,8 @@ export default function ForgotPassword(props) {
   const forgotPasswordGetLink = () => {
     setLoading(true);
     axios({
-      method: 'POST',
-      url: 'http://localhost:5000/forgot_password_get_change_password_link',
+      method: "POST",
+      url: "http://localhost:5000/forgot_password_get_change_password_link",
       params: {
         email: email,
       },
@@ -83,8 +83,8 @@ export default function ForgotPassword(props) {
 
   const forgotPasswordCodeSubmit = () => {
     axios({
-      method: 'POST',
-      url: 'http://localhost:5000/reset_password',
+      method: "POST",
+      url: "http://localhost:5000/reset_password",
       params: {
         email: enteredEmail,
         new_password: enteredNewPassword,
@@ -102,12 +102,12 @@ export default function ForgotPassword(props) {
     e.stopPropagation();
     // compare the user's code with our code
     if (enteredCode === hashValue) {
-      console.log('code is the same!');
+      console.log("code is the same!");
       setCodeVerified(true);
       setVerifyOpen(false);
       setNewPasswordFormOpen(true);
     } else {
-      console.log('code is the same!');
+      console.log("code is the same!");
       setCodeVerified(false);
     }
   };
@@ -153,7 +153,7 @@ export default function ForgotPassword(props) {
                   variant="outlined"
                 />
               </div>
-              <h3>{loading && 'Loading...'}</h3>
+              <h3>{loading && "Loading..."}</h3>
               <div>
                 <Button
                   variant="contained"
@@ -240,8 +240,7 @@ export default function ForgotPassword(props) {
               <div>
                 <TextField
                   required
-                  // error={errorValue}
-                  // helperText={errorText}
+                  type="password"
                   onChange={(e) => {
                     setEnteredNewPassword(e.target.value);
                     // handleCodeInput(e.target.value);
@@ -268,7 +267,7 @@ export default function ForgotPassword(props) {
           ) : null}
           {successfulPasswordUpdate ? (
             <React.Fragment>
-              <h1 style={{ color: 'grey' }}>
+              <h1 style={{ color: "grey" }}>
                 Your password is successfully updated!
               </h1>
               <h2>You can now log in with your new password</h2>
@@ -276,11 +275,11 @@ export default function ForgotPassword(props) {
           ) : null}
 
           {codeVerified === false ? (
-            <h2 style={{ color: 'red' }}>Incorrect Code</h2>
+            <h2 style={{ color: "red" }}>Incorrect Code</h2>
           ) : null}
         </div>
       </React.Fragment>,
-      document.getElementById('toolbarPortal')
+      document.getElementById("toolbarPortal")
     );
   }
 }
