@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import ImageUploader from "react-images-upload";
-import axios from "axios";
-import Button from "@material-ui/core/Button";
-import { useHistory } from "react-router-dom";
-import "./UploadProfilePage.css";
+import React, { useState } from 'react';
+import ImageUploader from 'react-images-upload';
+import axios from 'axios';
+import Button from '@material-ui/core/Button';
+import { useHistory } from 'react-router-dom';
+import './UploadProfilePage.css';
 
 export default function UploadProfilePage(props) {
   const [img, setImg] = useState(null);
@@ -21,10 +21,10 @@ export default function UploadProfilePage(props) {
 
   async function postProfilePhoto() {
     const form_data = new FormData();
-    form_data.append("image", img);
+    form_data.append('image', img);
 
     const response = await axios.post(
-      "http://localhost:5000/post_profile_photo",
+      'http://localhost:5000/post_profile_photo',
       form_data
     );
     return response;
@@ -32,17 +32,20 @@ export default function UploadProfilePage(props) {
 
   const deleteProfilePhoto = () => {
     axios({
-      method: "POST",
-      url: "http://localhost:5000/delete_profile_photo",
+      method: 'POST',
+      url: 'http://localhost:5000/delete_profile_photo',
     }).then((response) => {
       console.log(response);
       const postPhotoResponse = postProfilePhoto();
       postPhotoResponse.then((res) => {
         console.log(res);
         if (res.data.result === true) {
-          console.log("Uploaded successfully");
+          console.log('Uploaded successfully');
           if (img !== null) {
             setUploadedSuccessfully(true);
+            setTimeout(() => {
+              history.goBack();
+            }, 500);
           }
         }
       });
@@ -60,14 +63,14 @@ export default function UploadProfilePage(props) {
           withIcon={true}
           buttonText="Choose image"
           onChange={onDrop}
-          imgExtension={[".jpg", ".png", ".jpeg"]}
+          imgExtension={['.jpg', '.png', '.jpeg']}
           maxFileSize={5242880}
           withPreview={true}
           singleImage={true}
           withLabel={true}
         />
         {uploadedSuccessfully === true ? (
-          <h2 style={{ textAlign: "center", color: "grey" }}>
+          <h2 style={{ textAlign: 'center', color: 'grey' }}>
             Profile photo is uploaded successfully!
           </h2>
         ) : null}
@@ -82,7 +85,7 @@ export default function UploadProfilePage(props) {
               Save Profile Photo
             </Button>
           </div>
-          <div style={{ marginBottom: "10%" }}>
+          <div style={{ marginBottom: '10%' }}>
             <Button
               variant="outlined"
               color="primary"

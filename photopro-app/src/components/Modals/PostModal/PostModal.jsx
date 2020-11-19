@@ -167,9 +167,9 @@ export default function PostModal(props) {
   } else {
     return ReactDom.createPortal(
       <React.Fragment>
-        <div className="photo-overlay-styles" />
+        <div className="post-modal-overlay" />
         <div
-          className="photo-styles"
+          className="post-modal"
           onClick={(e) => {
             e.stopPropagation();
           }}

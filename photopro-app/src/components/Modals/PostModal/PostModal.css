@@ -1,4 +1,4 @@
-.photo-styles {
+.post-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -8,10 +8,11 @@
   z-index: 1000;
   width: 80%;
   max-height: 80vh;
+  width: 85vw;
   overflow-y: auto;
 }
 
-.photo-overlay-styles {
+.post-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;

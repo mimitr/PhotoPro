@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from "react";
-import Toolbar from "../components/toolbar/toolbar";
-import UserPhotos from "../components/userPhotos/UserPhotos";
-import Collections from "../components/collections/collections";
-import Button from "@material-ui/core/Button";
-import "./ProfilePage.css";
-import { useHistory } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import Toolbar from '../components/toolbar/toolbar';
+import UserPhotos from '../components/userPhotos/UserPhotos';
+import Collections from '../components/collections/collections';
+import Button from '@material-ui/core/Button';
+import './ProfilePage.css';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 function ProfilePage(props) {
   const [profileImg, setProfileImg] = useState(null);
 
   const history = useHistory();
   const handleUploadPhotoClicked = () => {
-    history.push("/upload-profile-photo");
+    history.push('/upload-profile-photo');
   };
 
   const getProfilePhoto = (ID) => {
     axios({
-      method: "GET",
-      url: "http://localhost:5000/get_profile_photo",
+      method: 'GET',
+      url: 'http://localhost:5000/get_profile_photo',
       params: {
         user_id: ID,
       },
@@ -33,8 +33,8 @@ function ProfilePage(props) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("userID") === props.location.state.uploaderID) {
-      getProfilePhoto(localStorage.getItem("userID"));
+    if (localStorage.getItem('userID') === props.location.state.uploaderID) {
+      getProfilePhoto(localStorage.getItem('userID'));
     } else {
       getProfilePhoto(props.location.state.uploaderID);
     }
@@ -50,20 +50,19 @@ function ProfilePage(props) {
   } else {
     // This variable helps certain components decide what information they should display.
     const displayMyProfile =
-      localStorage.getItem("userID") === props.location.state.uploaderID
+      localStorage.getItem('userID') === props.location.state.uploaderID
         ? true
         : false;
 
     // Tries to move the page to the top when the profile page is rendered
-    document.body.style.overflow = "unset";
+    document.body.style.overflow = 'unset';
     return (
       <React.Fragment>
         <Toolbar />
 
-        {/* personal profile page */}
         {displayMyProfile ? (
           <React.Fragment>
-            <div className="users-profile-pic" style={{ marginTop: "20%" }}>
+            <div className="users-profile-pic" style={{ marginTop: '20%' }}>
               <div className="dp-photo-wrapper">
                 {profileImg !== null ? (
                   <React.Fragment>
@@ -74,7 +73,7 @@ function ProfilePage(props) {
                 ) : null}
               </div>
 
-              <div className="upload-dp-button" style={{ textAlign: "center" }}>
+              <div className="upload-dp-button" style={{ textAlign: 'center' }}>
                 <Button variant="outlined" onClick={handleUploadPhotoClicked}>
                   Update Profile Photo
                 </Button>
@@ -83,7 +82,10 @@ function ProfilePage(props) {
           </React.Fragment>
         ) : null}
 
-        <div className="profile-wrapper" style={{ marginTop: "20%" }}>
+        <div
+          className="profile-wrapper"
+          style={{ marginTop: '5%', border: '3px solid red' }}
+        >
           {displayMyProfile ? null : (
             <Collections
               userID={props.location.state.uploaderID}
@@ -92,7 +94,7 @@ function ProfilePage(props) {
           )}
           <UserPhotos
             userID={props.location.state.uploaderID}
-            userLoggedIn={localStorage.getItem("userLoggedIn")}
+            userLoggedIn={localStorage.getItem('userLoggedIn')}
           />
         </div>
       </React.Fragment>
