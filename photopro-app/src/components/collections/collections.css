@@ -28,7 +28,7 @@ h3 {
   /* justify-content: flex-end; */
   justify-content: center;
   align-items: center;
-  height: 65000px;
+  height: 650px;
   background-size: auto;
   background-repeat: no-repeat;
   opacity: 0.8;
@@ -70,5 +70,5 @@ h3 {
 }
 
 .collectionsPageWrapper {
-  margin-top: 15%;
+  margin-top: 5%;
 }
