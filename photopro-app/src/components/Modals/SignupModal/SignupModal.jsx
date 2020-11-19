@@ -158,7 +158,8 @@ export default function RegistrationPage(props) {
           {codeGenerated !== null && userRegistered !== true ? (
             <React.Fragment>
               <div>
-                <h2>Enter the code we've just sent to your email:</h2>
+                <h1 style={{ color: "grey" }}>Please verify your email </h1>
+                <h2>Enter the code we've just sent to {emailValidated[1]}:</h2>
                 <div style={{ marginBottom: "5%" }}>
                   <TextField
                     required
@@ -194,7 +195,9 @@ export default function RegistrationPage(props) {
 
           {userRegistered === true ? (
             <React.Fragment>
-              <h1>Email verified, welcome to PhotoPro! </h1>
+              <h1 style={{ color: "grey" }}>
+                Your email is verified, welcome to PhotoPro!
+              </h1>
               <h2> Sign in with your details.</h2>
             </React.Fragment>
           ) : null}
