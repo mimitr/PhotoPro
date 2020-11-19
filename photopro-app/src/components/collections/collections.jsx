@@ -61,11 +61,11 @@ export default function Collections(props) {
         console.log(response);
         if (response.data.result !== false) {
           setAllCollections(response.data.result);
-
           if (
             response.data.result.find(
               (collection) => collection.private === false
-            )
+            ) ||
+            displayMyProfile === true
           ) {
             setHasCollections(true);
           } else {
