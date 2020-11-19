@@ -1,5 +1,5 @@
-import React from "react";
-import "./CheckoutItem.css";
+import React from 'react';
+import './CheckoutItem.css';
 
 export default function CheckoutItem(props) {
   return (
@@ -14,7 +14,7 @@ export default function CheckoutItem(props) {
           </div>
           <div className="image-info">
             <h2>Title: {props.title}</h2>
-            <h3>Price: ${props.price}</h3>
+            <h3>Price: ${Number(props.price).toFixed(2)}</h3>
           </div>
         </div>
       </div>

@@ -165,7 +165,10 @@ export default function CheckoutPage(props) {
             </Button>
             <h2>Total number of item(s): {shoppingCartItems.length}</h2>
 
-            <h2>TOTAL TO PAY: ${props.location.state.totalPrice}</h2>
+            <h2>
+              TOTAL TO PAY: $
+              {Number(props.location.state.totalPrice).toFixed(2)}
+            </h2>
             <div className="purchased-items">{checkoutItemsComponents}</div>
           </div>
         </div>
