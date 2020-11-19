@@ -82,10 +82,7 @@ function ProfilePage(props) {
           </React.Fragment>
         ) : null}
 
-        <div
-          className="profile-wrapper"
-          style={{ marginTop: '5%', border: '3px solid red' }}
-        >
+        <div className="profile-wrapper" style={{ marginTop: '20%' }}>
           {displayMyProfile ? null : (
             <Collections
               userID={props.location.state.uploaderID}

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import "./collections.css";
-import { Redirect } from "react-router-dom";
-import Collection from "./collection/Collection";
-import Userbackground from "../../background/user-background/user-background.jpg";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './collections.css';
+import { Redirect } from 'react-router-dom';
+import Collection from './collection/Collection';
+import Userbackground from '../../background/user-background/user-background.jpg';
 
 export default function Collections(props) {
   const [username, setUsername] = useState([props.userID]);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [allCollections, setAllCollections] = useState([]);
   const [collectionClicked, setCollectionClicked] = useState(false);
   const [collectionIdClicked, setCollectionIdClicked] = useState(null);
@@ -31,7 +31,7 @@ export default function Collections(props) {
 
   useEffect(() => {
     axios({
-      url: "http://localhost:5000/get_user_username",
+      url: 'http://localhost:5000/get_user_username',
       params: { user_id: userID },
     }).then((response) => {
       if (response.data.result) {
@@ -39,7 +39,7 @@ export default function Collections(props) {
       }
     });
     axios({
-      url: "http://localhost:5000/get_user_email",
+      url: 'http://localhost:5000/get_user_email',
       params: { user_id: userID },
     }).then((response) => {
       if (response.data.result) {
@@ -51,16 +51,26 @@ export default function Collections(props) {
   useEffect(() => {
     const getUsersCollections = () => {
       axios({
-        method: "GET",
-        url: "http://localhost:5000/get_users_collection",
+        method: 'GET',
+        url: 'http://localhost:5000/get_users_collection',
         params: {
           user_id: userID,
           batch_size: 20,
         },
       }).then((response) => {
+        console.log(response);
         if (response.data.result !== false) {
           setAllCollections(response.data.result);
-          setHasCollections(true);
+
+          if (
+            response.data.result.find(
+              (collection) => collection.private === false
+            )
+          ) {
+            setHasCollections(true);
+          } else {
+            setHasCollections(false);
+          }
         } else {
           setHasCollections(false);
         }
@@ -73,8 +83,8 @@ export default function Collections(props) {
 
   const getProfilePhoto = () => {
     axios({
-      method: "GET",
-      url: "http://localhost:5000/get_profile_photo",
+      method: 'GET',
+      url: 'http://localhost:5000/get_profile_photo',
       params: {
         user_id: userID,
       },
@@ -153,11 +163,11 @@ export default function Collections(props) {
               ) : null}
 
               {!props.displayMyProfile ? (
-                <h1 style={{ textAlign: "center", margin: "0" }}>{username}</h1>
+                <h1 style={{ textAlign: 'center', margin: '0' }}>{username}</h1>
               ) : null}
 
               {!props.displayMyProfile ? (
-                <h3 style={{ textAlign: "center" }}>Email: {email}</h3>
+                <h3 style={{ textAlign: 'center' }}>Email: {email}</h3>
               ) : null}
             </div>
           </React.Fragment>
@@ -167,7 +177,7 @@ export default function Collections(props) {
           {props.displayMyProfile ? (
             <h2
               className="quicksand"
-              style={{ marginTop: "10%", textAlign: "center" }}
+              style={{ marginTop: '10%', textAlign: 'center' }}
             >
               My collections
             </h2>
@@ -175,9 +185,9 @@ export default function Collections(props) {
             <h2
               className="quicksand"
               style={{
-                marginTop: "10%",
-                marginBottom: "8%",
-                textAlign: "center",
+                marginTop: '10%',
+                marginBottom: '8%',
+                textAlign: 'center',
               }}
             >
               Public Collections
@@ -192,9 +202,9 @@ export default function Collections(props) {
   return (
     <React.Fragment>
       {componentsRender}
-      <h1 style={{ textAlign: "center" }}>{loading && "Loading..."} </h1>
-      <h2 style={{ textAlign: "center" }}>
-        {!hasCollections && "This user does not have any public collections"}
+      <h1 style={{ textAlign: 'center' }}>{loading && 'Loading...'} </h1>
+      <h2 style={{ textAlign: 'center' }}>
+        {!hasCollections && 'This user does not have any public collections'}
       </h2>
     </React.Fragment>
   );
