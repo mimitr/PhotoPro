@@ -140,3 +140,7 @@ function call reather than one tag at a time.
 
 Today I worked on the restospective A report with christian. I also discussed
 the conclusion of the current sprint, as well as planning of the next sprint.
+
+
+November 5, 2020
+Today I worked on the image classification code in order for the site to automatically tag the images when they user a posts them. There was several issues encountered trying to get the authentication key provided by Google cloud services working along with the file not being able to be read properly from the local directory and because of this took some time to get the classification code working. In the end the problem turned out to be that the Json file holding all of the authentication information was located in a different directory then the test file directory so each time it would run it wouldn’t be able to locate the file and for some reason I wasn’t getting full output on the console when  was being run. After figuring this out I was able to make another commit and auto tag successfully worked.
