@@ -142,14 +142,93 @@ Today I worked on the restospective A report with christian. I also discussed
 the conclusion of the current sprint, as well as planning of the next sprint.
 
 
+
+
 November 5, 2020
-Today I worked on the image classification code in order for the site to automatically tag the images when they user a posts them. There was several issues encountered trying to get the authentication key provided by Google cloud services working along with the file not being able to be read properly from the local directory and because of this took some time to get the classification code working. In the end the problem turned out to be that the Json file holding all of the authentication information was located in a different directory then the test file directory so each time it would run it wouldn’t be able to locate the file and for some reason I wasn’t getting full output on the console when  was being run. After figuring this out I was able to make another commit and auto tag successfully worked.
+Today I worked on the image classification code in order for the site to 
+automatically tag the images when they user a posts them. There was several 
+issues encountered trying to get the authentication key provided by Google 
+cloud services working along with the file not being able to be read properly 
+from the local directory and because of this took some time to get the 
+classification code working. In the end the problem turned out to be that 
+the Json file holding all of the authentication information was located in 
+a different directory then the test file directory so each time it would run 
+it wouldn’t be able to locate the file and for some reason I wasn’t getting 
+full output on the console when  was being run. After figuring this out I was
+able to make another commit and auto tag successfully worked.
+
+
 
 November 6, 2020
-Today I modified my auto tags code to be able to strip the quotations off that existed given the automatically classified labels from Google cloud API. I ran this again and verified that the change didn’t break the site which they didn’t and worked fine.
+Today I modified my auto tags code to be able to strip the quotations off that
+existed given the automatically classified labels from Google cloud API. I ran
+this again and verified that the change didn’t break the site which they 
+didn’t and worked fine.
+
+
 
 November 14, 2020
-I haven’t been able to work on the site that much this past week because of all the other project work I’ve had in the other two courses which both had a critical project component. The first thing I worked on today was modifying my code which added order tags on upload in order to add these auto tags to the newly created auto tags table. After talking with Matt we decided to have an auto tags table which was instead of tags array in images entry in the images table in database in order to decouple each tag from each other. This way going forward we could have a separate order tags are a associated with an image and term.For example in the auto tags database the columns would be image ID term as in tag term and likelihood which stands for the classification likelihood given by the Google API calls. The idea behind this after discussing this with Matt in regards to the recommendation system was that we have a separate table called recommendations each tag term that existed in the order tags table would have a user ID entry or column the term and weighting. This weighting would be increased for that for that tag and user when they perform activities like commenting or liking and more strongly for an activity that was more significant like purchasing. Then during during activities which would require a significant recommendation activity we would order this table in descending order they of weighting which for that user would give us a descending list of tags which should be recommended based upon considering their past activity. Although this wasn’t a proper implementation in the conventional way machine learning was done none of us had enough experience in order to be able to implement a full machine learning data driven system if not for the fact that such systems require more use of data as they usually use deployed models and we did not have enough data. In terms of the personalised recommendation system my job was to implement the update to the cumulative weightings in the recommendations table when a user like to post or commented on a post as well as comments on comments. I had to write a script to update the auto tags table removing all the auto tags entries that were already in the database effectively downloading each image auto tagging it now with the newly added likelihood of information and uploading it to the auto tags table in  database this way we would have a model that was updated to reflect the structure we were using along with all the data that was needed associate with each picture.
+I haven’t been able to work on the site that much this past week because of all
+the other project work I’ve had in the other two courses which both had a 
+critical project component. The first thing I worked on today was modifying my
+code which added order tags on upload in order to add these auto tags to the 
+newly created auto tags table. After talking with Matt we decided to have an 
+auto tags table which was instead of tags array in images entry in the images 
+table in database in order to decouple each tag from each other. This way going
+forward we could have a separate order tags are a associated with an image and 
+term.For example in the auto tags database the columns would be image ID term 
+as in tag term and likelihood which stands for the classification likelihood 
+given by the Google API calls. The idea behind this after discussing this with
+Matt in regards to the recommendation system was that we have a separate table 
+called recommendations each tag term that existed in the order tags table would 
+have a user ID entry or column the term and weighting. This weighting would be 
+increased for that for that tag and user when they perform activities like 
+commenting or liking and more strongly for an activity that was more significant
+like purchasing. Then during during activities which would require a significant
+recommendation activity we would order this table in descending order they of 
+weighting which for that user would give us a descending list of tags which should
+be recommended based upon considering their past activity. Although this wasn’t a 
+proper implementation in the conventional way machine learning was done none of us
+had enough experience in order to be able to implement a full machine learning data
+driven system if not for the fact that such systems require more use of data as they
+usually use deployed models and we did not have enough data. In terms of the 
+personalised recommendation system my job was to implement the update to the 
+cumulative weightings in the recommendations table when a user like to post or 
+commented on a post as well as comments on comments. I had to write a script to 
+update the auto tags table removing all the auto tags entries that were already in
+the database effectively downloading each image auto tagging it now with the newly 
+added likelihood of information and uploading it to the auto tags table in  database
+this way we would have a model that was updated to reflect the structure we were using
+along with all the data that was needed associate with each picture.
+
+
+
 
 November 15, 2020
-Today my main task was to work on the related images function which use the auto tags table from the database in order to return the three images most related to the image that was currently being viewed in order for the user to be able to see images most relevant to the image that they already viewing. This functionality did not rely on personalised recommendation information which we have already collected and implemented the functionality for it rely purely on the order tagging in the likelihood of those tags being correct as returned my Google visions API used. The way I choose to implement this was using and SQL function which basically performed to join on the term column in the auto tag table then it ordered by this term and counted the number of elements that were not the same image ID between both sides of the join this way it affectively counted the number of tags The image had in common with another image. Then my SQL would order these in descending order which would basically give a descending order list for images with the most number of tags in common given an input image ID for tags to a search based upon. This means that related images function basically took in an image ID and tried to find the top the three images with the most number of matching tags. This function turned out to work quite well in practice even though the actual likelihood of the recommendation information wasn’t used. I decided to do it this way to avoid complexity and in practice this was fine due to the low number of images we had and my experience with machine learning algorithm implementation. I implemented the front end API for this also as well as their Axios calls in order for this to be affectively called by the front and developers when adding it to the front end of this page for all image post. Later today I had to come back and modify my order text function from yesterday because the auto tags being returned to a case sensitive and after being tested on the live site number of matches in search for the recommendation system we’re not what was expected and this was because the search terms with being made all lowercase but the auto tag or case-sensitive I went back in modified my auto tag function in order to make the tags terms all lowercase. After doing this the results were much improved.
+Today my main task was to work on the related images function which use the auto 
+tags table from the database in order to return the three images most related to 
+the image that was currently being viewed in order for the user to be able to see
+images most relevant to the image that they already viewing. This functionality 
+did not rely on personalised recommendation information which we have already 
+collected and implemented the functionality for it rely purely on the order tagging
+in the likelihood of those tags being correct as returned my Google visions API used.
+The way I choose to implement this was using and SQL function which basically performed
+to join on the term column in the auto tag table then it ordered by this term and 
+counted the number of elements that were not the same image ID between both sides of the
+join this way it affectively counted the number of tags The image had in common with 
+another image. Then my SQL would order these in descending order which would basically 
+give a descending order list for images with the most number of tags in common given an 
+input image ID for tags to a search based upon. This means that related images function 
+basically took in an image ID and tried to find the top the three images with the most 
+number of matching tags. This function turned out to work quite well in practice even 
+though the actual likelihood of the recommendation information wasn’t used. I decided to
+do it this way to avoid complexity and in practice this was fine due to the low number 
+of images we had and my experience with machine learning algorithm implementation. I 
+implemented the front end API for this also as well as their Axios calls in order for 
+this to be affectively called by the front and developers when adding it to the front 
+end of this page for all image post. Later today I had to come back and modify my order 
+text function from yesterday because the auto tags being returned to a case sensitive and
+after being tested on the live site number of matches in search for the recommendation 
+system we’re not what was expected and this was because the search terms with being made
+all lowercase but the auto tag or case-sensitive I went back in modified my auto tag 
+function in order to make the tags terms all lowercase. After doing this the results were much improved.
