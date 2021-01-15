@@ -14,7 +14,23 @@ This project is heavily inspired by social media applications such as Facebook a
 ![image](https://drive.google.com/uc?export=view&id=1HEH49XFIUb4NbsNY2W1_5LJSdhAuA6H8)
 
 #### Scrolling down the global feed 
-![image](https://drive.google.com/uc?export=view&id=1kAmNYL9lQhFN6QQVQnJyMvhWFneofxnu)
+![image](https://drive.google.com/uc?export=view&id=1JD4x02nAPL3uPzue8er9TT62LH198)
+
+
+
+### Photos
+#### Opening a Photo from the Feed 
+![image](https://drive.google.com/uc?export=view&id=1sTGLQ2lFHuyzGWXjreX0aCdQP93BGle0)
+
+
+### Profiles
+#### Visiting another users profile
+![image](https://drive.google.com/uc?export=view&id=1uPJHDy5FuagRUMfdk_u1NKlYKFtqyLuc)
+![image](https://drive.google.com/uc?export=view&id=17wuomVqaPspuX15jejhOua1Nlu1B_CnS)
+
+
+
+
 
 
 
