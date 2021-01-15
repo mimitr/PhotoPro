@@ -10,7 +10,10 @@ This project is heavily inspired by social media applications such as Facebook a
 
 ## Demo Photos
 ### Main Page
+#### Search Bar
 ![image](https://drive.google.com/uc?export=view&id=1HEH49XFIUb4NbsNY2W1_5LJSdhAuA6H8)
+
+#### Scrolling down the global feed 
 ![image](https://drive.google.com/uc?export=view&id=1kAmNYL9lQhFN6QQVQnJyMvhWFneofxnu)
 
 
