@@ -14,7 +14,8 @@ This project is heavily inspired by social media applications such as Facebook a
 ![image](https://drive.google.com/uc?export=view&id=1HEH49XFIUb4NbsNY2W1_5LJSdhAuA6H8)
 
 #### Scrolling down the global feed 
-![image](https://drive.google.com/uc?export=view&id=1JD4x02nAPL3uPzue8er9TT62LH198)
+![image](https://drive.google.com/uc?export=view&id=1JD4x02nAPL3uPzue8er9TT62LH198-gC)
+
 
 
 ### Photos
