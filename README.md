@@ -23,6 +23,19 @@ This project is heavily inspired by social media applications such as Facebook a
 ![image](https://drive.google.com/uc?export=view&id=1sTGLQ2lFHuyzGWXjreX0aCdQP93BGle0)
 
 
+### Collections
+#### Collection Folders
+![image](https://drive.google.com/uc?export=view&id=1_mcYiUCCLuFAzf7eOR_fOp2xRuuxRDpN)
+
+#### Opening a Collection
+![image](https://drive.google.com/uc?export=view&id=1d8KTWWcXkwQsOC9zxrR9AdYi0Vq5Wh1n)
+
+
+### Uploading a Photo
+![image](https://drive.google.com/uc?export=view&id=1IadC_4tnOdxYw8Tw8_BKQOWMpqlTujK2)
+
+
+
 ### Profiles
 #### Visiting another users profile
 ![image](https://drive.google.com/uc?export=view&id=1uPJHDy5FuagRUMfdk_u1NKlYKFtqyLuc)
