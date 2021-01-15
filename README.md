@@ -22,6 +22,11 @@ This project is heavily inspired by social media applications such as Facebook a
 #### Opening a Photo from the Feed 
 ![image](https://drive.google.com/uc?export=view&id=1sTGLQ2lFHuyzGWXjreX0aCdQP93BGle0)
 
+#### Commenting on a Photo & Related Images Feature
+![image](https://drive.google.com/uc?export=view&id=143MYjHd7O2R6rcFs4Z6hCjX3PeEblqyI)
+
+
+
 
 ### Collections
 #### Collection Folders
