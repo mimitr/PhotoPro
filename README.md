@@ -17,7 +17,6 @@ This project is heavily inspired by social media applications such as Facebook a
 ![image](https://drive.google.com/uc?export=view&id=1JD4x02nAPL3uPzue8er9TT62LH198)
 
 
-
 ### Photos
 #### Opening a Photo from the Feed 
 ![image](https://drive.google.com/uc?export=view&id=1sTGLQ2lFHuyzGWXjreX0aCdQP93BGle0)
