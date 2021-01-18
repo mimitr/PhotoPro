@@ -1,4 +1,5 @@
 # capstone-project-comp3900-f11a-2mjec
+This project was completed as a part of COMP3900 (Computer Science Project) at UNSW. It was completed within a team of 6.
 
 ## About this project
 PhotoPro is a stock image hosting website that learns user behaviour for a more personalised experience. Users can upload a photo of their choosing which will appear on the web app with a watermarked added across the image. Other users may view this stock photo, like, comment and even follow other users if they enjoy their type of content. If a user really likes a photo, they can purchase the image with a price set by the uploader in order to download the un-watermarked version. Users also have the option of creating collections, either public or private to store some of their favourite photos for later purchase if they wish. 
